@@ -1,18 +1,27 @@
-# 宅食図鑑 無料公開ガイド（Cloudflare Pages / pages.dev）
+# 宅食図鑑 無料公開ガイド（Cloudflare Workers Static Assets）
 
 作成日: 2026-08-26
-更新日: 2026-08-26（Cloudflare公式仕様の再調査に基づき更新）
+更新日: 2026-08-26（Cloudflare公式仕様の再調査に基づき**Workers方式に最終決定**）
 目的: 独自ドメインなし・完全無料で本番公開し、ASP登録→流入→初回CVを最短で検証する。
 
 ---
 
-## 1. 公開方針（決定事項）
+## 1. 公開方針（最終決定）
 
 - 独自ドメインは購入しない（takushokuzukan.jp も取得しない）
-- Cloudflare Pages の無料プランを使用
-- 公開URLは無料の `pages.dev` サブドメイン
+- **Cloudflare Workers Static Assets（無料プラン）を使用**
+- 公開URLは無料の `workers.dev` サブドメイン: **`https://takushokuzukan.workers.dev`**
 - サイト名「宅食図鑑」は維持
-- `site/` をCloudflare Pagesで静的ホスティング
+- `site/` をWorkers Static Assetsで静的ホスティング
+- **Pages方式は、2026年8月時点でダッシュボードがWorker作成に誘導するため、Workers方式を採用**（Pages自体は存続しているが、新規作成はWorkerが最短）
+
+### Workers方式を選んだ理由（公式仕様の確認結果）
+
+- Cloudflareは新規プロジェクトをWorkersへ誘導（Pages Getting Startedに明記）
+- **Workers Static Assetsは純粋な静的サイトをWorkerスクリプトなしで配信可能**（公式ドキュメントのSSG構成例で確認）
+- `not_found_handling = "404-page"` でカスタム404（`site/404.html`）を配信可能（公式SSGガイドで確認）
+- `html_handling = "auto-trailing-slash"` でルート"/"・index.html・スラッシュ付きURLを正しく処理（公式で確認）
+- 無料プランで`workers.dev`URLが無料。ビルド・デプロイはGit連携（Workers Builds）で自動化
 
 ## 1.5 2026年8月時点の重要仕様（公式確認済み）
 
@@ -42,38 +51,34 @@
 
 ## 3. デプロイ方法（3択）
 
-### 方法A: CloudflareネイティブのGitHub連携（推奨・最簡単・無料）
+### 方法A: Workers Builds（Git連携）— 採用方式
 
-GitHub Actions不要。Cloudflareがリポジトリを直接監視し、pushのたびに自動ビルド・デプロイする。
+2026年8月時点のダッシュボードはWorker作成が最初に表示されるため、**このWorkerフローをそのまま使う**。
 
-**手順（1回だけ、約10分）:**
+**前提（Claude Code側で準備済み ✅）**:
+- リポジトリ `2070abet-ui/ret`（mainブランチ）にプロジェクト一式をpush済み
+- `wrangler.toml` をWorkers Static Assets用に更新済み（`assets.directory = "./site"`、`not_found_handling = "404-page"`）
+- `site/` は `https://takushokuzukan.workers.dev` を指すcanonicalで再ビルド済み
 
-0. 前提: リポジトリ `2070abet-ui/ret`（mainブランチ）にプロジェクトをpush済みであること ✅
-1. Cloudflareダッシュボード → **Workers & Pages** → **Create application**
-2. **ここが重要**: 最初に表示されるのは「Worker」作成画面。**そのまま進まず、画面内の「Pages」タブを選択**する
-3. **Connect to Git** を選択（Pagesのセットアップ方法: Connect to Git / Direct Upload / C3 CLI のうち「Connect to Git」）
-4. GitHub連携を許可（認可画面でリポジトリへのアクセスを許可）→ リポジトリ `2070abet-ui/ret` を選択
-5. ビルド設定を入力:
-   - **Project name**: `takushokuzukan`（これをURL `https://takushokuzukan.pages.dev` に使う。他と被ったら自動で別名になる）
-   - **Production branch**: `main`
-   - **Framework preset**: （なし）
-   - **Build command**: `python tools/build.py`
-   - **Build output directory**: `site`
-   - **Root directory**: （空欄のまま = リポジトリルート）
-   - 環境変数は不要（PythonはCloudflareのビルド環境に標準搭載）
-6. 「Save and Deploy」
-7. 完了後に発行されるURL: **`https://takushokuzukan.pages.dev`**（Project nameがtakushokuzukanの場合）
+**画面での入力（現在のWorker設定画面）**:
 
-以降、`git push` するだけで自動ビルド・デプロイ。
+| 項目 | 入力 |
+|---|---|
+| **Build command（Optional）** | **空欄のまま**（`site/`はコミット済みでそのまま配信される。`python tools/build.py`を入れても動作するが、空欄が最安定） |
+| **Builds for non-production branches** | オフ（デフォルトのまま・チェックしない） |
+| **Protect with Cloudflare Access** | オフ（チェックしない） |
+| **Advanced settings** | 開かない・変更しない（Deploy commandはデフォルトの `npx wrangler deploy` が使われる） |
 
-**もしBuildコマンドが失敗する場合の代替**: Build commandを空欄にして、Build output directoryを`site`にすると、リポジトリにコミット済みの`site/`をそのまま配信できる（ビルド不要モード）。どちらでも動く。
+**その後**:
+- デプロイボタン（Save and Deploy / Deploy）をクリック
+- Workers Buildsが自動で `npx wrangler deploy` を実行し、`wrangler.toml` に従って `site/` を `takushokuzukan.workers.dev` に配信
+- 以降、`git push` するだけで自動再デプロイ
 
-### もし「Pages」タブが見つからない場合（Workersフローしか表示されない場合）
+**注意**: Worker名（wrangler.tomlの`name = "takushokuzukan"`）が `takushokuzukan.workers.dev` として既に他者に使われている場合、ビルドが失敗する。その場合は`wrangler.toml`の`name`を変更（例: `takushokuzukan-site`）して再pushする。この場合のURLは `https://takushokuzukan-site.workers.dev` になり、`config/site.json`の`url`も合わせて更新する。
 
-2026年8月時点のダッシュボードはWorker作成が最初に表示される。通常はCreate application画面に「Workers」「Pages」のタブがあるはずだが、**もしPagesタブが見つからない場合はWorkerフローで進めず、一度確認すること**。
+### 補足: Pages方式を使う場合（参考）
 
-- 画面右上のログイン名 → メニュー、またはサイドバーに「Workers & Pages」一覧ページがある。そこから「Create application」を開き直すと、通常はWorkers/Pagesの選択肢が表示される。
-- それでもPagesが見つからない場合は、Workers Static Assets（`wrangler.toml`の`assets.directory`方式）で公開する。この場合の設定ファイルはClaude Code側で用意するので、画面キャプチャ等で現状を共有してほしい。
+2026年8月時点でもPagesのGit連携自体は存在する（公式ドキュメントで確認）。Create application画面に「Pages」タブが表示される場合は、そちらでも公開できる（Build command: `python tools/build.py` / Build output directory: `site` / pages.dev URL）。ただし新規作成はWorkerが最短のため、本プロジェクトはWorkers方式で進める。
 
 ### 方法B: Wrangler直接アップロード（Cloudflare連携不要・単発で手早く）
 

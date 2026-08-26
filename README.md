@@ -1,9 +1,9 @@
-# 宅食図鑑（takushokuzukan.pages.dev）
+# 宅食図鑑（takushokuzukan.workers.dev）
 
 個人 × Claude Codeによる宅配食（食品宅配）アフィリエイト事業のリポジトリ。
 
 - サイト名: **宅食図鑑**
-- 公開URL: **https://takushokuzukan.pages.dev**（Cloudflare Pages 無料プラン / 独自ドメインなし）
+- 公開URL: **https://takushokuzukan.workers.dev**（Cloudflare Workers Static Assets 無料プラン / 独自ドメインなし）
 - サイト名決定経緯: `docs/SITE_NAME_DOMAIN_DECISION_2026_08.md`
 - 無料公開・デプロイ手順: `docs/DEPLOYMENT_GUIDE_2026_08.md`
 

@@ -1,7 +1,13 @@
-# Cloudflare Pages 設定（Wrangler直接アップロード方式用）
-# 使い方: npm install -g wrangler → npx wrangler pages deploy site --project-name=takushokuzukan
-# もしくは deploy.ps1 / deploy.sh を実行（事前に CLOUDFLARE_API_TOKEN を環境変数に設定）
+# Cloudflare Workers Static Assets 設定（2026-08時点の公式仕様に準拠）
+# 静的サイト site/ をそのまま配信する。Workerスクリプト不要。
+# 参照: https://developers.cloudflare.com/workers/static-assets/
+# デプロイ: npx wrangler deploy  （Workers BuildsのGit連携ではこれが自動実行される）
 name = "takushokuzukan"
-pages_build_output_dir = "./site"
-
 compatibility_date = "2026-08-26"
+
+[assets]
+directory = "./site"
+# 存在しないURLに対して site/404.html を404ステータスで返す
+not_found_handling = "404-page"
+# ルート"/"は index.html、"/foo.html" はスラッシュなし、ディレクトリindexはスラッシュ付きで配信
+html_handling = "auto-trailing-slash"

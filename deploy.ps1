@@ -21,7 +21,7 @@ if (-not $env:CLOUDFLARE_API_TOKEN) {
     exit 1
 }
 
-Write-Host "==> Cloudflare Pages へデプロイ中..." -ForegroundColor Cyan
-npx wrangler pages deploy .\site --project-name=takushokuzukan
+Write-Host "==> Cloudflare Workers へデプロイ中（Static Assets方式）..." -ForegroundColor Cyan
+npx wrangler deploy
 
-Write-Host "==> 完了。公開URLを確認してください（通常は https://takushokuzukan.pages.dev）" -ForegroundColor Green
+Write-Host "==> 完了。公開URLを確認してください（通常は https://takushokuzukan.workers.dev）" -ForegroundColor Green
