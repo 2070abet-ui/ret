@@ -1,6 +1,7 @@
 # 宅食図鑑 無料公開ガイド（Cloudflare Pages / pages.dev）
 
 作成日: 2026-08-26
+更新日: 2026-08-26（Cloudflare公式仕様の再調査に基づき更新）
 目的: 独自ドメインなし・完全無料で本番公開し、ASP登録→流入→初回CVを最短で検証する。
 
 ---
@@ -12,6 +13,20 @@
 - 公開URLは無料の `pages.dev` サブドメイン
 - サイト名「宅食図鑑」は維持
 - `site/` をCloudflare Pagesで静的ホスティング
+
+## 1.5 2026年8月時点の重要仕様（公式確認済み）
+
+- **Cloudflareは新規プロジェクトにPagesではなくWorkersを推奨**している（公式Getting Startedページに「Are you sure you want to use Pages? Workers supports most Pages use cases... Start new projects with Workers.」と明記）。
+- ただし**Pages自体は引き続き利用可能**で、「Create application → Pages → Connect to Git」のフローは2026年8月現在も正式サポートされている（公式Git integrationガイドで確認）。
+- 現在のダッシュボードは「Create application」でWorker作成フローが最初に表示される。**静的サイトをGit連携で最短公開するには、この画面で「Pages」タブを選択する必要がある。**
+- Pagesビルド環境にはPython 3.13.3が標準搭載（公式Build imageページで確認）。`python tools/build.py` がそのまま動作する。
+- Pages無料プラン: 500ビルド/月・20,000ファイル・pages.dev URL無料。
+
+## 1.6 GitHubリポジトリ（準備完了済み）
+
+- リポジトリ: `https://github.com/2070abet-ui/ret`（public）
+- デフォルトブランチ: `main`（ローカルの`master`→`main`に変更済み・プッシュ済み）
+- プロジェクト一式（tools/build.py, data/, site/ 等）はGitHubにアップロード済み
 
 ## 2. Cloudflare Pages 無料プランの制限（2026年8月時点の公式情報）
 
@@ -33,23 +48,32 @@ GitHub Actions不要。Cloudflareがリポジトリを直接監視し、pushの�
 
 **手順（1回だけ、約10分）:**
 
-1. GitHubで新規リポジトリを作成（Publicが無料で簡単。PrivateでもPages連携は無料）
-2. ローカルでリモート登録してpush:
-   ```
-   git remote add origin https://github.com/あなたのID/リポジトリ名.git
-   git push -u origin main
-   ```
-3. Cloudflareに無料アカウント作成 → ダッシュボード → **Workers & Pages → Create → Pages → Connect to Git**
-4. GitHub連携を許可 → 先ほどのリポジトリを選択
+0. 前提: リポジトリ `2070abet-ui/ret`（mainブランチ）にプロジェクトをpush済みであること ✅
+1. Cloudflareダッシュボード → **Workers & Pages** → **Create application**
+2. **ここが重要**: 最初に表示されるのは「Worker」作成画面。**そのまま進まず、画面内の「Pages」タブを選択**する
+3. **Connect to Git** を選択（Pagesのセットアップ方法: Connect to Git / Direct Upload / C3 CLI のうち「Connect to Git」）
+4. GitHub連携を許可（認可画面でリポジトリへのアクセスを許可）→ リポジトリ `2070abet-ui/ret` を選択
 5. ビルド設定を入力:
-   - **Framework preset**: （なし/Other）
+   - **Project name**: `takushokuzukan`（これをURL `https://takushokuzukan.pages.dev` に使う。他と被ったら自動で別名になる）
+   - **Production branch**: `main`
+   - **Framework preset**: （なし）
    - **Build command**: `python tools/build.py`
    - **Build output directory**: `site`
+   - **Root directory**: （空欄のまま = リポジトリルート）
    - 環境変数は不要（PythonはCloudflareのビルド環境に標準搭載）
 6. 「Save and Deploy」
-7. 完了後に発行されるURL: **`https://takushokuzukan.pages.dev`**（プロジェクト名がtakushokuzukanの場合）
+7. 完了後に発行されるURL: **`https://takushokuzukan.pages.dev`**（Project nameがtakushokuzukanの場合）
 
-以降、`git push` するだけで自動デプロイ。
+以降、`git push` するだけで自動ビルド・デプロイ。
+
+**もしBuildコマンドが失敗する場合の代替**: Build commandを空欄にして、Build output directoryを`site`にすると、リポジトリにコミット済みの`site/`をそのまま配信できる（ビルド不要モード）。どちらでも動く。
+
+### もし「Pages」タブが見つからない場合（Workersフローしか表示されない場合）
+
+2026年8月時点のダッシュボードはWorker作成が最初に表示される。通常はCreate application画面に「Workers」「Pages」のタブがあるはずだが、**もしPagesタブが見つからない場合はWorkerフローで進めず、一度確認すること**。
+
+- 画面右上のログイン名 → メニュー、またはサイドバーに「Workers & Pages」一覧ページがある。そこから「Create application」を開き直すと、通常はWorkers/Pagesの選択肢が表示される。
+- それでもPagesが見つからない場合は、Workers Static Assets（`wrangler.toml`の`assets.directory`方式）で公開する。この場合の設定ファイルはClaude Code側で用意するので、画面キャプチャ等で現状を共有してほしい。
 
 ### 方法B: Wrangler直接アップロード（Cloudflare連携不要・単発で手早く）
 
