@@ -407,10 +407,11 @@ def build_comparison_page(service_a, service_b, aff_links):
 
 # ---------- 診断ツール ----------
 
-def build_diagnosis_tool(services):
+def build_diagnosis_tool(services, aff_links):
     # クライアントサイドで動作する条件検索ツール
     svc_data = []
     for svc in services:
+        aff = aff_links.get(svc["id"], {})
         svc_data.append({
             "id": svc["id"],
             "name": svc["name"],
@@ -418,6 +419,7 @@ def build_diagnosis_tool(services):
             "target": svc.get("target", []),
             "price": svc.get("price_plan", {}).get("lowest_per_meal_yen"),
             "url": svc.get("official_url", ""),
+            "aff_url": aff.get("actual_url", ""),  # アフィリエイトリンク（あれば優先）
         })
     svc_json = json.dumps(svc_data, ensure_ascii=False)
 
@@ -467,8 +469,10 @@ def build_diagnosis_tool(services):
       }} else {{
         html += '<table><tr><th>サービス</th><th>特徴</th><th>公式サイト</th></tr>';
         for (const s of scored) {{
-          const url = s.url || '';
-          const link = url ? `<a href="${{url}}" target="_blank" rel="noopener">公式サイト</a>` : '<span style="color:#999">要確認</span>';
+          const url = s.aff_url || s.url || '';
+          const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
+          const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
+          const link = url ? `<a href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span style="color:#999">要確認</span>';
           html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td>${{link}}</td></tr>`;
         }}
         html += '</table>';
@@ -808,7 +812,7 @@ def main():
     pages.append("campaigns.html")
 
     # 診断ツール
-    (OUT_DIR / "tool" / "diagnosis.html").write_text(build_diagnosis_tool(services), encoding="utf-8")
+    (OUT_DIR / "tool" / "diagnosis.html").write_text(build_diagnosis_tool(services, aff_links), encoding="utf-8")
     pages.append("tool/diagnosis.html")
 
     # 法務ページ

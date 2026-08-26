@@ -39,10 +39,10 @@
     },
     "fit-food-home": {
       "asp": "A8.net",
-      "status": "未提携（ASP承認待ち）",
-      "actual_url": "",
+      "status": "提携承認済み（A8リンク設定済み）",
+      "actual_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXK+3LSINM+57YO+BX3J6",
       "fallback_url": "",
-      "note": "報酬2,000円/1,500円。公式ドメイン未確認のためリンク表示なし（要確認）"
+      "note": "新規購入2,000円/1,500円（A8）。公式ドメイン未確認のためフォールバックURLは空"
     },
     "magokoro-care": {
       "asp": "A8.net 等",

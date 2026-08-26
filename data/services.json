@@ -360,8 +360,8 @@
       },
       "first_time_campaign": {
         "campaign_id": "fitfood-first",
-        "summary": "初回お試しキャンペーンあり（詳細は公式要確認）",
-        "detail": "要確認",
+        "summary": "A8.net提携承認済み（新規購入2,000円/1,500円）。公式ドメインは未確認",
+        "detail": "A8.net案件が承認済み。公式ドメイン未確認のため、公式サイト情報は要確認。",
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
@@ -391,7 +391,7 @@
           {
             "asp": "A8.net",
             "reward_yen": 2000,
-            "status": "掲載中（2,000円/1,500円）",
+            "status": "提携承認済み",
             "cv_condition": "要確認",
             "last_verified": "2026-08-26"
           }
