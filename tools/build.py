@@ -177,6 +177,13 @@ def build_service_page(service, aff_links):
     aff_campaigns = aff.get("campaigns", [])
 
     # アフィリエイト報酬表示
+    # 関連記事リンク（サービスDBに article_link があれば表示）
+    article_link_html = ""
+    _art_link = service.get("article_link", "")
+    if _art_link:
+        _art_label = service.get("article_label", "関連記事を見る")
+        article_link_html = f'<a class="btn-secondary" href="{esc(_art_link)}">{esc(_art_label)}</a> '
+
     reward_html = ""
     if aff_campaigns:
         items = []
@@ -249,6 +256,7 @@ def build_service_page(service, aff_links):
     {reward_html}
 
     <div style="margin-top:16px;">
+      {article_link_html}
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
     </div>
@@ -547,6 +555,174 @@ def build_index_page(services, campaigns, aff_links):
     return html
 
 
+# ---------- 記事ページ：シェフの無添つくりおき 口コミ・評判 ----------
+
+def build_article_chef_muten_kuchikomi(aff_links):
+    """シェフの無添つくりおき 商標ロングテール記事（一次情報・公式サイト2026-08-26確認）"""
+    title = "シェフの無添つくりおきの口コミ・評判を徹底検証！料金・送料・メニュー・「まずい？」まで【2026年8月】"
+    desc = "シェフの無添つくりおきの料金（初回3,799円〜）・送料・メニュー・解約条件を公式情報で検証。「まずい？」の見方、口コミの確認方法、向いている人まで解説します。"
+    html = page_header(title, desc, "articles/chef-muten-tukuritoki-kuchikomi.html")
+
+    # A8 CTA（aff_link関数が actual_url を使用、rel=nofollow sponsored付き）
+    cta = aff_link(aff_links, "chef-muten-tukuritoki", label="シェフの無添つくりおきを公式サイトで見る", cls="btn-primary")
+
+    html += f"""
+    <h1>シェフの無添つくりおきの口コミ・評判を徹底検証！料金・送料・メニュー・「まずい？」まで</h1>
+    <p style="font-size:13px;color:#666;">最終確認日：2026年8月26日 ｜ 情報源：公式サイト（store.tavenal.com）・公式FAQ</p>
+
+    <div class="card" style="background:#fff8f0;">
+      <h2>結論：どんな人に向いている？</h2>
+      <p>「シェフの無添つくりおき」は、<strong>添加物（保存料・化学調味料）を一切使わない無添加のお惣菜を、週替わりで届けてくれる冷蔵の惣菜宅配</strong>です。</p>
+      <p>以下のような人に向いていると判断できます（公式情報に基づく）。</p>
+      <ul class="feature-list">
+        <li><strong>小さな子どもがいる家庭</strong>：無添加・やさしい味付けで、お子様に安心して食べさせたい人</li>
+        <li><strong>毎日の献立・調理の時間を減らしたい人</strong>：レンジで温めるだけで食卓が完成</li>
+        <li><strong>無添加にこだわりたい人</strong>：シェフ手作り・添加物不使用に特化</li>
+      </ul>
+      <p>一方、以下の人は合わない可能性があります。</p>
+      <ul class="feature-list">
+        <li><strong>一人暮らし</strong>：1セットが「大人2名+子ども」の家族向け想定で、量が多い（公式FAQで「一人暮らしには量が多い？」という質問がある）</li>
+        <li><strong>メニューを自分で選びたい人</strong>：メニューはおまかせ・週替わりで指定不可</li>
+        <li><strong>冷凍で長く保存したい人</strong>：冷蔵お届けで消費期限は4日</li>
+      </ul>
+      <div style="margin-top:12px;">{cta}</div>
+    </div>
+
+    <div class="card">
+      <h2>シェフの無添つくりおきとは？（基本情報）</h2>
+      <table>
+        <tr><th>運営</th><td>株式会社タベナル（公式サイトより）</td></tr>
+        <tr><th>サービス内容</th><td>一流シェフが化学調味料を一切使わず手作りするお惣菜を、週替わりで宅配</td></tr>
+        <tr><th>特徴</th><td>添加物不使用（保存料・化学調味料不使用）／専属の管理栄養士が栄養設計を監修</td></tr>
+        <tr><th>お届け形態</th><td>冷蔵状態でお届け（冷凍ではない）</td></tr>
+        <tr><th>消費期限</th><td>お届けから4日間</td></tr>
+        <tr><th>利用方法</th><td>毎週の定期購入。レンジで温めるだけ</td></tr>
+        <tr><th>確認日</th><td>2026年8月26日（公式サイト）</td></tr>
+      </table>
+      <p style="font-size:13px;color:#666;">※同じ運営グループの「FIT FOOD HOME」会員はログインして注文可能と公式サイトに記載があります。</p>
+    </div>
+
+    <div class="card">
+      <h2>料金プランを比較（公式情報）</h2>
+      <table>
+        <tr><th></th><th>食卓サポートプラン</th><th>食卓おまかせプラン</th></tr>
+        <tr><td><strong>想定家族</strong></td><td>大人2名+お子様1名（幼児）</td><td>大人2名+お子様2名（小中学生）</td></tr>
+        <tr><td><strong>想定日数</strong></td><td>夕食2回分</td><td>夕食3回分</td></tr>
+        <tr><td><strong>メニュー数</strong></td><td>主菜2種+副菜3種（5個）</td><td>主菜3種（各2パック）+副菜6種（9個）</td></tr>
+        <tr><td><strong>1個あたり内容量</strong></td><td>150〜300g程度</td><td>150〜600g程度</td></tr>
+        <tr><td><strong>通常価格（2回目以降）</strong></td><td>5,173円（税込）+送料990円</td><td>13,607円（税込）+送料990円</td></tr>
+        <tr><td><strong>初回限定価格</strong></td><td><strong>3,799円（税込・送料無料）</strong></td><td><strong>9,980円（税込・送料無料）</strong></td></tr>
+      </table>
+      <p style="font-size:13px;color:#666;">初回価格は「26%OFF」の限定価格で、ご契約者様1回目のご注文のみ適用（公式FAQより）。※価格は2026年8月26日時点の公式情報です。</p>
+      <div style="margin-top:12px;">{cta}</div>
+    </div>
+
+    <div class="card">
+      <h2>送料は？</h2>
+      <ul class="feature-list">
+        <li>通常（2回目以降）：<strong>1回あたり990円（税込）</strong></li>
+        <li>初回：<strong>送料無料</strong>（初回限定価格に含まれる）</li>
+      </ul>
+      <p>送料が毎回かかる点は、費用を計算する際に注意が必要です。1回あたり990円を加味した上で、総額を比較しましょう。</p>
+    </div>
+
+    <div class="card">
+      <h2>メニューと内容量（週替わり・指定不可）</h2>
+      <p>メニューは<strong>週替わり</strong>で、お客様自身での指定はできません（公式FAQより）。栄養や食材のバランスを考慮した献立が届きます。</p>
+      <ul class="feature-list">
+        <li>主菜・副菜をバランスよく組み合わせた構成</li>
+        <li>レンジで温めてお皿に盛り付けるだけでOK</li>
+        <li>余った分は冷蔵保存（開封後）・一部メニューは冷凍保存も可能</li>
+        <li>お弁当のおかずとしても活用できる</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>「まずい？」の真相を考える（断定しない）</h2>
+      <p>検索で「シェフの無添つくりおき まずい」と調べている方は、「本当に美味しいのか不安」という気持ちがあるはずです。</p>
+      <p>当サイトは現時点で実際に試食した独自レビューは保有していません。そのため「美味しい」「まずい」と断定はしませんが、公式情報から判断材料を整理します。</p>
+      <ul class="feature-list">
+        <li>一流シェフが手作りしている（公式）</li>
+        <li>無添加・やさしい味付けをコンセプトにしている（公式）</li>
+        <li>味の感じ方は個人差が大きいため、<strong>初回限定価格（26%OFF・送料無料）で実際に試す</strong>のが確実</li>
+      </ul>
+      <p><strong>重要な注意点</strong>：無添加・やさしい味付けが「薄味」と感じる人もいれば「ちょうど良い」と感じる人もいます。また、冷蔵お届けのため冷凍タイプの宅配食とは食感・保存方法が異なります。</p>
+    </div>
+
+    <div class="card">
+      <h2>口コミ・評判の見方（事実と評価の分離）</h2>
+      <p>口コミ・評判を確認する際の注意点をまとめます。</p>
+      <ul class="feature-list">
+        <li><strong>確認できる事実</strong>：公式情報（料金・送料・メニュー構成・解約条件・消費期限）は上記の通り</li>
+        <li><strong>人によって評価が分かれる点</strong>：味付けの好み、量の適正（家族構成による）、調理の手間感</li>
+        <li><strong>特に確認したい点</strong>：家族構成に合った量か、週替わりメニューの好み、消費期限4日で食べ切れるか</li>
+      </ul>
+      <p style="font-size:13px;color:#666;">※当サイトは他サイトの口コミ文を転載していません。購入を検討する際は、公式サイトの情報と、ご自身の家族構成・食習慣に照らして判断してください。</p>
+    </div>
+
+    <div class="card">
+      <h2>メリット・デメリット（公式情報から整理）</h2>
+      <div class="pros-cons">
+        <div>
+          <strong>メリット</strong>
+          <ul class="feature-list">
+            <li>無添加（保存料・化学調味料不使用）で安心</li>
+            <li>シェフ手作り・管理栄養士監修</li>
+            <li>週替わりで飽きにくい</li>
+            <li>レンジ調理のみで時短・後片付けが楽</li>
+            <li>2回目以降はいつでも休止（解約）可能・違約金なし</li>
+            <li>初回は26%OFF+送料無料で試せる</li>
+          </ul>
+        </div>
+        <div>
+          <strong>デメリット・注意点</strong>
+          <ul class="feature-list">
+            <li>メニュー指定不可（おまかせ・週替わり）</li>
+            <li>冷蔵お届けのため消費期限が4日と短い</li>
+            <li>毎回の送料990円がかかる</li>
+            <li>家族向けの量で一人暮らしには多い可能性</li>
+            <li>冷凍の宅配食と比べると長期保存には向かない</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>解約・スキップ・休止の条件（公式FAQより）</h2>
+      <table>
+        <tr><th>項目</th><th>内容</th></tr>
+        <tr><td>初回お届け分</td><td>キャンセル不可（初回限定価格のため）</td></tr>
+        <tr><td>2回目以降のスキップ</td><td>可能。お届けの6日前までに手続き（九州・島根・青森は7日前）</td></tr>
+        <tr><td>休止（解約）</td><td>2回目以降はいつでも可能・違約金なし</td></tr>
+        <tr><td>退会</td><td>定期休止手続き後、退会申請。完了まで約1週間</td></tr>
+      </table>
+      <p style="font-size:13px;color:#666;">初回はキャンセル不可・2回目以降はいつでも解約可能という点は、試しやすい一方で「初回分は必ず受け取る」必要がある点として押さえておきましょう。</p>
+    </div>
+
+    <div class="card" style="background:#fff8f0;">
+      <h2>まとめ：自分に合うかどうかの判断基準</h2>
+      <p>「シェフの無添つくりおき」は、<strong>無添加・手作りにこだわりたい家族向けの冷蔵惣菜宅配</strong>です。</p>
+      <ul class="feature-list">
+        <li>✅ 家族（特に小さな子ども）に無添加の食事を食べさせたい → 検討価値あり</li>
+        <li>✅ 献立・調理の時短をしたい → 検討価値あり</li>
+        <li>⚠️ 一人暮らしで量が少ない方が良い → 他の宅配食（nosh等）と比較を推奨</li>
+        <li>⚠️ メニューを自分で選びたい → 不向き（おまかせ・週替わり）</li>
+      </ul>
+      <p>初回は26%OFF+送料無料（3,799円〜）で試せるため、「量・味・使い勝手」を実際に確認してから継続を判断するのがおすすめです。</p>
+      <div style="margin-top:12px;">{cta}</div>
+      <p style="font-size:12px;color:#999;margin-top:8px;">※当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
+    </div>
+
+    <div style="margin-top:16px;">
+      <a class="btn-secondary" href="/services/chef-muten-tukuritoki.html">シェフの無添つくりおきの詳細ページを見る</a>
+      <a class="btn-secondary" href="/ranking.html">宅配食の比較一覧を見る</a>
+      <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
+    </div>
+    """
+    html += page_footer("2026-08-26")
+    return html
+
+
 # ---------- 404ページ ----------
 
 def build_404_page():
@@ -814,6 +990,12 @@ def main():
     # 診断ツール
     (OUT_DIR / "tool" / "diagnosis.html").write_text(build_diagnosis_tool(services, aff_links), encoding="utf-8")
     pages.append("tool/diagnosis.html")
+
+    # 記事ページ（シェフの無添つくりおき 口コミ・評判）
+    (OUT_DIR / "articles").mkdir(parents=True, exist_ok=True)
+    (OUT_DIR / "articles" / "chef-muten-tukuritoki-kuchikomi.html").write_text(
+        build_article_chef_muten_kuchikomi(aff_links), encoding="utf-8")
+    pages.append("articles/chef-muten-tukuritoki-kuchikomi.html")
 
     # 法務ページ
     legal_pages = [
