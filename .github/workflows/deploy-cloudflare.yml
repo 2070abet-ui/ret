@@ -1,13 +1,13 @@
-# Cloudflare Pages へのデプロイ（GitHub Actions方式）
-# ※より簡単なのは「CloudflareネイティブのGitHub連携」です（docs/DEPLOYMENT_GUIDE_2026_08.md参照）。
-#    この方式を使う場合のみ、GitHubリポジトリのSettings→Secretsに以下を設定してください。
+# Cloudflare へのデプロイ（旧: Pages方式）
+# ※本番デプロイは「Cloudflare Workers Builds（Git連携）」が担当し、pushのたびに自動実行される（現行方式）。
+#    本workflowはPages時代の残骸で、本番（Workers: ret4853）とは対象が異なる。
+#    本番への自動デプロイは不要のため、pushトリガーは無効化している（手動実行のみ可能）。
+#    この方式を有効化する場合のみ、GitHubリポジトリのSettings→Secretsに以下を設定すること。
 #    - CLOUDFLARE_API_TOKEN（Cloudflareダッシュボード→マイプロフィール→APIトークン→作成）
 #    - CLOUDFLARE_ACCOUNT_ID（CloudflareダッシュボードのURL: dash.cloudflare.com/{ACCOUNT_ID}）
 name: Deploy to Cloudflare Pages
 
 on:
-  push:
-    branches: [main, master]
   workflow_dispatch:
 
 jobs:
