@@ -1030,6 +1030,14 @@ def main():
     (OUT_DIR / "sitemap.xml").write_text(build_sitemap(pages), encoding="utf-8")
     (OUT_DIR / "robots.txt").write_text(build_robots(), encoding="utf-8")
 
+    # Google Search Console 所有権確認ファイル（HTMLファイル方式）
+    # 内容はGoogleが指定したファイル名そのもの（標準フォーマット）。sitemapには含めない。
+    gsc_verify_files = {
+        "googlef4d8b0b633188b1b.html": "google-site-verification: googlef4d8b0b633188b1b.html",
+    }
+    for _fname, _fcontent in gsc_verify_files.items():
+        (OUT_DIR / _fname).write_text(_fcontent, encoding="utf-8")
+
     print(f"生成完了: {len(pages)} ページ + sitemap.xml + robots.txt")
     print(f"出力先: {OUT_DIR}")
 
