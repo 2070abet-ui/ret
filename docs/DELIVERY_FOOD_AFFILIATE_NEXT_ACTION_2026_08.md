@@ -140,6 +140,7 @@ ret/
 
 ## 11. 次に実行する具体的タスク
 
+0. **サイト名・ドメインの決定（済）**: 「宅食図鑑 / takushokuzukan.jp」に決定。詳細は `docs/SITE_NAME_DOMAIN_DECISION_2026_08.md` 参照。※競合「takushokulab.com」（宅食ラボ、宅配食比較サイト）が存在するため「ラボ」系名称は回避。
 1. **ASP登録と提携申請**（ユーザー作業）: A8.net・afb・アクセストレードに登録し、nosh・ワタミ・三ツ星ファーム案件の提携申請。
 2. **ドメイン・ホスティング決定**: 安価なサーバー（Xserver等）またはGitHub Pages/Cloudflare Pagesに`site/`をデプロイ。
 3. **Google Search Console**: サイトを登録し、インデックス送信（sitemap.xml）。

@@ -1,6 +1,9 @@
-# 宅配食アフィリエイト事業
+# 宅食図鑑（takushokuzukan.jp）
 
 個人 × Claude Codeによる宅配食（食品宅配）アフィリエイト事業のリポジトリ。
+
+- サイト名: **宅食図鑑**
+- ドメイン: **takushokuzukan.jp**（決定経緯は `docs/SITE_NAME_DOMAIN_DECISION_2026_08.md`）
 
 ## コンセプト
 

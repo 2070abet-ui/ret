@@ -19,9 +19,10 @@ DATA_DIR = ROOT / "data"
 CONFIG_DIR = ROOT / "config"
 OUT_DIR = ROOT / "site"
 
-SITE_NAME = "宅配食ラボ"
+# サイト名・ドメインは docs/SITE_NAME_DOMAIN_DECISION_2026_08.md で決定
+SITE_NAME = "宅食図鑑"
 SITE_DESC = "宅配食・宅配弁当サービスを実データで比較。最新の初回キャンペーン・お試し情報を毎週更新。"
-SITE_URL = "https://your-domain.example.com"  # TODO: 実際のドメインに置き換える
+SITE_URL = "https://takushokuzukan.jp"  # ドメイン取得後に確定（現在は予定ドメイン）
 
 
 def load_json(path):
@@ -515,9 +516,10 @@ def build_sitemap(pages):
 </urlset>"""
 
 
-ROBOTS = """User-agent: *
+def build_robots():
+    return f"""User-agent: *
 Allow: /
-Sitemap: https://your-domain.example.com/sitemap.xml
+Sitemap: {SITE_URL}/sitemap.xml
 """
 
 
@@ -571,7 +573,7 @@ def main():
 
     # sitemap / robots
     (OUT_DIR / "sitemap.xml").write_text(build_sitemap(pages), encoding="utf-8")
-    (OUT_DIR / "robots.txt").write_text(ROBOTS, encoding="utf-8")
+    (OUT_DIR / "robots.txt").write_text(build_robots(), encoding="utf-8")
 
     print(f"生成完了: {len(pages)} ページ + sitemap.xml + robots.txt")
     print(f"出力先: {OUT_DIR}")
