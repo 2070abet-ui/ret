@@ -6,9 +6,37 @@ from sitegen import data
 from sitegen import templates
 
 
+def _tag_set(svc):
+    return set(svc.get("tags", [])) | set(svc.get("target", []))
+
+
+def compute_related(services, aff_links, min_score=2, max_items=3):
+    """関連サービス（tags+targetの単純な集合演算のみ。汎用matching engineではない）。
+    一致数 >= min_score のみ候補にし、スコア降順・A8提携承認済み優先・services.json記載順
+    でタイブレークして上位max_items件を返す。一致0〜1件のサービスは候補に含めない。
+    PHASE1_IMPLEMENTATION_PLAN.md 7章のアルゴリズムをそのまま実装したもの。"""
+    order_index = {s["id"]: i for i, s in enumerate(services)}
+    result = {}
+    for svc in services:
+        a = _tag_set(svc)
+        candidates = []
+        for other in services:
+            if other["id"] == svc["id"]:
+                continue
+            score = len(a & _tag_set(other))
+            if score < min_score:
+                continue
+            approved = 1 if aff_links.get(other["id"], {}).get("actual_url") else 0
+            candidates.append((score, approved, order_index[other["id"]], other))
+        candidates.sort(key=lambda t: (-t[0], -t[1], t[2]))
+        result[svc["id"]] = [c[3] for c in candidates[:max_items]]
+    return result
+
+
 def main():
     services, campaigns, shipping, sources, aff_links = data.load_data()
     shipping_by_id = {s["service_id"]: s for s in shipping}
+    related_by_id = compute_related(services, aff_links)
     out_dir = data.OUT_DIR
 
     # 出力先クリーン
@@ -66,7 +94,8 @@ def main():
     # サービス個別ページ
     for svc in services:
         (out_dir / "services" / f"{svc['id']}.html").write_text(
-            templates.build_service_page(svc, aff_links, shipping_by_id), encoding="utf-8")
+            templates.build_service_page(svc, aff_links, shipping_by_id, related_by_id.get(svc["id"], [])),
+            encoding="utf-8")
         pages.append(f"services/{svc['id']}.html")
 
     # 比較ページ（config/comparisons.json 駆動。中身のペアは従来のハードコードと同一）

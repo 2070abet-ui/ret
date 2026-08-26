@@ -134,6 +134,27 @@
       "url": "https://mitsuboshifarm.jp/",
       "confirmed_at": "2026-08-27",
       "note": "JavaScript描画のため本文取得不可。第三者アフィリエイトサイトに料金情報の言及はあるが一次情報でないため不採用。データ更新は見送り（確認未達のブロッカー記録）"
+    },
+    {
+      "id": "kenko-chokkyokubin-price-202608",
+      "label": "健康直球便 公式サイト（トップページ商品価格）",
+      "url": "https://kenko-chokkyubin.com/",
+      "confirmed_at": "2026-08-27",
+      "note": "PHASE1データ充足作業で確認。人気商品5点の価格を確認：消化にやさしい食Aセット/やわらか食Aセット/やわらか食Bセット 各10食6,780円、カロリー・塩分調整食Aセット/Bセット 各10食5,780円。最安は5,780円÷10食=578円/食（algorithm: DERIVED）。全商品網羅ではないためservices.jsonのplan_notesに同条件を明記した。"
+    },
+    {
+      "id": "yoshikei-price-attempt-202608",
+      "label": "ヨシケイ 価格確認の試行（未確認のまま据え置き）",
+      "url": "https://www.yoshikei.co.jp/",
+      "confirmed_at": "2026-08-27",
+      "note": "PHASE1データ充足作業で公式トップページを確認したが価格記載なし（配達料無料の記載のみ）。WebSearchでは複数の第三者ブログ（プチママ1食約320円等）がヒットしたが一次情報でないため不採用。地域会社ごとに価格体系が異なる構造が要因と推定され、単一の公式価格ページには到達できなかった。price_planは既存のPENDING状態のまま据え置く（推測で埋めない）。"
+    },
+    {
+      "id": "fitfoodhome-domain-attempt-202608",
+      "label": "FIT FOOD HOME 公式ドメイン確認の試行（未確定のまま据え置き）",
+      "url": "https://fitfoodhome.life/",
+      "confirmed_at": "2026-08-27",
+      "note": "PHASE1データ充足作業でfitfoodhome.lifeを取得試行したがJS描画等により本文がほぼ取得できず、運営会社名・価格の確認に至らなかった。WebSearchでは「シェフの無添つくりおき」と同一運営基盤（store.tavenal.com、株式会社タベナル）である可能性を示す記述（articles/chef-muten-tukuritoki-kuchikomi.htmlの記事本文にも同旨の記載あり）を確認したが、FIT FOOD HOME自体の公式ドメインと断定できる一次情報には至らなかった。services.jsonのofficial_urlは空欄のまま据え置く。"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "_comment": "定期監視対象URLリスト。価格・キャンペーン変更の検知に使う。ツール: python tools/watch.py",
-  "updated_at": "2026-08-26",
+  "updated_at": "2026-08-27",
   "targets": [
     {
       "id": "nosh-official",
@@ -44,6 +44,30 @@
       "label": "まごころケア食 公式",
       "url": "https://www.magokoro-care.com/",
       "note": "価格・キャンペーン表示の監視"
+    },
+    {
+      "id": "chef-muten-tukuritoki-official",
+      "label": "シェフの無添つくりおき 公式",
+      "url": "https://store.tavenal.com/tsukurioki/",
+      "note": "A8提携承認済み（収益化対象）。価格・キャンペーン表示の監視（2026-08-27追加：PHASE1_IMPLEMENTATION_PLAN.mdの是正対応）"
+    },
+    {
+      "id": "syokurakuzen-official",
+      "label": "食楽膳 公式",
+      "url": "https://shokurakuzen-sompocarefoods.com/",
+      "note": "A8提携承認済み（収益化対象）。価格・キャンペーン表示の監視（2026-08-27追加：PHASE1_IMPLEMENTATION_PLAN.mdの是正対応）"
+    },
+    {
+      "id": "yoshikei-official",
+      "label": "ヨシケイ 公式",
+      "url": "https://www.yoshikei.co.jp/",
+      "note": "A8提携承認済み（収益化対象）。価格・キャンペーン表示の監視（2026-08-27追加：PHASE1_IMPLEMENTATION_PLAN.mdの是正対応）"
+    },
+    {
+      "id": "kenko-chokkyokubin-official",
+      "label": "健康直球便 公式",
+      "url": "https://kenko-chokkyubin.com/",
+      "note": "A8提携承認済み（収益化対象）。価格・キャンペーン表示の監視（2026-08-27追加：PHASE1_IMPLEMENTATION_PLAN.mdの是正対応）"
     }
   ]
 }

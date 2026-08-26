@@ -22,27 +22,81 @@ def yen(v):
     return f"{v:,}円"
 
 
+# ---------- フィールド単位の確認状態（verification status）----------
+# 新しいstatus専用キーは追加しない。既存フィールド（lowest_per_meal_yen / shipping_fee /
+# notes / requires_verification）だけから4状態を導出する（PHASE1_IMPLEMENTATION_PLAN.md 8章）。
+
+_VSTATUS_LABEL = {
+    "confirmed": "確認済み",
+    "derived": "算出値",
+    "pending": "確認中",
+    "uncollected": "未収集",
+}
+
+
+def vstatus_badge(status):
+    label = _VSTATUS_LABEL.get(status, "確認中")
+    return f'<span class="vstatus vstatus-{status}">{esc(label)}</span>'
+
+
+def vstatus_legend():
+    return (
+        '<p style="font-size:12px;color:#666;margin-top:8px;">表示の見方：'
+        f'{vstatus_badge("confirmed")}＝公式一次情報で確認／'
+        f'{vstatus_badge("derived")}＝公式情報から計算／'
+        f'{vstatus_badge("pending")}＝情報はあるが裏付け不十分／'
+        f'{vstatus_badge("uncollected")}＝公式情報にまだ到達できていません</p>'
+    )
+
+
+def _price_status(price_plan):
+    """価格の確認状態。plan_notes中の既存の記法（DERIVED/PENDING_VERIFICATION）を
+    機械可読な判定に使う（新規データキーの追加はしない）。"""
+    if not price_plan:
+        return "uncollected"
+    notes = price_plan.get("plan_notes") or ""
+    if price_plan.get("lowest_per_meal_yen") is not None:
+        return "derived" if "DERIVED" in notes else "confirmed"
+    return "pending" if "PENDING_VERIFICATION" in notes else "uncollected"
+
+
+def _shipping_status(shipping_row):
+    """送料の確認状態。shipping_fee/notesのみから導出。"""
+    if not shipping_row:
+        return "uncollected"
+    notes = shipping_row.get("notes") or ""
+    if shipping_row.get("shipping_fee") is not None:
+        return "confirmed"
+    if "UNCOLLECTED" in notes:
+        return "uncollected"
+    return "confirmed"  # 地域等により変動するが公式情報として文章で確認済み
+
+
+def _campaign_status(first_time_campaign):
+    """初回キャンペーンの確認状態。既存のrequires_verification(bool)をそのまま使う。"""
+    if not first_time_campaign:
+        return "uncollected"
+    return "uncollected" if first_time_campaign.get("requires_verification", True) else "confirmed"
+
+
 def shipping_line(shipping_row):
     """data/shipping.jsonの1行から送料の表示行を組み立てる。
     地域・食数・プランで変動し単一値にできないサービスは notes の事実記述をそのまま表示する
     （単一値への圧縮による誤誘導を避けるため）。
-    notesに"UNCOLLECTED"を含む行は、公式一次情報にまだ到達できていない内部管理用の記述
-    （ブロッカーの理由等）のため、ユーザー向けには一切表示しない。
-    確認できる公開情報が無ければ空文字を返す。"""
-    if not shipping_row:
-        return ""
+    notesに"UNCOLLECTED"を含む行（内部ブロッカーの理由等）は、その理由文自体は
+    ユーザー向けに表示しないが、「未収集」であること自体は確認状態バッジで正直に示す。"""
+    status = _shipping_status(shipping_row)
+    badge = vstatus_badge(status)
+    if status == "uncollected":
+        return f'<p><strong>送料：</strong>{badge}（最新情報は公式サイトでご確認ください）</p>'
     fee = shipping_row.get("shipping_fee")
     notes = (shipping_row.get("notes") or "").strip()
-    if "UNCOLLECTED" in notes:
-        notes = ""
     if fee is not None:
         fee_text = "送料無料" if fee == 0 else f"{yen(fee)}"
         text = f"{fee_text}（{notes}）" if notes else fee_text
-    elif notes:
-        text = notes
     else:
-        return ""
-    return f'<p><strong>送料：</strong>{esc(text)}</p>'
+        text = notes
+    return f'<p><strong>送料：</strong>{esc(text)} {badge}</p>'
 
 
 # ---------- リンク生成 ----------
@@ -131,6 +185,11 @@ th {{ background:#f5ede8; font-weight:bold; }}
 .btn-primary {{ display:inline-block; background:var(--primary); color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold; }}
 .btn-secondary {{ display:inline-block; background:#eee; color:#333; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold; }}
 .tag {{ display:inline-block; background:#f5ede8; color:var(--primary); padding:2px 10px; border-radius:12px; font-size:12px; margin:2px; }}
+.vstatus {{ display:inline-block; font-size:11px; padding:1px 8px; border-radius:10px; font-weight:bold; white-space:nowrap; }}
+.vstatus-confirmed {{ background:#e6f4ea; color:#1e7e34; }}
+.vstatus-derived {{ background:#e8f0fe; color:#1a56db; }}
+.vstatus-pending {{ background:#fff4e5; color:#b45300; }}
+.vstatus-uncollected {{ background:#f1f1f1; color:#777; }}
 .aff-note {{ font-size:11px; opacity:.8; }}
 .updated {{ color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }}
 .pros-cons {{ display:flex; gap:16px; flex-wrap:wrap; }}
@@ -158,9 +217,10 @@ ul.feature-list li, ol.feature-list li {{ margin-left:20px; font-size:14px; }}
 """
 
 
-def page_footer(updated_date):
+def page_footer(updated_date, show_vstatus_legend=False):
+    legend = vstatus_legend() if show_vstatus_legend else ""
     return f"""
-<div class="updated">最終更新: {updated_date} ｜ 情報は確認時点のものであり、最新の価格・条件は必ず公式サイトをご確認ください。</div>
+<div class="updated">最終更新: {updated_date} ｜ 情報は確認時点のものであり、最新の価格・条件は必ず公式サイトをご確認ください。{legend}</div>
 </main>
 <footer class="site">
   <div class="container">
@@ -180,10 +240,28 @@ def page_footer(updated_date):
 
 # ---------- サービス詳細ページ ----------
 
-def build_service_page(service, aff_links, shipping_by_id=None):
+def related_services_block(related):
+    """関連サービスカード。tags+targetの一致数>=2件のサービスのみ渡される想定
+    （計算はgenerators.pyのcompute_related()で事前に行う）。該当が無ければ何も出力しない。"""
+    if not related:
+        return ""
+    items = "".join(
+        f'<a class="btn-secondary" href="/services/{esc(r["id"])}.html">{esc(r["name"])}</a> '
+        for r in related
+    )
+    return f"""
+    <div class="card">
+      <h2>関連サービス</h2>
+      <p style="font-size:13px;color:#666;">共通する特徴・対象が多いサービスです。</p>
+      <div style="margin-top:8px;">{items}</div>
+    </div>"""
+
+
+def build_service_page(service, aff_links, shipping_by_id=None, related=None):
     s_id = service["id"]
     s_name = service["name"]
     shipping_html = shipping_line((shipping_by_id or {}).get(s_id))
+    related_html = related_services_block(related)
 
     # 関連記事リンク（サービスDBに article_link があれば表示）
     article_link_html = ""
@@ -214,7 +292,7 @@ def build_service_page(service, aff_links, shipping_by_id=None):
       <table>
         <tr><th>運営会社</th><td>{esc(service.get("operator", "公式確認中"))}</td></tr>
         <tr><th>形態</th><td>{esc(service.get("meal_type", ""))}（{esc(service.get("meal_form", ""))}）</td></tr>
-        <tr><th>最安料金</th><td>{cheapest_html}（2026-08-26時点）</td></tr>
+        <tr><th>最安料金</th><td>{cheapest_html}（2026-08-26時点） {vstatus_badge(_price_status(service.get("price_plan", {})))}</td></tr>
         <tr><th>対象</th><td>{", ".join(service.get("target", []))}</td></tr>
       </table>
       <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで料金・キャンペーンを確認")}</div>
@@ -235,7 +313,7 @@ def build_service_page(service, aff_links, shipping_by_id=None):
 
     <div class="card">
       <h2>初回キャンペーン・お試し</h2>
-      <p>{esc(service.get("first_time_campaign", {}).get("summary", "公式確認中"))}</p>
+      <p>{esc(service.get("first_time_campaign", {}).get("summary", "公式確認中"))} {vstatus_badge(_campaign_status(service.get("first_time_campaign", {})))}</p>
       <p style="font-size:13px;color:#666;">{esc(service.get("first_time_campaign", {}).get("detail", ""))}</p>
       <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトでキャンペーンを確認", cls="btn-secondary")}</div>
     </div>
@@ -245,14 +323,14 @@ def build_service_page(service, aff_links, shipping_by_id=None):
       {shipping_html}
       <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
     </div>
-
+    {related_html}
     <div style="margin-top:16px;">
       {article_link_html}
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer("2026-08-26", show_vstatus_legend=True)
     return html
 
 
@@ -260,8 +338,12 @@ def build_service_page(service, aff_links, shipping_by_id=None):
 
 def build_ranking_page(services, campaigns, aff_links):
     # サービスID → 確認済みの初回キャンペーン特典（requires_verification=false のみ表示）
+    # camp_txt/camp_badge は同じcampaigns.json（data/campaigns.json）を情報源として揃える
+    # （services.json側のfirst_time_campaignは別データで鮮度がずれている場合があるため使わない）。
     confirmed_camp = {}
+    any_camp_ids = set()
     for c in campaigns:
+        any_camp_ids.add(c.get("service_id"))
         if not c.get("requires_verification", True):
             confirmed_camp[c.get("service_id")] = c.get("discount_type", "")
 
@@ -269,15 +351,26 @@ def build_ranking_page(services, campaigns, aff_links):
     for svc in services:
         cheapest = svc.get("price_plan", {}).get("lowest_per_meal_yen")
         cheapest_txt = (f"{yen(cheapest)}/食") if cheapest else "公式確認中"
+        price_badge = vstatus_badge(_price_status(svc.get("price_plan", {})))
         camp_txt = confirmed_camp.get(svc["id"], "公式確認中")
+        if svc["id"] in confirmed_camp:
+            camp_status = "confirmed"
+        elif svc["id"] in any_camp_ids:
+            camp_status = "pending"
+        else:
+            camp_status = "uncollected"
+        camp_badge = vstatus_badge(camp_status)
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
         rows.append(f"""
         <tr>
           <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a><br>{tags}</td>
-          <td>{cheapest_txt}</td>
-          <td>{esc(camp_txt)}</td>
+          <td>{cheapest_txt} {price_badge}</td>
+          <td>{esc(camp_txt)} {camp_badge}</td>
           <td>{', '.join(svc.get('target', []))}</td>
-          <td>{aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}</td>
+          <td>
+            <a class="btn-secondary" href="/services/{svc['id']}.html">詳しく見る</a>
+            {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}
+          </td>
         </tr>""")
 
     title = "宅配食おすすめ比較ランキング【2026年8月最新】"
@@ -304,7 +397,7 @@ def build_ranking_page(services, campaigns, aff_links):
     </div>
     <p style="font-size:13px;color:#666;">※各サービスの詳細はサービス名リンクから。価格・キャンペーン情報は常に変動するため、最新情報は公式サイトをご確認ください。</p>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer("2026-08-26", show_vstatus_legend=True)
     return html
 
 

@@ -1,7 +1,8 @@
 {
-  "_comment": "比較ページのペア設定。tools/build.py にハードコードされていたcomp_pairsを外出ししたもの。ペアの組み合わせ自体は変更していない（Batch1では新しい比較ロジック・新規ペアは追加しない）。",
+  "_comment": "比較ページのペア設定。tools/build.py にハードコードされていたcomp_pairsを外出ししたもの。既存2ペアはPHASE1_IMPLEMENTATION_PLAN.md 10章の評価により維持（両社ともASPプログラムは実在し、実測SERPで個人サイトが上位に入る実績があるため）。",
   "pairs": [
     { "a": "nosh", "b": "mitsuboshi-farm" },
-    { "a": "nosh", "b": "watami-takushoku" }
+    { "a": "nosh", "b": "watami-takushoku" },
+    { "a": "syokurakuzen", "b": "kenko-chokkyokubin", "_note": "両社ともA8提携承認済み。タグ一致4件（高齢者・塩分制限・健康志向・冷凍）で、同一ターゲット層への代替CV先としてSEO_FLOW_RESEARCH_2026_08.mdに記載済み（2026-08-27追加：PHASE1_IMPLEMENTATION_PLAN.md 10章）" }
   ]
 }

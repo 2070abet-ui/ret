@@ -35,6 +35,11 @@ th { background:#f5ede8; font-weight:bold; }
 .btn-primary { display:inline-block; background:var(--primary); color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold; }
 .btn-secondary { display:inline-block; background:#eee; color:#333; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold; }
 .tag { display:inline-block; background:#f5ede8; color:var(--primary); padding:2px 10px; border-radius:12px; font-size:12px; margin:2px; }
+.vstatus { display:inline-block; font-size:11px; padding:1px 8px; border-radius:10px; font-weight:bold; white-space:nowrap; }
+.vstatus-confirmed { background:#e6f4ea; color:#1e7e34; }
+.vstatus-derived { background:#e8f0fe; color:#1a56db; }
+.vstatus-pending { background:#fff4e5; color:#b45300; }
+.vstatus-uncollected { background:#f1f1f1; color:#777; }
 .aff-note { font-size:11px; opacity:.8; }
 .updated { color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }
 .pros-cons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -68,7 +73,7 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
       <table>
         <tr><th>運営会社</th><td>株式会社タベナル</td></tr>
         <tr><th>形態</th><td>冷蔵惣菜・おかず宅配（冷蔵（レンジで温めるだけ））</td></tr>
-        <tr><th>最安料金</th><td>1,035円/食（2026-08-26時点）</td></tr>
+        <tr><th>最安料金</th><td>1,035円/食（2026-08-26時点） <span class="vstatus vstatus-confirmed">確認済み</span></td></tr>
         <tr><th>対象</th><td>健康志向, 時短, 無添加, 家族</td></tr>
       </table>
       <div style="margin-top:12px;"><a class="btn-primary" href="https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DZOQK2+57YO+5YJRM" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトで料金・キャンペーンを確認<span class="aff-note">（A8.net経由）</span></a></div>
@@ -89,24 +94,29 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
 
     <div class="card">
       <h2>初回キャンペーン・お試し</h2>
-      <p>初回限定26%OFF（3,799円〜・送料無料）で試せる</p>
+      <p>初回限定26%OFF（3,799円〜・送料無料）で試せる <span class="vstatus vstatus-confirmed">確認済み</span></p>
       <p style="font-size:13px;color:#666;">食卓サポートプランは初回3,799円（税込・送料無料・5品）、食卓おまかせプランは初回9,980円（税込・送料無料・9品）。初回限定価格は通常価格の26%OFF（公式サイト・公式FAQ 2026-08-26確認）。</p>
       <div style="margin-top:12px;"><a class="btn-secondary" href="https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DZOQK2+57YO+5YJRM" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトでキャンペーンを確認<span class="aff-note">（A8.net経由）</span></a></div>
     </div>
 
     <div class="card">
       <h2>解約・送料について</h2>
-      <p><strong>送料：</strong>990円（初回は送料無料（公式サイト・公式FAQ 2026-08-26確認、2026-08-27再確認・変化なし））</p>
+      <p><strong>送料：</strong>990円（初回は送料無料（公式サイト・公式FAQ 2026-08-26確認、2026-08-27再確認・変化なし）） <span class="vstatus vstatus-confirmed">確認済み</span></p>
       <p>送料は1回あたり990円（初回は送料無料）。初回お届け分はキャンセル不可。2回目以降はお届け6日前までに手続きすればスキップ可能（九州・島根・青森は7日前）。休止（解約）は2回目以降いつでも可能・違約金なし。</p>
     </div>
-
+    
+    <div class="card">
+      <h2>関連サービス</h2>
+      <p style="font-size:13px;color:#666;">共通する特徴・対象が多いサービスです。</p>
+      <div style="margin-top:8px;"><a class="btn-secondary" href="/services/shokutakubin.html">食宅便（日清医療食品）</a> <a class="btn-secondary" href="/services/syokurakuzen.html">食楽膳</a> <a class="btn-secondary" href="/services/yoshikei.html">ヨシケイ</a> </div>
+    </div>
     <div style="margin-top:16px;">
       <a class="btn-secondary" href="/articles/chef-muten-tukuritoki-kuchikomi.html">口コミ・評判・料金の検証記事を見る</a> 
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
     </div>
     
-<div class="updated">最終更新: 2026-08-26 ｜ 情報は確認時点のものであり、最新の価格・条件は必ず公式サイトをご確認ください。</div>
+<div class="updated">最終更新: 2026-08-26 ｜ 情報は確認時点のものであり、最新の価格・条件は必ず公式サイトをご確認ください。<p style="font-size:12px;color:#666;margin-top:8px;">表示の見方：<span class="vstatus vstatus-confirmed">確認済み</span>＝公式一次情報で確認／<span class="vstatus vstatus-derived">算出値</span>＝公式情報から計算／<span class="vstatus vstatus-pending">確認中</span>＝情報はあるが裏付け不十分／<span class="vstatus vstatus-uncollected">未収集</span>＝公式情報にまだ到達できていません</p></div>
 </main>
 <footer class="site">
   <div class="container">
