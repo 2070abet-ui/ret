@@ -1,0 +1,120 @@
+{
+  "_comment": "宅配食 初回キャンペーン・お試し情報DB。最短CV導線のための最重要データ。valid_from/valid_toで期間管理し、毎週更新して鮮度を保つ。",
+  "updated_at": "2026-08-26",
+  "campaigns": [
+    {
+      "campaign_id": "nosh-first-202608",
+      "service_id": "nosh",
+      "title": "nosh 初回お試しキャンペーン",
+      "summary": "初回限定の割引価格でお試しできる",
+      "detail": "初回限定のお試し価格・割引キャンペーン。詳細な条件・金額は公式サイトで確認してください。",
+      "discount_type": "初回割引",
+      "conditions": "要確認（公式サイトで確認）",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://nosh.jp/",
+      "affiliate": {
+        "asp": "A8.net / afb",
+        "reward_yen": 2500,
+        "note": "報酬は新規購入完了時。A8.net 2,500円 / afb 2,750円（2026-08-26確認）"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-26"
+    },
+    {
+      "campaign_id": "watami-first-202608",
+      "service_id": "watami-takushoku",
+      "title": "ワタミの宅食ダイレクト 初回お試し",
+      "summary": "初回限定のお試しキャンペーンあり",
+      "detail": "初回限定のお試し・割引キャンペーン。詳細な条件・金額は公式サイトで確認してください。",
+      "discount_type": "初回割引",
+      "conditions": "要確認（公式サイトで確認）",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://direct.watami-takushoku.com/",
+      "affiliate": {
+        "asp": "A8.net / afb / アクセストレード",
+        "reward_yen": 3095,
+        "note": "報酬は新規申込時。A8.net最大3,095円（2026-08-26確認）"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-26"
+    },
+    {
+      "campaign_id": "mitsuboshi-first-202608",
+      "service_id": "mitsuboshi-farm",
+      "title": "三ツ星ファーム 初回お試しキャンペーン",
+      "summary": "購入促進プロモーション実施中",
+      "detail": "購入促進プロモーションがASPに掲載。初回お試し・割引の詳細は公式サイトで確認してください。",
+      "discount_type": "初回割引",
+      "conditions": "要確認（公式サイトで確認）",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://mitsuboshifarm.jp/",
+      "affiliate": {
+        "asp": "アクセストレード",
+        "reward_yen": 3080,
+        "note": "報酬3,080円を確認したが、一部掲載終了表示あり。ASPで要再確認（2026-08-26）"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-26"
+    },
+    {
+      "campaign_id": "wellness-first-202608",
+      "service_id": "wellness-dining",
+      "title": "ウェルネスダイニング お試し",
+      "summary": "制限食のお試しセットあり",
+      "detail": "要確認（公式サイトで確認）",
+      "discount_type": "お試し",
+      "conditions": "要確認（公式サイトで確認）",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://www.wellness-dining.com/",
+      "affiliate": {
+        "asp": "afb / A8.net 等",
+        "reward_yen": null,
+        "note": "案件存在を確認。報酬は要ASPログイン確認（2026-08-26）"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-26"
+    },
+    {
+      "campaign_id": "shokutakubin-first-202608",
+      "service_id": "shokutakubin",
+      "title": "食宅便 お試しプラン",
+      "summary": "お試しプランあり",
+      "detail": "要確認（公式サイトで確認）",
+      "discount_type": "お試し",
+      "conditions": "要確認（公式サイトで確認）",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://www.shokutakubin.com/",
+      "affiliate": {
+        "asp": "A8.net",
+        "reward_yen": null,
+        "note": "A8.netに案件あり。報酬は要ASPログイン確認（2026-08-26）"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-26"
+    },
+    {
+      "campaign_id": "fitfood-first-202608",
+      "service_id": "fit-food-home",
+      "title": "FIT FOOD HOME 初回キャンペーン",
+      "summary": "ダイエット・ボディメイク向け宅配食の初回キャンペーン",
+      "detail": "要確認（公式サイトで確認）",
+      "discount_type": "初回割引",
+      "conditions": "要確認（公式サイトで確認）",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://fitfoodhome.jp/",
+      "affiliate": {
+        "asp": "A8.net",
+        "reward_yen": 2000,
+        "note": "A8.net 2,000円 / 1,500円（2026-08-26確認）"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-26"
+    }
+  ]
+}

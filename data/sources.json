@@ -1,0 +1,55 @@
+{
+  "_comment": "出典・最終確認日管理。全てのデータの鮮度と信頼性を担保するための台帳。",
+  "updated_at": "2026-08-26",
+  "sources": [
+    {
+      "id": "a8-nosh",
+      "label": "affisearch.com nosh案件一覧",
+      "url": "https://affisearch.com/campaigns/a8-s00000017722002",
+      "confirmed_at": "2026-08-26",
+      "note": "nosh報酬 A8.net 2,500円 / afb 2,750円、掲載中"
+    },
+    {
+      "id": "a8-watami",
+      "label": "affisearch.com ワタミの宅食ダイレクト案件一覧",
+      "url": "https://affisearch.com/campaigns/a8-s00000018527007",
+      "confirmed_at": "2026-08-26",
+      "note": "ワタミの宅食ダイレクト 4案件（1,753〜3,095円）、掲載中"
+    },
+    {
+      "id": "mitsuboshi-at",
+      "label": "media-analytics.jp 三ツ星ファーム案件",
+      "url": "https://media-analytics.jp/affisearch/promotions/mitsuboshi-farm",
+      "confirmed_at": "2026-08-26",
+      "note": "三ツ星ファーム アクセストレード 3,080円。一部掲載終了表示あり要再確認"
+    },
+    {
+      "id": "afi-asp-nosh",
+      "label": "afi-asp.tokyo nosh ASP解説",
+      "url": "https://afi-asp.tokyo/nosh-asp/",
+      "confirmed_at": "2026-08-26",
+      "note": "noshのプラン価格（6食4,190円/8食4,990円/10食5,990円、初回499円/食）。過去情報の可能性あり"
+    },
+    {
+      "id": "nosh-official",
+      "label": "nosh公式サイト",
+      "url": "https://nosh.jp/",
+      "confirmed_at": "2026-08-26",
+      "note": "最安492円/食と表示"
+    },
+    {
+      "id": "serp-宅配食-おすすめ",
+      "label": "SERP調査: 宅配食 おすすめ ランキング 比較",
+      "url": "https://lite.duckduckgo.com/lite/?q=%E5%AE%85%E9%85%8D%E9%A3%9F+%E3%81%8A%E3%81%99%E3%81%99%E3%82%81+%E3%83%A9%E3%83%B3%E3%82%AD%E3%83%B3%E3%82%B0+%E6%AF%94%E8%BC%83",
+      "confirmed_at": "2026-08-26",
+      "note": "GYRO HOLDINGS・マイベスト・DFS・伊坂酒造・竹野・EXIDEA等の量産型/ニッチサイトが混在。大手ポータル寡占ではない"
+    },
+    {
+      "id": "serp-nosh-mitsuboshi",
+      "label": "SERP調査: nosh 三ツ星ファーム 比較 どっち",
+      "url": "https://lite.duckduckgo.com/lite/?q=nosh+%E4%B8%89%E3%83%84%E6%98%9F%E3%83%95%E3%82%A1%E3%83%BC%E3%83%A0+%E6%AF%94%E8%BC%83+%E3%81%A9%E3%81%A1",
+      "confirmed_at": "2026-08-26",
+      "note": "ほぼ全て小〜中規模個人ブログ・ニッチサイトが上位"
+    }
+  ]
+}

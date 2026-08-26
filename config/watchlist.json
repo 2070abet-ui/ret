@@ -1,0 +1,49 @@
+{
+  "_comment": "定期監視対象URLリスト。価格・キャンペーン変更の検知に使う。ツール: python tools/watch.py",
+  "updated_at": "2026-08-26",
+  "targets": [
+    {
+      "id": "nosh-official",
+      "label": "nosh 公式サイト",
+      "url": "https://nosh.jp/",
+      "note": "最安価格・キャンペーン表示の監視"
+    },
+    {
+      "id": "watami-official",
+      "label": "ワタミの宅食ダイレクト 公式",
+      "url": "https://watami-takushoku.com/",
+      "note": "価格・キャンペーン表示の監視"
+    },
+    {
+      "id": "mitsuboshi-official",
+      "label": "三ツ星ファーム 公式",
+      "url": "https://mitsuboshifarm.jp/",
+      "note": "価格・キャンペーン表示の監視"
+    },
+    {
+      "id": "wellness-official",
+      "label": "ウェルネスダイニング 公式",
+      "url": "https://www.wellness-dining.com/",
+      "note": "価格・キャンペーン表示の監視"
+    },
+    {
+      "id": "shokutakubin-official",
+      "label": "食宅便 公式",
+      "url": "https://www.shokutakubin.com/",
+      "note": "価格・キャンペーン表示の監視"
+    },
+    {
+      "id": "fitfood-official",
+      "label": "FIT FOOD HOME 公式（ドメイン要確認）",
+      "url": "",
+      "note": "公式ドメイン未確認（2026-08-26）。確認後に追加する",
+      "disabled": true
+    },
+    {
+      "id": "magokoro-official",
+      "label": "まごころケア食 公式",
+      "url": "https://www.magokoro-care.com/",
+      "note": "価格・キャンペーン表示の監視"
+    }
+  ]
+}

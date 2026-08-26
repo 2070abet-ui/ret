@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>宅配食 診断ツール｜自分に合うサービスを条件で探す | 宅配食ラボ</title>
+<meta name="description" content="予算・目的・こだわりを選ぶだけで、あなたに合う宅配食サービスがわかる無料の診断ツール。">
+<link rel="canonical" href="https://your-domain.example.com/tool/diagnosis.html">
+<style>
+:root { --primary:#e8552d; --text:#222; --bg:#faf7f5; --card:#fff; --muted:#666; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif; color:var(--text); background:var(--bg); line-height:1.7; }
+.container { max-width:1000px; margin:0 auto; padding:0 16px; }
+header.site { background:var(--primary); color:#fff; padding:16px 0; }
+header.site .container { display:flex; align-items:center; justify-content:space-between; }
+header.site a { color:#fff; text-decoration:none; }
+nav.main a { margin-right:16px; font-size:14px; }
+h1 { font-size:1.6rem; margin:24px 0 8px; }
+h2 { font-size:1.25rem; margin:24px 0 8px; }
+h3 { font-size:1.05rem; margin:16px 0 6px; }
+.card { background:var(--card); border-radius:8px; padding:16px; margin:12px 0; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+table { width:100%; border-collapse:collapse; background:var(--card); border-radius:8px; overflow:hidden; font-size:14px; }
+th, td { padding:10px 12px; text-align:left; border-bottom:1px solid #eee; vertical-align:top; }
+th { background:#f5ede8; font-weight:bold; }
+.btn-primary { display:inline-block; background:var(--primary); color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold; }
+.btn-secondary { display:inline-block; background:#eee; color:#333; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold; }
+.tag { display:inline-block; background:#f5ede8; color:var(--primary); padding:2px 10px; border-radius:12px; font-size:12px; margin:2px; }
+.aff-note { font-size:11px; opacity:.8; }
+.updated { color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }
+.pros-cons { display:flex; gap:16px; flex-wrap:wrap; }
+.pros-cons > div { flex:1; min-width:240px; }
+.pros li, .cons li { margin-left:20px; font-size:14px; }
+.reward-badge { display:inline-block; background:#fff3e0; border:1px solid #ffcc80; color:#e65100; padding:4px 12px; border-radius:6px; font-weight:bold; font-size:13px; }
+footer.site { text-align:center; padding:24px 16px; color:var(--muted); font-size:12px; margin-top:32px; }
+ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="container">
+    <a href="/"><strong>宅配食ラボ</strong></a>
+    <nav class="main">
+      <a href="/ranking.html">おすすめ比較</a>
+      <a href="/campaigns.html">初回キャンペーン</a>
+      <a href="/tool/diagnosis.html">診断ツール</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+
+    <h1>宅配食 診断ツール</h1>
+    <p>以下の条件を選ぶと、あなたに合いそうな宅配食サービスを表示します。</p>
+
+    <div class="card">
+      <h3>目的を選んでください（複数可）</h3>
+      <div id="goals" class="checks">
+        <label><input type="checkbox" value="一人暮らし"> 一人暮らし</label>
+        <label><input type="checkbox" value="ダイエット"> ダイエット</label>
+        <label><input type="checkbox" value="糖質制限"> 糖質制限</label>
+        <label><input type="checkbox" value="健康志向"> 健康志向</label>
+        <label><input type="checkbox" value="時短"> 時短（手間を省きたい）</label>
+        <label><input type="checkbox" value="高タンパク"> 高タンパク</label>
+        <label><input type="checkbox" value="高齢者"> 親・高齢者の食事</label>
+      </div>
+      <p style="margin-top:12px;"><button class="btn-primary" onclick="runDiag()">診断する</button></p>
+    </div>
+
+    <div id="result" class="card" style="display:none;"></div>
+
+    <script>
+    const SERVICES = [{"id": "nosh", "name": "nosh（ナッシュ）", "tags": ["低糖質", "低塩分", "冷凍", "管理栄養士監修", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "時短"], "price": 492, "url": "https://nosh.jp/"}, {"id": "watami-takushoku", "name": "ワタミの宅食ダイレクト", "tags": ["冷凍", "管理栄養士監修", "低糖質対応あり", "セットプラン"], "target": ["一人暮らし", "共働き", "健康志向", "時短"], "price": null, "url": "https://watami-takushoku.com/"}, {"id": "mitsuboshi-farm", "name": "三ツ星ファーム", "tags": ["低糖質", "シェフ監修", "冷凍", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "おいしさ重視"], "price": null, "url": "https://mitsuboshifarm.jp/"}, {"id": "wellness-dining", "name": "ウェルネスダイニング", "tags": ["糖質制限", "カロリー制限", "管理栄養士監修", "制限食"], "target": ["糖質制限", "カロリー制限", "健康志向", "制限食"], "price": null, "url": "https://www.wellness-dining.com/"}, {"id": "shokutakubin", "name": "食宅便（日清医療食品）", "tags": ["健康", "医療食品", "冷凍", "冷蔵"], "target": ["健康志向", "高齢者", "制限食", "時短"], "price": null, "url": "https://www.shokutakubin.com/"}, {"id": "fit-food-home", "name": "FIT FOOD HOME", "tags": ["ダイエット", "カロリー制限", "高タンパク", "冷凍"], "target": ["ダイエット", "ボディメイク", "カロリー制限", "高タンパク"], "price": null, "url": "https://fitfoodhome.jp/"}, {"id": "magokoro-care", "name": "まごころケア食", "tags": ["高齢者", "やわらか食", "健康", "冷凍"], "target": ["高齢者", "健康志向", "やわらかい食事", "制限食"], "price": null, "url": "https://www.magokoro-care.com/"}];
+    function runDiag() {
+      const goals = [...document.querySelectorAll('#goals input:checked')].map(x => x.value);
+      if (goals.length === 0) {
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = '<p>目的を1つ以上選んでください。</p>';
+        return;
+      }
+      // タグ or ターゲットとの一致数でスコアリング
+      const scored = SERVICES.map(s => {
+        const pool = [...(s.tags||[]), ...(s.target||[])];
+        let score = 0;
+        for (const g of goals) { if (pool.includes(g)) score++; }
+        return { ...s, score };
+      }).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
+      let html = '<h2>あなたにおすすめのサービス</h2>';
+      if (scored.length === 0) {
+        html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
+      } else {
+        html += '<table><tr><th>サービス</th><th>特徴</th><th>公式サイト</th></tr>';
+        for (const s of scored) {
+          html += `<tr><td><strong>${s.name}</strong></td><td>${(s.tags||[]).join('・')}</td><td><a href="${s.url}" target="_blank" rel="noopener">公式サイト</a></td></tr>`;
+        }
+        html += '</table>';
+        html += '<p style="font-size:13px;color:#666;margin-top:12px;">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';
+      }
+      document.getElementById('result').style.display = 'block';
+      document.getElementById('result').innerHTML = html;
+    }
+    </script>
+    
+<div class="updated">最終更新: 2026-08-26 ｜ 情報は確認時点のものであり、最新の価格・条件は必ず公式サイトをご確認ください。</div>
+</main>
+<footer class="site">
+  <div class="container">
+    <p>宅配食ラボは宅配食サービスの比較情報を提供するサイトです。各サービスの価格・キャンペーン情報は常に変動します。</p>
+    <p>当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
+  </div>
+</footer>
+</body>
+</html>

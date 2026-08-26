@@ -1,0 +1,55 @@
+{
+  "_comment": "アフィリエイトリンク管理。ASP承認後に actual_url を埋める。プレースホルダーはサイト生成時に非表示にするか「公式サイトを見る」リンクにフォールバックする。",
+  "updated_at": "2026-08-26",
+  "affiliate_links": {
+    "nosh": {
+      "asp": "A8.net / afb",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://nosh.jp/",
+      "note": "A8.net/afbで提携申請可能。承認後、actual_url を埋める"
+    },
+    "watami-takushoku": {
+      "asp": "A8.net / afb / アクセストレード",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://direct.watami-takushoku.com/",
+      "note": "報酬は新規申込時。A8.net最大3,095円"
+    },
+    "mitsuboshi-farm": {
+      "asp": "アクセストレード",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://mitsuboshifarm.jp/",
+      "note": "報酬3,080円（要再確認）"
+    },
+    "wellness-dining": {
+      "asp": "afb / A8.net 等",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://www.wellness-dining.com/",
+      "note": "報酬要確認"
+    },
+    "shokutakubin": {
+      "asp": "A8.net",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://www.shokutakubin.com/",
+      "note": "報酬要確認"
+    },
+    "fit-food-home": {
+      "asp": "A8.net",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://fitfoodhome.jp/",
+      "note": "報酬2,000円/1,500円"
+    },
+    "magokoro-care": {
+      "asp": "A8.net 等",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://www.magokoro-care.com/",
+      "note": "報酬要確認"
+    }
+  }
+}

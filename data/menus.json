@@ -1,0 +1,20 @@
+{
+  "_comment": "メニュー別栄養DB（カロリー・塩分・糖質・タンパク質）。構造定義と初期シード。実際のメニュー・栄養データは公式ページから収集して蓄積する。本ファイルは0件から始め、収集パイプラインで増やす。",
+  "updated_at": "2026-08-26",
+  "menus": [],
+  "_schema": {
+    "menu_id": "string",
+    "service_id": "string",
+    "menu_name": "string",
+    "category": "string (主菜/副菜/セット等)",
+    "price_per_meal_yen": "number",
+    "calorie_kcal": "number",
+    "salt_g": "number",
+    "carb_g": "number",
+    "protein_g": "number",
+    "allergen_flags": ["string"],
+    "is_current": "boolean",
+    "first_seen_date": "YYYY-MM-DD",
+    "last_checked_date": "YYYY-MM-DD"
+  }
+}

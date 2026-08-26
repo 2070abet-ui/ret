@@ -1,0 +1,30 @@
+{
+  "_comment": "送料・解約条件・最低注文数DB。比較コンテンツの重要要素。要ASP/公式確認項目。",
+  "updated_at": "2026-08-26",
+  "shipping_rules": [
+    {
+      "service_id": "nosh",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "要確認",
+      "notes": "送料・解約条件は公式サイト要確認（2026-08-26）",
+      "last_checked": "2026-08-26"
+    },
+    {
+      "service_id": "watami-takushoku",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "要確認",
+      "notes": "送料・解約条件は公式サイト要確認（2026-08-26）",
+      "last_checked": "2026-08-26"
+    },
+    {
+      "service_id": "mitsuboshi-farm",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "要確認",
+      "notes": "送料・解約条件は公式サイト要確認（2026-08-26）",
+      "last_checked": "2026-08-26"
+    }
+  ]
+}

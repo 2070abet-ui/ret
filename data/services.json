@@ -1,0 +1,324 @@
+{
+  "_comment": "宅配食サービス マスタDB。last_checked=最終確認日。price_plan等は公式サイト・ASP公開情報ベース。未確認項目は要確認マーク。",
+  "updated_at": "2026-08-26",
+  "services": [
+    {
+      "id": "nosh",
+      "name": "nosh（ナッシュ）",
+      "name_short": "nosh",
+      "operator": "ナッシュ株式会社",
+      "official_url": "https://nosh.jp/",
+      "meal_type": "冷凍宅配弁当",
+      "meal_form": "冷凍（レンジで温めるだけ）",
+      "main_features": [
+        "低糖質・低塩分にこだわった冷凍弁当",
+        "管理栄養士がメニューを監修",
+        "100種類以上のメニューから毎週選べる",
+        "糖質30g以下のメニュー中心",
+        "一人前の分量がちょうど良い"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": 492,
+        "plan_notes": "公式サイトで最安492円/食と表示（2026-08-26確認）。プラン別の正確な価格・初回価格は公式ページ要確認。",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "nosh-first",
+        "summary": "初回お試し価格あり（1食あたり特別価格、詳細は公式要確認）",
+        "detail": "初回限定の割引・お試しセットが存在する。正確な条件・金額は公式サイトで確認すること。",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": ["一人暮らし", "ダイエット", "糖質制限", "時短"],
+      "tags": ["低糖質", "低塩分", "冷凍", "管理栄養士監修", "一人暮らし"],
+      "pros": [
+        "低糖質・低塩分で健康志向のニーズに対応",
+        "メニュー数が豊富で飽きにくい",
+        "レンジで温めるだけですぐ食べられる"
+      ],
+      "cons": [
+        "冷凍庫のスペースが必要",
+        "単価は冷凍弁当の中では中〜やや高め",
+        "人気メニューは在庫切れになりやすい"
+      ],
+      "cancellation_note": "定期購入の解約条件は公式サイト要確認（2026-08-26時点で未確認）",
+      "affiliate": {
+        "campaigns": [
+          {"asp": "A8.net", "reward_yen": 2500, "status": "掲載中", "cv_condition": "新規購入完了", "last_verified": "2026-08-26"},
+          {"asp": "afb", "reward_yen": 2750, "status": "掲載中", "cv_condition": "新規購入完了", "last_verified": "2026-08-26"}
+        ],
+        "source_url": "https://affisearch.com/campaigns/a8-s00000017722002"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "watami-takushoku",
+      "name": "ワタミの宅食ダイレクト",
+      "name_short": "ワタミの宅食",
+      "operator": "ワタミ株式会社",
+      "official_url": "https://watami-takushoku.com/",
+      "meal_type": "冷凍総菜・宅配食",
+      "meal_form": "冷凍",
+      "main_features": [
+        "管理栄養士が設計したバランスの取れた冷凍総菜",
+        "ワタミグループの安心感",
+        "セットプランが豊富"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "要確認（公式サイトで確認すること）",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "watami-first",
+        "summary": "初回お試しキャンペーンあり（詳細は公式要確認）",
+        "detail": "初回限定のお試し・割引があると見られる。正確な条件は公式サイト要確認。",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": ["一人暮らし", "共働き", "健康志向", "時短"],
+      "tags": ["冷凍", "管理栄養士監修", "低糖質対応あり", "セットプラン"],
+      "pros": [
+        "大手（ワタミグループ）の信頼性",
+        "管理栄養士監修で栄養バランスが良い",
+        "複数のセットプランから選べる"
+      ],
+      "cons": [
+        "メニューの好みが分かれる可能性",
+        "冷凍庫スペースが必要"
+      ],
+      "cancellation_note": "要確認（公式サイト・利用規約で確認すること）",
+      "affiliate": {
+        "campaigns": [
+          {"asp": "afb", "reward_yen": 1753, "status": "掲載中", "cv_condition": "新規申込", "last_verified": "2026-08-26"},
+          {"asp": "アクセストレード", "reward_yen": 2500, "status": "掲載中", "cv_condition": "新規申込", "last_verified": "2026-08-26"},
+          {"asp": "A8.net", "reward_yen": 3095, "status": "掲載中", "cv_condition": "定期購入（初回申込）", "last_verified": "2026-08-26"},
+          {"asp": "A8.net", "reward_yen": 2538, "status": "掲載中", "cv_condition": "新規申込", "last_verified": "2026-08-26"}
+        ],
+        "source_url": "https://affisearch.com/campaigns/a8-s00000018527007"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "mitsuboshi-farm",
+      "name": "三ツ星ファーム",
+      "name_short": "三ツ星ファーム",
+      "operator": "株式会社エニィファクトリー",
+      "official_url": "https://mitsuboshifarm.jp/",
+      "meal_type": "冷凍宅配弁当（低糖質）",
+      "meal_form": "冷凍",
+      "main_features": [
+        "一流シェフが監修する低糖質弁当",
+        "ゆる低糖質の宅食サブスク",
+        "有名店シェフの味を自宅で"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "要確認（公式サイトで確認すること）",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "mitsuboshi-first",
+        "summary": "初回お試しキャンペーンあり（詳細は公式要確認）",
+        "detail": "購入促進プロモーションがASPで確認される。正確な条件は公式サイト要確認。",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": ["一人暮らし", "ダイエット", "糖質制限", "おいしさ重視"],
+      "tags": ["低糖質", "シェフ監修", "冷凍", "一人暮らし"],
+      "pros": [
+        "シェフ監修で味への評価が高い",
+        "低糖質でも満足感を重視したメニュー"
+      ],
+      "cons": [
+        "noshと比較してメニュー数・価格帯の違いを要確認",
+        "冷凍庫スペースが必要"
+      ],
+      "cancellation_note": "要確認（公式サイトで確認すること）",
+      "affiliate": {
+        "campaigns": [
+          {"asp": "アクセストレード", "reward_yen": 3080, "status": "掲載終了の可能性あり（要確認）", "cv_condition": "購入促進プロモーション", "last_verified": "2026-08-26", "note": "affisearch.comで3,080円を確認したが掲載終了表示も見られたため要再確認"}
+        ],
+        "source_url": "https://media-analytics.jp/affisearch/promotions/mitsuboshi-farm"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "wellness-dining",
+      "name": "ウェルネスダイニング",
+      "name_short": "ウェルネスダイニング",
+      "operator": "ウェルネスダイニング株式会社",
+      "official_url": "https://www.wellness-dining.com/",
+      "meal_type": "宅配食（糖質制限・カロリー制限）",
+      "meal_form": "冷凍",
+      "main_features": [
+        "管理栄養士が監修した制限食",
+        "糖質制限・カロリー制限・塩分制限などに対応",
+        "医療・介護領域の実績"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "要確認（公式サイトで確認すること）",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "wellness-first",
+        "summary": "お試しセットあり（詳細は公式要確認）",
+        "detail": "要確認",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": ["糖質制限", "カロリー制限", "健康志向", "制限食"],
+      "tags": ["糖質制限", "カロリー制限", "管理栄養士監修", "制限食"],
+      "pros": [
+        "制限食の専門性が高い",
+        "医療・介護領域での実績"
+      ],
+      "cons": [
+        "一般向けの宅配食より専門色が強い",
+        "価格は要確認"
+      ],
+      "cancellation_note": "要確認",
+      "affiliate": {
+        "campaigns": [
+          {"asp": "afb / A8.net 等", "reward_yen": null, "status": "案件存在を確認（要詳細確認）", "cv_condition": "要確認", "last_verified": "2026-08-26", "note": "affisearch系サイトで案件の存在を確認。報酬額は要ASPログイン確認"}
+        ],
+        "source_url": "https://affisearch.com/"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "shokutakubin",
+      "name": "食宅便（日清医療食品）",
+      "name_short": "食宅便",
+      "operator": "日清医療食品株式会社",
+      "official_url": "https://www.shokutakubin.com/",
+      "meal_type": "宅配食（冷凍・冷蔵）",
+      "meal_form": "冷凍 / 冷蔵",
+      "main_features": [
+        "日清医療食品が運営",
+        "健康に配慮したメニュー",
+        "病院給食のノウハウを活かした宅配食"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "要確認",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "shokutakubin-first",
+        "summary": "お試しプランあり（詳細は公式要確認）",
+        "detail": "要確認",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": ["健康志向", "高齢者", "制限食", "時短"],
+      "tags": ["健康", "医療食品", "冷凍", "冷蔵"],
+      "pros": [
+        "日清医療食品の信頼性",
+        "栄養管理の専門性"
+      ],
+      "cons": [
+        "若年層向けの訴求は弱め",
+        "価格は要確認"
+      ],
+      "cancellation_note": "要確認",
+      "affiliate": {
+        "campaigns": [
+          {"asp": "A8.net", "reward_yen": null, "status": "案件存在を確認（要詳細確認）", "cv_condition": "要確認", "last_verified": "2026-08-26", "note": "A8.netに案件あり。報酬額は要ASPログイン確認"}
+        ],
+        "source_url": "https://affisearch.com/"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "fit-food-home",
+      "name": "FIT FOOD HOME",
+      "name_short": "FIT FOOD HOME",
+      "operator": "株式会社FIT FOOD HOME",
+      "official_url": "https://fitfoodhome.jp/",
+      "meal_type": "宅配食（カロリー・栄養管理）",
+      "meal_form": "冷凍",
+      "main_features": [
+        "カロリー・栄養管理をサポート",
+        "ダイエット・ボディメイク向け",
+        "トレーニーにも人気"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "要確認",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "fitfood-first",
+        "summary": "初回お試しキャンペーンあり（詳細は公式要確認）",
+        "detail": "要確認",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": ["ダイエット", "ボディメイク", "カロリー制限", "高タンパク"],
+      "tags": ["ダイエット", "カロリー制限", "高タンパク", "冷凍"],
+      "pros": [
+        "ダイエット・ボディメイク特化",
+        "高タンパクメニュー"
+      ],
+      "cons": [
+        "一般の宅配食より専門色が強い",
+        "価格は要確認"
+      ],
+      "cancellation_note": "要確認",
+      "affiliate": {
+        "campaigns": [
+          {"asp": "A8.net", "reward_yen": 2000, "status": "掲載中（2,000円/1,500円）", "cv_condition": "要確認", "last_verified": "2026-08-26"}
+        ],
+        "source_url": "https://affisearch.com/"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "magokoro-care",
+      "name": "まごころケア食",
+      "name_short": "まごころケア食",
+      "operator": "ニチレイフーズグループ関連",
+      "official_url": "https://www.magokoro-care.com/",
+      "meal_type": "宅配食（高齢者・健康配慮）",
+      "meal_form": "冷凍",
+      "main_features": [
+        "高齢者・健康配慮向けの宅配食",
+        "やわらか食・ムース食などに対応",
+        "配達エリアが広い"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "要確認",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "magokoro-first",
+        "summary": "お試し・キャンペーンあり（詳細は公式要確認）",
+        "detail": "要確認",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": ["高齢者", "健康志向", "やわらかい食事", "制限食"],
+      "tags": ["高齢者", "やわらか食", "健康", "冷凍"],
+      "pros": [
+        "高齢者向けの専門性が高い",
+        "やわらか食・ムース食に対応",
+        "配達エリアが広い"
+      ],
+      "cons": [
+        "若年層には訴求しにくい",
+        "価格は要確認"
+      ],
+      "cancellation_note": "要確認",
+      "affiliate": {
+        "campaigns": [
+          {"asp": "A8.net 等", "reward_yen": null, "status": "案件存在を確認（要詳細確認）", "cv_condition": "要確認", "last_verified": "2026-08-26", "note": "affisearch系サイトで案件掲載サイトとして確認"}
+        ],
+        "source_url": "https://affisearch.com/"
+      },
+      "last_checked": "2026-08-26"
+    }
+  ]
+}
