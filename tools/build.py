@@ -21,7 +21,7 @@ OUT_DIR = ROOT / "site"
 
 # サイト名・URLは config/site.json で管理する（Cloudflare Pages 無料公開のため pages.dev を使用）
 SITE_NAME = "宅食図鑑"
-SITE_DESC = "宅配食・宅配弁当サービスを実データで比較。最新の初回キャンペーン・お試し情報を毎週更新。"
+SITE_DESC = "宅配食・宅配弁当サービスの料金・初回キャンペーン情報を公式確認データで比較。最新のキャンペーン情報を毎週更新。"
 _DEFAULT_URL = "https://takushokuzukan.pages.dev"
 _site_config_path = CONFIG_DIR / "site.json"
 SITE_URL = os.environ.get("SITE_URL", _DEFAULT_URL)
@@ -60,17 +60,8 @@ def esc(s):
 
 def yen(v):
     if v is None:
-        return "要確認"
+        return "公式確認中"
     return f"{v:,}円"
-
-
-def reward_display(campaign):
-    """報酬表示。reward_text（歩合等）があればそれ、なければreward_yenを円表示。"""
-    t = campaign.get("reward_text", "")
-    if t:
-        return t
-    r = campaign.get("reward_yen")
-    return yen(r) if r else "要確認"
 
 
 # ---------- リンク生成 ----------
@@ -85,7 +76,7 @@ def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
     target = info.get("asp", "")
     label = label or "公式サイトを見る"
     if not url:
-        return f'<span class="btn-disabled" style="display:inline-block;background:#eee;color:#999;padding:8px 16px;border-radius:6px;font-size:13px;">公式サイト（要確認）</span>'
+        return f'<span class="btn-disabled" style="display:inline-block;background:#eee;color:#999;padding:8px 16px;border-radius:6px;font-size:13px;">公式サイト（公式確認中）</span>'
     note = ""
     if actual:
         note = f'<span class="aff-note">（{esc(target)}経由）</span>'
@@ -128,7 +119,6 @@ th {{ background:#f5ede8; font-weight:bold; }}
 .pros-cons {{ display:flex; gap:16px; flex-wrap:wrap; }}
 .pros-cons > div {{ flex:1; min-width:240px; }}
 .pros li, .cons li {{ margin-left:20px; font-size:14px; }}
-.reward-badge {{ display:inline-block; background:#fff3e0; border:1px solid #ffcc80; color:#e65100; padding:4px 12px; border-radius:6px; font-weight:bold; font-size:13px; }}
 footer.site {{ text-align:center; padding:24px 16px; color:var(--muted); font-size:12px; margin-top:32px; }}
 ul.feature-list li, ol.feature-list li {{ margin-left:20px; font-size:14px; }}
 </style>
@@ -173,32 +163,13 @@ def page_footer(updated_date):
 def build_service_page(service, aff_links):
     s_id = service["id"]
     s_name = service["name"]
-    aff = service.get("affiliate", {})
-    aff_campaigns = aff.get("campaigns", [])
 
-    # アフィリエイト報酬表示
     # 関連記事リンク（サービスDBに article_link があれば表示）
     article_link_html = ""
     _art_link = service.get("article_link", "")
     if _art_link:
         _art_label = service.get("article_label", "関連記事を見る")
         article_link_html = f'<a class="btn-secondary" href="{esc(_art_link)}">{esc(_art_label)}</a> '
-
-    reward_html = ""
-    if aff_campaigns:
-        items = []
-        for c in aff_campaigns:
-            items.append(
-                f'<tr><td>{esc(c.get("asp", ""))}</td><td>{reward_display(c)}</td>'
-                f'<td>{esc(c.get("status", ""))}</td><td>{esc(c.get("cv_condition", ""))}</td></tr>'
-            )
-        reward_html = f"""
-        <h2>アフィリエイト報酬（内部管理情報）</h2>
-        <table>
-          <tr><th>ASP</th><th>報酬</th><th>状態</th><th>成果条件</th></tr>
-          {''.join(items)}
-        </table>
-        """
 
     # メニュー・栄養
     feature_list = "".join(f"<li>{esc(f)}</li>" for f in service.get("main_features", []))
@@ -207,7 +178,7 @@ def build_service_page(service, aff_links):
     tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service.get("tags", []))
 
     cheapest = service.get("price_plan", {}).get("lowest_per_meal_yen")
-    cheapest_html = yen(cheapest) + "/食" if cheapest else "要確認"
+    cheapest_html = (yen(cheapest) + "/食") if cheapest else "公式確認中"
 
     title = f"{s_name}の口コミ・評判・料金を徹底解説"
     desc = f"{s_name}の特徴・料金・初回キャンペーン・評判をまとめました。{SITE_NAME}の最新調査情報（2026年8月）に基づく内容です。"
@@ -220,12 +191,12 @@ def build_service_page(service, aff_links):
     <div class="card">
       <h2>基本情報</h2>
       <table>
-        <tr><th>運営会社</th><td>{esc(service.get("operator", "要確認"))}</td></tr>
+        <tr><th>運営会社</th><td>{esc(service.get("operator", "公式確認中"))}</td></tr>
         <tr><th>形態</th><td>{esc(service.get("meal_type", ""))}（{esc(service.get("meal_form", ""))}）</td></tr>
         <tr><th>最安料金</th><td>{cheapest_html}（2026-08-26時点）</td></tr>
         <tr><th>対象</th><td>{", ".join(service.get("target", []))}</td></tr>
       </table>
-      <div style="margin-top:12px;">{aff_link(aff_links, s_id)}</div>
+      <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで料金・キャンペーンを確認")}</div>
     </div>
 
     <div class="card">
@@ -243,17 +214,15 @@ def build_service_page(service, aff_links):
 
     <div class="card">
       <h2>初回キャンペーン・お試し</h2>
-      <p>{esc(service.get("first_time_campaign", {}).get("summary", "要確認"))}</p>
+      <p>{esc(service.get("first_time_campaign", {}).get("summary", "公式確認中"))}</p>
       <p style="font-size:13px;color:#666;">{esc(service.get("first_time_campaign", {}).get("detail", ""))}</p>
-      <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで最新情報を見る", cls="btn-secondary")}</div>
+      <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトでキャンペーンを確認", cls="btn-secondary")}</div>
     </div>
 
     <div class="card">
       <h2>解約・送料について</h2>
-      <p>{esc(service.get("cancellation_note", "要確認（公式サイトで確認してください）"))}</p>
+      <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
     </div>
-
-    {reward_html}
 
     <div style="margin-top:16px;">
       {article_link_html}
@@ -267,28 +236,26 @@ def build_service_page(service, aff_links):
 
 # ---------- ランキングページ ----------
 
-def build_ranking_page(services, aff_links):
+def build_ranking_page(services, campaigns, aff_links):
+    # サービスID → 確認済みの初回キャンペーン特典（requires_verification=false のみ表示）
+    confirmed_camp = {}
+    for c in campaigns:
+        if not c.get("requires_verification", True):
+            confirmed_camp[c.get("service_id")] = c.get("discount_type", "")
+
     rows = []
     for svc in services:
-        aff = svc.get("affiliate", {}).get("campaigns", [])
-        numerics = [c.get("reward_yen") for c in aff if c.get("reward_yen")]
-        texts = [c.get("reward_text") for c in aff if c.get("reward_text")]
-        if texts:
-            reward_txt = texts[0]  # 歩合・範囲報酬はテキスト優先
-        elif numerics:
-            reward_txt = f"最大{yen(max(numerics))}"
-        else:
-            reward_txt = "要確認"
         cheapest = svc.get("price_plan", {}).get("lowest_per_meal_yen")
-        cheapest_txt = f"{yen(cheapest)}/食" if cheapest else "要確認"
+        cheapest_txt = (f"{yen(cheapest)}/食") if cheapest else "公式確認中"
+        camp_txt = confirmed_camp.get(svc["id"], "公式確認中")
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
         rows.append(f"""
         <tr>
           <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a><br>{tags}</td>
           <td>{cheapest_txt}</td>
-          <td><span class="reward-badge">{reward_txt}</span></td>
+          <td>{esc(camp_txt)}</td>
           <td>{', '.join(svc.get('target', []))}</td>
-          <td>{aff_link(aff_links, svc['id'], label='公式サイト', cls='btn-secondary')}</td>
+          <td>{aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}</td>
         </tr>""")
 
     title = "宅配食おすすめ比較ランキング【2026年8月最新】"
@@ -297,10 +264,10 @@ def build_ranking_page(services, aff_links):
     html = page_header(title, desc, "ranking.html")
     html += f"""
     <h1>宅配食おすすめ比較ランキング【2026年8月最新】</h1>
-    <p>主要宅配食サービスを最新データで比較しています。報酬表示はASP公開情報（2026-08-26時点）。</p>
+    <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（2026-08-26時点）。</p>
     <div class="card">
       <table>
-        <tr><th>サービス</th><th>最安料金</th><th>初回報酬目安</th><th>向いている人</th><th></th></tr>
+        <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>向いている人</th><th></th></tr>
         {''.join(rows)}
       </table>
     </div>
@@ -326,20 +293,22 @@ def build_campaigns_page(campaigns, services, aff_links):
     cards = []
     for c in campaigns:
         svc = svc_by_id.get(c.get("service_id"))
-        svc_name = svc["name"] if svc else "要確認"
-        reward_txt = reward_display(c.get("affiliate", {}))
+        svc_name = svc["name"] if svc else "公式確認中"
+        svc_id = c.get("service_id", "")
         cards.append(f"""
         <div class="card">
           <h2>{esc(c['title'])}</h2>
           <p>{esc(c['summary'])}</p>
           <table>
             <tr><th>対象サービス</th><td>{esc(svc_name)}</td></tr>
-            <tr><th>割引タイプ</th><td>{esc(c.get('discount_type', '要確認'))}</td></tr>
-            <tr><th>条件</th><td>{esc(c.get('conditions', '要確認'))}</td></tr>
-            <tr><th>成果報酬（ASP）</th><td>最大{reward_txt}（{esc(c.get('affiliate', {}).get('asp', ''))}）</td></tr>
+            <tr><th>割引タイプ</th><td>{esc(c.get('discount_type', '公式確認中'))}</td></tr>
+            <tr><th>条件</th><td>{esc(c.get('conditions', '公式確認中'))}</td></tr>
             <tr><th>最終確認</th><td>{esc(c.get('last_checked', ''))}</td></tr>
           </table>
-          <div style="margin-top:12px;">{aff_link(aff_links, c['service_id'], label='公式サイトでキャンペーンを確認', cls='btn-primary')}</div>
+          <div style="margin-top:12px;">
+            <a class="btn-secondary" href="/services/{esc(svc_id)}.html">サービス詳細を見る</a>
+            {aff_link(aff_links, c['service_id'], label='公式サイトでキャンペーンを確認', cls='btn-primary')}
+          </div>
         </div>""")
 
     title = "宅配食 初回キャンペーン・お試し情報まとめ【2026年8月】"
@@ -363,8 +332,8 @@ def build_comparison_page(service_a, service_b, aff_links):
 
     a_cheapest = service_a.get("price_plan", {}).get("lowest_per_meal_yen")
     b_cheapest = service_b.get("price_plan", {}).get("lowest_per_meal_yen")
-    a_price = f"{yen(a_cheapest)}/食" if a_cheapest else "要確認"
-    b_price = f"{yen(b_cheapest)}/食" if b_cheapest else "要確認"
+    a_price = (f"{yen(a_cheapest)}/食") if a_cheapest else "公式確認中"
+    b_price = (f"{yen(b_cheapest)}/食") if b_cheapest else "公式確認中"
 
     a_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_a.get("tags", []))
     b_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_b.get("tags", []))
@@ -383,7 +352,8 @@ def build_comparison_page(service_a, service_b, aff_links):
         <tr><td><strong>特徴</strong></td><td>{a_tags}</td><td>{b_tags}</td></tr>
         <tr><td><strong>最安料金</strong></td><td>{a_price}</td><td>{b_price}</td></tr>
         <tr><td><strong>向いている人</strong></td><td>{', '.join(service_a.get('target', []))}</td><td>{', '.join(service_b.get('target', []))}</td></tr>
-        <tr><td><strong>公式サイト</strong></td><td>{aff_link(aff_links, a_id, label='公式サイト', cls='btn-secondary')}</td><td>{aff_link(aff_links, b_id, label='公式サイト', cls='btn-secondary')}</td></tr>
+        <tr><td><strong>料金・特徴を詳しく見る</strong></td><td><a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細ページ</a></td><td><a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細ページ</a></td></tr>
+        <tr><td><strong>公式サイト</strong></td><td>{aff_link(aff_links, a_id, label='公式サイトを確認', cls='btn-secondary')}</td><td>{aff_link(aff_links, b_id, label='公式サイトを確認', cls='btn-secondary')}</td></tr>
       </table>
     </div>
 
@@ -405,6 +375,8 @@ def build_comparison_page(service_a, service_b, aff_links):
     </div>
 
     <div style="margin-top:16px;">
+      <a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細を見る</a>
+      <a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細を見る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
       <a class="btn-secondary" href="/tool/diagnosis.html">診断ツールで選ぶ</a>
     </div>
@@ -428,6 +400,7 @@ def build_diagnosis_tool(services, aff_links):
             "price": svc.get("price_plan", {}).get("lowest_per_meal_yen"),
             "url": svc.get("official_url", ""),
             "aff_url": aff.get("actual_url", ""),  # アフィリエイトリンク（あれば優先）
+            "detail_url": f"/services/{svc['id']}.html",  # 当サイト内サービス詳細ページ
         })
     svc_json = json.dumps(svc_data, ensure_ascii=False)
 
@@ -475,13 +448,14 @@ def build_diagnosis_tool(services, aff_links):
       if (scored.length === 0) {{
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
       }} else {{
-        html += '<table><tr><th>サービス</th><th>特徴</th><th>公式サイト</th></tr>';
+        html += '<table><tr><th>サービス</th><th>特徴</th><th>詳細</th><th>公式サイト</th></tr>';
         for (const s of scored) {{
+          const detail = `<a href="${{s.detail_url}}">詳しく見る</a>`;
           const url = s.aff_url || s.url || '';
           const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
           const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
-          const link = url ? `<a href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span style="color:#999">要確認</span>';
-          html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td>${{link}}</td></tr>`;
+          const link = url ? `<a href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span style="color:#999">公式確認中</span>';
+          html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td>${{detail}}</td><td>${{link}}</td></tr>`;
         }}
         html += '</table>';
         html += '<p style="font-size:13px;color:#666;margin-top:12px;">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';
@@ -514,7 +488,7 @@ def build_index_page(services, campaigns, aff_links):
             <a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>
             <div>{''.join(f'<span class="tag">{esc(t)}</span>' for t in svc.get('tags', [])[:3])}</div>
           </div>
-          <div>{aff_link(aff_links, svc['id'], label='公式サイト', cls='btn-secondary')}</div>
+          <div>{aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}</div>
         </div>"""
 
     title = f"{SITE_NAME}｜宅配食の比較・初回キャンペーン情報"
@@ -523,7 +497,7 @@ def build_index_page(services, campaigns, aff_links):
     html = page_header(title, desc, "index.html")
     html += f"""
     <h1>宅配食を、データで選ぶ。</h1>
-    <p>{SITE_NAME}は、宅配食・宅配弁当サービスの料金・栄養・初回キャンペーン情報を「実データ」で比較するサイトです。最新のキャンペーン情報を毎週更新しています。</p>
+    <p>{SITE_NAME}は、宅配食・宅配弁当サービスの料金・初回キャンペーン情報を、公式サイトで最終確認したデータで比較するサイトです。最新のキャンペーン情報を毎週更新しています。</p>
 
     <div class="card" style="background:#fff8f0;">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
@@ -546,7 +520,7 @@ def build_index_page(services, campaigns, aff_links):
       <h2>このサイトのこだわり</h2>
       <ul class="feature-list">
         <li><strong>鮮度</strong>：価格・キャンペーン情報を毎週更新し、最終確認日を明記</li>
-        <li><strong>実データ</strong>：AIが生成した記事ではなく、公式情報・実食をベースにしたデータ</li>
+        <li><strong>公式確認</strong>：公式サイトの情報を確認したもののみ掲載し、未確認の項目は「公式確認中」と明示</li>
         <li><strong>目的別</strong>：一人暮らし・ダイエット・糖質制限など目的で比較できる</li>
       </ul>
     </div>
@@ -966,9 +940,18 @@ def main():
     services, campaigns, shipping, sources, aff_links = load_data()
 
     # 出力先クリーン
+    # 外部プロセス（例: python -m http.server）が OUT_DIR をCWDとして使用していると
+    # Windows ではディレクトリ自体を削除できないため、その場合は中身を削除して上書き再生成する。
     if OUT_DIR.exists():
         import shutil
-        shutil.rmtree(OUT_DIR)
+        try:
+            shutil.rmtree(OUT_DIR)
+        except OSError:
+            for _child in OUT_DIR.iterdir():
+                if _child.is_dir():
+                    shutil.rmtree(_child, ignore_errors=True)
+                else:
+                    _child.unlink(missing_ok=True)
     (OUT_DIR / "services").mkdir(parents=True)
     (OUT_DIR / "comparisons").mkdir(parents=True)
     (OUT_DIR / "tool").mkdir(parents=True)
@@ -980,7 +963,7 @@ def main():
     pages.append("index.html")
 
     # ランキング
-    (OUT_DIR / "ranking.html").write_text(build_ranking_page(services, aff_links), encoding="utf-8")
+    (OUT_DIR / "ranking.html").write_text(build_ranking_page(services, campaigns, aff_links), encoding="utf-8")
     pages.append("ranking.html")
 
     # キャンペーン

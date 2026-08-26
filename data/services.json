@@ -177,7 +177,7 @@
       "first_time_campaign": {
         "campaign_id": "mitsuboshi-first",
         "summary": "初回お試しキャンペーンあり（詳細は公式要確認）",
-        "detail": "購入促進プロモーションがASPで確認される。正確な条件は公式サイト要確認。",
+        "detail": "購入促進プロモーションを確認。正確な条件は公式サイトで確認中。",
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
@@ -360,8 +360,8 @@
       },
       "first_time_campaign": {
         "campaign_id": "fitfood-first",
-        "summary": "A8.net提携承認済み（新規購入2,000円/1,500円）。公式ドメインは未確認",
-        "detail": "A8.net案件が承認済み。公式ドメイン未確認のため、公式サイト情報は要確認。",
+        "summary": "ダイエット・ボディメイク向け宅配食の初回キャンペーン。公式ドメインは未確認",
+        "detail": "公式ドメイン未確認のため、公式サイト情報は公式確認中。",
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
@@ -486,7 +486,7 @@
       "first_time_campaign": {
         "campaign_id": "chef-muten-first",
         "summary": "初回お試し・キャンペーンの有無は公式サイトで要確認",
-        "detail": "A8.net案件（新規購入7,000円）が承認済み。初回割引の詳細は公式サイトで確認すること。",
+        "detail": "初回お試し・キャンペーンの有無は公式サイトで確認中。初回割引の詳細は公式サイトで確認すること。",
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
@@ -624,7 +624,7 @@
       "first_time_campaign": {
         "campaign_id": "yoshikei-first",
         "summary": "お試し・キャンペーンは地域により異なる（要確認）",
-        "detail": "A8.net案件（新規購入1,100円）が承認済み。初回キャンペーンの詳細は各エリアのヨシケイで要確認。",
+        "detail": "初回キャンペーンの詳細は各エリアのヨシケイで確認中。",
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
