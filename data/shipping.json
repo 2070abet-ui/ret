@@ -25,6 +25,14 @@
       "cancellation_condition": "要確認",
       "notes": "送料・解約条件は公式サイト要確認（2026-08-26）",
       "last_checked": "2026-08-26"
+    },
+    {
+      "service_id": "chef-muten-tukuritoki",
+      "shipping_fee": 990,
+      "min_order": null,
+      "cancellation_condition": "初回お届け分はキャンセル不可。2回目以降はお届け6日前までに手続きすればスキップ可能（九州・島根・青森は7日前）。休止（解約）は2回目以降いつでも可能・違約金なし",
+      "notes": "送料は1回あたり990円、初回は送料無料（公式サイト・公式FAQ 2026-08-26確認）",
+      "last_checked": "2026-08-26"
     }
   ]
 }

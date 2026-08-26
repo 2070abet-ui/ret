@@ -180,8 +180,8 @@ def build_service_page(service, aff_links):
     cheapest = service.get("price_plan", {}).get("lowest_per_meal_yen")
     cheapest_html = (yen(cheapest) + "/食") if cheapest else "公式確認中"
 
-    title = f"{s_name}の口コミ・評判・料金を徹底解説"
-    desc = f"{s_name}の特徴・料金・初回キャンペーン・評判をまとめました。{SITE_NAME}の最新調査情報（2026年8月）に基づく内容です。"
+    title = f"{s_name}の特徴・料金・初回キャンペーンを解説"
+    desc = f"{s_name}の特徴・料金・初回キャンペーン・お試し情報をまとめました。{SITE_NAME}が公式サイトで最終確認した情報（2026年8月）に基づく内容です。"
 
     html = page_header(title, desc, f"services/{s_id}.html")
     html += f"""

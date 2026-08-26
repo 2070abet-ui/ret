@@ -119,11 +119,11 @@
     {
       "campaign_id": "chef-muten-first-202608",
       "service_id": "chef-muten-tukuritoki",
-      "title": "シェフの無添つくりおき 初回キャンペーン",
-      "summary": "無添加・シェフ手作りのお惣菜を週替わりで宅配",
-      "detail": "初回お試し・キャンペーンの有無は公式サイトで確認中。",
-      "discount_type": "要確認",
-      "conditions": "要確認（公式サイトで確認）",
+      "title": "シェフの無添つくりおき 初回26%OFFキャンペーン",
+      "summary": "初回限定26%OFF（3,799円〜・送料無料）で無添加のお惣菜を試せる",
+      "detail": "食卓サポートプラン：初回3,799円（税込・送料無料・5品）。食卓おまかせプラン：初回9,980円（税込・送料無料・9品）。初回限定価格は通常価格の26%OFF（公式サイト・公式FAQ 2026-08-26確認）。",
+      "discount_type": "初回26%OFF",
+      "conditions": "ご契約者様1回目のご注文のみ。初回分はキャンセル不可（公式FAQより）",
       "valid_from": null,
       "valid_to": null,
       "source_url": "https://store.tavenal.com/tsukurioki/",
@@ -132,7 +132,7 @@
         "reward_yen": 7000,
         "note": "新規購入7,000円（プログラムID: s00000024360001）"
       },
-      "requires_verification": true,
+      "requires_verification": false,
       "last_checked": "2026-08-26"
     },
     {
