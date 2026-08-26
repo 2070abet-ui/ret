@@ -2,7 +2,8 @@
 # 静的サイト site/ をそのまま配信する。Workerスクリプト不要。
 # 参照: https://developers.cloudflare.com/workers/static-assets/
 # デプロイ: npx wrangler deploy  （Workers BuildsのGit連携ではこれが自動実行される）
-name = "takushokuzukan"
+# name は実際にデプロイされたWorker名（公開URL: ret4853.2070abe.workers.dev）
+name = "ret4853"
 compatibility_date = "2026-08-26"
 
 [assets]

@@ -1,7 +1,7 @@
 {
-  "_comment": "サイト名・URL設定。Cloudflare Pagesで公開するためpages.devを使用。Cloudflareプロジェクト名が変わった場合はurlを更新すること。search_console_metaはGoogle Search Consoleの所有権確認メタタグ（取得後に設定）。",
+  "_comment": "サイト名・URL設定。Cloudflare Workers Static Assetsで公開中。search_console_metaはGoogle Search Consoleの所有権確認メタタグ（取得後に設定）。",
   "name": "宅食図鑑",
-  "url": "https://takushokuzukan.workers.dev",
+  "url": "https://ret4853.2070abe.workers.dev",
   "search_console_meta": "",
   "operator": {
     "_comment": "運営者情報。ASP審査前に必ず設定すること。架空の情報は記載しないこと。",
