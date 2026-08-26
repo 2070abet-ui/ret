@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>宅配食 診断ツール｜自分に合うサービスを条件で探す | 宅食図鑑</title>
 <meta name="description" content="予算・目的・こだわりを選ぶだけで、あなたに合う宅配食サービスがわかる無料の診断ツール。">
-<link rel="canonical" href="https://takushokuzukan.jp/tool/diagnosis.html">
+
+<link rel="canonical" href="https://takushokuzukan.pages.dev/tool/diagnosis.html">
 <style>
 :root { --primary:#e8552d; --text:#222; --bg:#faf7f5; --card:#fff; --muted:#666; }
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -68,7 +69,7 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
     <div id="result" class="card" style="display:none;"></div>
 
     <script>
-    const SERVICES = [{"id": "nosh", "name": "nosh（ナッシュ）", "tags": ["低糖質", "低塩分", "冷凍", "管理栄養士監修", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "時短"], "price": 492, "url": "https://nosh.jp/"}, {"id": "watami-takushoku", "name": "ワタミの宅食ダイレクト", "tags": ["冷凍", "管理栄養士監修", "低糖質対応あり", "セットプラン"], "target": ["一人暮らし", "共働き", "健康志向", "時短"], "price": null, "url": "https://watami-takushoku.com/"}, {"id": "mitsuboshi-farm", "name": "三ツ星ファーム", "tags": ["低糖質", "シェフ監修", "冷凍", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "おいしさ重視"], "price": null, "url": "https://mitsuboshifarm.jp/"}, {"id": "wellness-dining", "name": "ウェルネスダイニング", "tags": ["糖質制限", "カロリー制限", "管理栄養士監修", "制限食"], "target": ["糖質制限", "カロリー制限", "健康志向", "制限食"], "price": null, "url": "https://www.wellness-dining.com/"}, {"id": "shokutakubin", "name": "食宅便（日清医療食品）", "tags": ["健康", "医療食品", "冷凍", "冷蔵"], "target": ["健康志向", "高齢者", "制限食", "時短"], "price": null, "url": "https://www.shokutakubin.com/"}, {"id": "fit-food-home", "name": "FIT FOOD HOME", "tags": ["ダイエット", "カロリー制限", "高タンパク", "冷凍"], "target": ["ダイエット", "ボディメイク", "カロリー制限", "高タンパク"], "price": null, "url": "https://fitfoodhome.jp/"}, {"id": "magokoro-care", "name": "まごころケア食", "tags": ["高齢者", "やわらか食", "健康", "冷凍"], "target": ["高齢者", "健康志向", "やわらかい食事", "制限食"], "price": null, "url": "https://www.magokoro-care.com/"}];
+    const SERVICES = [{"id": "nosh", "name": "nosh（ナッシュ）", "tags": ["低糖質", "低塩分", "冷凍", "管理栄養士監修", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "時短"], "price": 492, "url": "https://nosh.jp/"}, {"id": "watami-takushoku", "name": "ワタミの宅食ダイレクト", "tags": ["冷凍", "管理栄養士監修", "低糖質対応あり", "セットプラン"], "target": ["一人暮らし", "共働き", "健康志向", "時短"], "price": null, "url": "https://watami-takushoku.com/"}, {"id": "mitsuboshi-farm", "name": "三ツ星ファーム", "tags": ["低糖質", "シェフ監修", "冷凍", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "おいしさ重視"], "price": null, "url": "https://mitsuboshifarm.jp/"}, {"id": "wellness-dining", "name": "ウェルネスダイニング", "tags": ["糖質制限", "カロリー制限", "管理栄養士監修", "制限食"], "target": ["糖質制限", "カロリー制限", "健康志向", "制限食"], "price": null, "url": "https://www.wellness-dining.com/"}, {"id": "shokutakubin", "name": "食宅便（日清医療食品）", "tags": ["健康", "医療食品", "冷凍", "冷蔵"], "target": ["健康志向", "高齢者", "制限食", "時短"], "price": null, "url": "https://www.shokutakubin.com/"}, {"id": "fit-food-home", "name": "FIT FOOD HOME", "tags": ["ダイエット", "カロリー制限", "高タンパク", "冷凍"], "target": ["ダイエット", "ボディメイク", "カロリー制限", "高タンパク"], "price": null, "url": ""}, {"id": "magokoro-care", "name": "まごころケア食", "tags": ["高齢者", "やわらか食", "健康", "冷凍"], "target": ["高齢者", "健康志向", "やわらかい食事", "制限食"], "price": null, "url": "https://www.magokoro-care.com/"}];
     function runDiag() {
       const goals = [...document.querySelectorAll('#goals input:checked')].map(x => x.value);
       if (goals.length === 0) {
@@ -89,7 +90,9 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
       } else {
         html += '<table><tr><th>サービス</th><th>特徴</th><th>公式サイト</th></tr>';
         for (const s of scored) {
-          html += `<tr><td><strong>${s.name}</strong></td><td>${(s.tags||[]).join('・')}</td><td><a href="${s.url}" target="_blank" rel="noopener">公式サイト</a></td></tr>`;
+          const url = s.url || '';
+          const link = url ? `<a href="${url}" target="_blank" rel="noopener">公式サイト</a>` : '<span style="color:#999">要確認</span>';
+          html += `<tr><td><strong>${s.name}</strong></td><td>${(s.tags||[]).join('・')}</td><td>${link}</td></tr>`;
         }
         html += '</table>';
         html += '<p style="font-size:13px;color:#666;margin-top:12px;">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';

@@ -13,7 +13,7 @@
       "asp": "A8.net / afb / アクセストレード",
       "status": "未提携（ASP承認待ち）",
       "actual_url": "",
-      "fallback_url": "https://direct.watami-takushoku.com/",
+      "fallback_url": "https://watami-takushoku.com/",
       "note": "報酬は新規申込時。A8.net最大3,095円"
     },
     "mitsuboshi-farm": {
@@ -41,8 +41,8 @@
       "asp": "A8.net",
       "status": "未提携（ASP承認待ち）",
       "actual_url": "",
-      "fallback_url": "https://fitfoodhome.jp/",
-      "note": "報酬2,000円/1,500円"
+      "fallback_url": "",
+      "note": "報酬2,000円/1,500円。公式ドメイン未確認のためリンク表示なし（要確認）"
     },
     "magokoro-care": {
       "asp": "A8.net 等",

@@ -19,10 +19,21 @@ DATA_DIR = ROOT / "data"
 CONFIG_DIR = ROOT / "config"
 OUT_DIR = ROOT / "site"
 
-# サイト名・ドメインは docs/SITE_NAME_DOMAIN_DECISION_2026_08.md で決定
+# サイト名・URLは config/site.json で管理する（Cloudflare Pages 無料公開のため pages.dev を使用）
 SITE_NAME = "宅食図鑑"
 SITE_DESC = "宅配食・宅配弁当サービスを実データで比較。最新の初回キャンペーン・お試し情報を毎週更新。"
-SITE_URL = "https://takushokuzukan.jp"  # ドメイン取得後に確定（現在は予定ドメイン）
+_DEFAULT_URL = "https://takushokuzukan.pages.dev"
+_site_config_path = CONFIG_DIR / "site.json"
+SITE_URL = os.environ.get("SITE_URL", _DEFAULT_URL)
+GSC_META = ""  # Google Search Console 所有権確認メタタグ
+if _site_config_path.exists():
+    try:
+        _site_config = json.loads(_site_config_path.read_text(encoding="utf-8"))
+        SITE_URL = _site_config.get("url", SITE_URL)
+        SITE_NAME = _site_config.get("name", SITE_NAME)
+        GSC_META = _site_config.get("search_console_meta", "")
+    except (json.JSONDecodeError, OSError):
+        pass
 
 
 def load_json(path):
@@ -54,13 +65,16 @@ def yen(v):
 # ---------- リンク生成 ----------
 
 def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
-    """アフィリエイトリンク。actual_urlがあればそれ、なければ公式URLにフォールバック。"""
+    """アフィリエイトリンク。actual_urlがあればそれ、なければ公式URLにフォールバック。
+    両方ない場合は、壊れたリンクを出さず「要確認」表示にする。"""
     info = aff_links.get(service_id, {})
     actual = info.get("actual_url", "")
     fallback = info.get("fallback_url", "")
     url = actual or fallback
     target = info.get("asp", "")
-    label = label or f"公式サイトを見る"
+    label = label or "公式サイトを見る"
+    if not url:
+        return f'<span class="btn-disabled" style="display:inline-block;background:#eee;color:#999;padding:8px 16px;border-radius:6px;font-size:13px;">公式サイト（要確認）</span>'
     note = ""
     if actual:
         note = f'<span class="aff-note">（{esc(target)}経由）</span>'
@@ -77,6 +91,7 @@ def page_header(title, description, canonical_path):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{esc(title)} | {SITE_NAME}</title>
 <meta name="description" content="{esc(description)}">
+{GSC_META}
 <link rel="canonical" href="{SITE_URL}/{canonical_path}">
 <style>
 :root {{ --primary:#e8552d; --text:#222; --bg:#faf7f5; --card:#fff; --muted:#666; }}
@@ -430,7 +445,9 @@ def build_diagnosis_tool(services):
       }} else {{
         html += '<table><tr><th>サービス</th><th>特徴</th><th>公式サイト</th></tr>';
         for (const s of scored) {{
-          html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td><a href="${{s.url}}" target="_blank" rel="noopener">公式サイト</a></td></tr>`;
+          const url = s.url || '';
+          const link = url ? `<a href="${{url}}" target="_blank" rel="noopener">公式サイト</a>` : '<span style="color:#999">要確認</span>';
+          html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td>${{link}}</td></tr>`;
         }}
         html += '</table>';
         html += '<p style="font-size:13px;color:#666;margin-top:12px;">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';
@@ -504,6 +521,31 @@ def build_index_page(services, campaigns, aff_links):
     return html
 
 
+# ---------- 404ページ ----------
+
+def build_404_page():
+    return f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ページが見つかりません | {SITE_NAME}</title>
+<meta name="robots" content="noindex">
+<style>
+body {{ font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif; background:#faf7f5; color:#222; text-align:center; padding:60px 16px; }}
+h1 {{ font-size:1.5rem; margin-bottom:16px; }}
+p {{ margin-bottom:16px; color:#666; }}
+a {{ color:#e8552d; }}
+</style>
+</head>
+<body>
+<h1>ページが見つかりません（404）</h1>
+<p>お探しのページは移動したか、存在しない可能性があります。</p>
+<p><a href="/">ホームに戻る</a> ｜ <a href="/ranking.html">宅配食の比較一覧を見る</a> ｜ <a href="/campaigns.html">初回キャンペーンを見る</a></p>
+</body>
+</html>"""
+
+
 # ---------- sitemap / robots ----------
 
 def build_sitemap(pages):
@@ -571,7 +613,8 @@ def main():
                 build_comparison_page(svc_by_id[a_id], svc_by_id[b_id], aff_links), encoding="utf-8")
             pages.append(f"comparisons/{a_id}-vs-{b_id}.html")
 
-    # sitemap / robots
+    # 404 / sitemap / robots
+    (OUT_DIR / "404.html").write_text(build_404_page(), encoding="utf-8")
     (OUT_DIR / "sitemap.xml").write_text(build_sitemap(pages), encoding="utf-8")
     (OUT_DIR / "robots.txt").write_text(build_robots(), encoding="utf-8")
 

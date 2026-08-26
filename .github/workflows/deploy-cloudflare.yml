@@ -1,0 +1,33 @@
+# Cloudflare Pages へのデプロイ（GitHub Actions方式）
+# ※より簡単なのは「CloudflareネイティブのGitHub連携」です（docs/DEPLOYMENT_GUIDE_2026_08.md参照）。
+#    この方式を使う場合のみ、GitHubリポジトリのSettings→Secretsに以下を設定してください。
+#    - CLOUDFLARE_API_TOKEN（Cloudflareダッシュボード→マイプロフィール→APIトークン→作成）
+#    - CLOUDFLARE_ACCOUNT_ID（CloudflareダッシュボードのURL: dash.cloudflare.com/{ACCOUNT_ID}）
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build site
+        run: python tools/build.py
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: takushokuzukan
+          directory: ./site
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

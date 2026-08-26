@@ -1,0 +1,7 @@
+# Cloudflare Pages 設定（Wrangler直接アップロード方式用）
+# 使い方: npm install -g wrangler → npx wrangler pages deploy site --project-name=takushokuzukan
+# もしくは deploy.ps1 / deploy.sh を実行（事前に CLOUDFLARE_API_TOKEN を環境変数に設定）
+name = "takushokuzukan"
+pages_build_output_dir = "./site"
+
+compatibility_date = "2026-08-26"

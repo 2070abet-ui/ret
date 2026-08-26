@@ -1,9 +1,11 @@
-# 宅食図鑑（takushokuzukan.jp）
+# 宅食図鑑（takushokuzukan.pages.dev）
 
 個人 × Claude Codeによる宅配食（食品宅配）アフィリエイト事業のリポジトリ。
 
 - サイト名: **宅食図鑑**
-- ドメイン: **takushokuzukan.jp**（決定経緯は `docs/SITE_NAME_DOMAIN_DECISION_2026_08.md`）
+- 公開URL: **https://takushokuzukan.pages.dev**（Cloudflare Pages 無料プラン / 独自ドメインなし）
+- サイト名決定経緯: `docs/SITE_NAME_DOMAIN_DECISION_2026_08.md`
+- 無料公開・デプロイ手順: `docs/DEPLOYMENT_GUIDE_2026_08.md`
 
 ## コンセプト
 
@@ -32,6 +34,18 @@ python tools/build.py
 # 価格・キャンペーン変更の監視（週1回推奨）
 python tools/watch.py
 ```
+
+## デプロイ
+
+Cloudflare Pages の無料プラン + pages.dev で公開する。
+
+- 推奨: CloudflareネイティブのGitHub連携（Build command: `python tools/build.py` / Output directory: `site`）
+- 代替: `deploy.ps1`（Wrangler直接アップロード）
+- 詳細は `docs/DEPLOYMENT_GUIDE_2026_08.md`
+
+## サイト名・URL設定
+
+`config/site.json` で管理する（name / url / search_console_meta）。Cloudflareプロジェクト名が変わった場合は `url` を更新する。
 
 ## アフィリエイト設定
 

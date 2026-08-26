@@ -236,7 +236,8 @@
       "name": "FIT FOOD HOME",
       "name_short": "FIT FOOD HOME",
       "operator": "株式会社FIT FOOD HOME",
-      "official_url": "https://fitfoodhome.jp/",
+      "official_url": "",
+      "official_url_note": "公式ドメイン未確認（2026-08-26）。fitfoodhome.jpはDNS解決せず。A8.net案件は存在（2,000円/1,500円）。",
       "meal_type": "宅配食（カロリー・栄養管理）",
       "meal_form": "冷凍",
       "main_features": [

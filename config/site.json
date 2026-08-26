@@ -1,0 +1,6 @@
+{
+  "_comment": "サイト名・URL設定。Cloudflare Pagesで公開するためpages.devを使用。Cloudflareプロジェクト名が変わった場合はurlを更新すること。search_console_metaはGoogle Search Consoleの所有権確認メタタグ（取得後に設定）。",
+  "name": "宅食図鑑",
+  "url": "https://takushokuzukan.pages.dev",
+  "search_console_meta": ""
+}
