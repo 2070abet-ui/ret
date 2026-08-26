@@ -1,0 +1,7 @@
+{
+  "_comment": "比較ページのペア設定。tools/build.py にハードコードされていたcomp_pairsを外出ししたもの。ペアの組み合わせ自体は変更していない（Batch1では新しい比較ロジック・新規ペアは追加しない）。",
+  "pairs": [
+    { "a": "nosh", "b": "mitsuboshi-farm" },
+    { "a": "nosh", "b": "watami-takushoku" }
+  ]
+}
