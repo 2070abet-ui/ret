@@ -29,8 +29,19 @@
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
-      "target": ["一人暮らし", "ダイエット", "糖質制限", "時短"],
-      "tags": ["低糖質", "低塩分", "冷凍", "管理栄養士監修", "一人暮らし"],
+      "target": [
+        "一人暮らし",
+        "ダイエット",
+        "糖質制限",
+        "時短"
+      ],
+      "tags": [
+        "低糖質",
+        "低塩分",
+        "冷凍",
+        "管理栄養士監修",
+        "一人暮らし"
+      ],
       "pros": [
         "低糖質・低塩分で健康志向のニーズに対応",
         "メニュー数が豊富で飽きにくい",
@@ -44,8 +55,20 @@
       "cancellation_note": "定期購入の解約条件は公式サイト要確認（2026-08-26時点で未確認）",
       "affiliate": {
         "campaigns": [
-          {"asp": "A8.net", "reward_yen": 2500, "status": "掲載中", "cv_condition": "新規購入完了", "last_verified": "2026-08-26"},
-          {"asp": "afb", "reward_yen": 2750, "status": "掲載中", "cv_condition": "新規購入完了", "last_verified": "2026-08-26"}
+          {
+            "asp": "A8.net",
+            "reward_yen": 2500,
+            "status": "掲載中",
+            "cv_condition": "新規購入完了",
+            "last_verified": "2026-08-26"
+          },
+          {
+            "asp": "afb",
+            "reward_yen": 2750,
+            "status": "掲載中",
+            "cv_condition": "新規購入完了",
+            "last_verified": "2026-08-26"
+          }
         ],
         "source_url": "https://affisearch.com/campaigns/a8-s00000017722002"
       },
@@ -76,8 +99,18 @@
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
-      "target": ["一人暮らし", "共働き", "健康志向", "時短"],
-      "tags": ["冷凍", "管理栄養士監修", "低糖質対応あり", "セットプラン"],
+      "target": [
+        "一人暮らし",
+        "共働き",
+        "健康志向",
+        "時短"
+      ],
+      "tags": [
+        "冷凍",
+        "管理栄養士監修",
+        "低糖質対応あり",
+        "セットプラン"
+      ],
       "pros": [
         "大手（ワタミグループ）の信頼性",
         "管理栄養士監修で栄養バランスが良い",
@@ -90,10 +123,34 @@
       "cancellation_note": "要確認（公式サイト・利用規約で確認すること）",
       "affiliate": {
         "campaigns": [
-          {"asp": "afb", "reward_yen": 1753, "status": "掲載中", "cv_condition": "新規申込", "last_verified": "2026-08-26"},
-          {"asp": "アクセストレード", "reward_yen": 2500, "status": "掲載中", "cv_condition": "新規申込", "last_verified": "2026-08-26"},
-          {"asp": "A8.net", "reward_yen": 3095, "status": "掲載中", "cv_condition": "定期購入（初回申込）", "last_verified": "2026-08-26"},
-          {"asp": "A8.net", "reward_yen": 2538, "status": "掲載中", "cv_condition": "新規申込", "last_verified": "2026-08-26"}
+          {
+            "asp": "afb",
+            "reward_yen": 1753,
+            "status": "掲載中",
+            "cv_condition": "新規申込",
+            "last_verified": "2026-08-26"
+          },
+          {
+            "asp": "アクセストレード",
+            "reward_yen": 2500,
+            "status": "掲載中",
+            "cv_condition": "新規申込",
+            "last_verified": "2026-08-26"
+          },
+          {
+            "asp": "A8.net",
+            "reward_yen": 3095,
+            "status": "掲載中",
+            "cv_condition": "定期購入（初回申込）",
+            "last_verified": "2026-08-26"
+          },
+          {
+            "asp": "A8.net",
+            "reward_yen": 2538,
+            "status": "掲載中",
+            "cv_condition": "新規申込",
+            "last_verified": "2026-08-26"
+          }
         ],
         "source_url": "https://affisearch.com/campaigns/a8-s00000018527007"
       },
@@ -124,8 +181,18 @@
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
-      "target": ["一人暮らし", "ダイエット", "糖質制限", "おいしさ重視"],
-      "tags": ["低糖質", "シェフ監修", "冷凍", "一人暮らし"],
+      "target": [
+        "一人暮らし",
+        "ダイエット",
+        "糖質制限",
+        "おいしさ重視"
+      ],
+      "tags": [
+        "低糖質",
+        "シェフ監修",
+        "冷凍",
+        "一人暮らし"
+      ],
       "pros": [
         "シェフ監修で味への評価が高い",
         "低糖質でも満足感を重視したメニュー"
@@ -137,7 +204,14 @@
       "cancellation_note": "要確認（公式サイトで確認すること）",
       "affiliate": {
         "campaigns": [
-          {"asp": "アクセストレード", "reward_yen": 3080, "status": "掲載終了の可能性あり（要確認）", "cv_condition": "購入促進プロモーション", "last_verified": "2026-08-26", "note": "affisearch.comで3,080円を確認したが掲載終了表示も見られたため要再確認"}
+          {
+            "asp": "アクセストレード",
+            "reward_yen": 3080,
+            "status": "掲載終了の可能性あり（要確認）",
+            "cv_condition": "購入促進プロモーション",
+            "last_verified": "2026-08-26",
+            "note": "affisearch.comで3,080円を確認したが掲載終了表示も見られたため要再確認"
+          }
         ],
         "source_url": "https://media-analytics.jp/affisearch/promotions/mitsuboshi-farm"
       },
@@ -168,8 +242,18 @@
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
-      "target": ["糖質制限", "カロリー制限", "健康志向", "制限食"],
-      "tags": ["糖質制限", "カロリー制限", "管理栄養士監修", "制限食"],
+      "target": [
+        "糖質制限",
+        "カロリー制限",
+        "健康志向",
+        "制限食"
+      ],
+      "tags": [
+        "糖質制限",
+        "カロリー制限",
+        "管理栄養士監修",
+        "制限食"
+      ],
       "pros": [
         "制限食の専門性が高い",
         "医療・介護領域での実績"
@@ -181,7 +265,14 @@
       "cancellation_note": "要確認",
       "affiliate": {
         "campaigns": [
-          {"asp": "afb / A8.net 等", "reward_yen": null, "status": "案件存在を確認（要詳細確認）", "cv_condition": "要確認", "last_verified": "2026-08-26", "note": "affisearch系サイトで案件の存在を確認。報酬額は要ASPログイン確認"}
+          {
+            "asp": "afb / A8.net 等",
+            "reward_yen": null,
+            "status": "案件存在を確認（要詳細確認）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-26",
+            "note": "affisearch系サイトで案件の存在を確認。報酬額は要ASPログイン確認"
+          }
         ],
         "source_url": "https://affisearch.com/"
       },
@@ -212,8 +303,18 @@
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
-      "target": ["健康志向", "高齢者", "制限食", "時短"],
-      "tags": ["健康", "医療食品", "冷凍", "冷蔵"],
+      "target": [
+        "健康志向",
+        "高齢者",
+        "制限食",
+        "時短"
+      ],
+      "tags": [
+        "健康",
+        "医療食品",
+        "冷凍",
+        "冷蔵"
+      ],
       "pros": [
         "日清医療食品の信頼性",
         "栄養管理の専門性"
@@ -225,7 +326,14 @@
       "cancellation_note": "要確認",
       "affiliate": {
         "campaigns": [
-          {"asp": "A8.net", "reward_yen": null, "status": "案件存在を確認（要詳細確認）", "cv_condition": "要確認", "last_verified": "2026-08-26", "note": "A8.netに案件あり。報酬額は要ASPログイン確認"}
+          {
+            "asp": "A8.net",
+            "reward_yen": null,
+            "status": "案件存在を確認（要詳細確認）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-26",
+            "note": "A8.netに案件あり。報酬額は要ASPログイン確認"
+          }
         ],
         "source_url": "https://affisearch.com/"
       },
@@ -257,8 +365,18 @@
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
-      "target": ["ダイエット", "ボディメイク", "カロリー制限", "高タンパク"],
-      "tags": ["ダイエット", "カロリー制限", "高タンパク", "冷凍"],
+      "target": [
+        "ダイエット",
+        "ボディメイク",
+        "カロリー制限",
+        "高タンパク"
+      ],
+      "tags": [
+        "ダイエット",
+        "カロリー制限",
+        "高タンパク",
+        "冷凍"
+      ],
       "pros": [
         "ダイエット・ボディメイク特化",
         "高タンパクメニュー"
@@ -270,7 +388,13 @@
       "cancellation_note": "要確認",
       "affiliate": {
         "campaigns": [
-          {"asp": "A8.net", "reward_yen": 2000, "status": "掲載中（2,000円/1,500円）", "cv_condition": "要確認", "last_verified": "2026-08-26"}
+          {
+            "asp": "A8.net",
+            "reward_yen": 2000,
+            "status": "掲載中（2,000円/1,500円）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-26"
+          }
         ],
         "source_url": "https://affisearch.com/"
       },
@@ -301,8 +425,18 @@
         "requires_verification": true,
         "last_checked": "2026-08-26"
       },
-      "target": ["高齢者", "健康志向", "やわらかい食事", "制限食"],
-      "tags": ["高齢者", "やわらか食", "健康", "冷凍"],
+      "target": [
+        "高齢者",
+        "健康志向",
+        "やわらかい食事",
+        "制限食"
+      ],
+      "tags": [
+        "高齢者",
+        "やわらか食",
+        "健康",
+        "冷凍"
+      ],
       "pros": [
         "高齢者向けの専門性が高い",
         "やわらか食・ムース食に対応",
@@ -315,9 +449,283 @@
       "cancellation_note": "要確認",
       "affiliate": {
         "campaigns": [
-          {"asp": "A8.net 等", "reward_yen": null, "status": "案件存在を確認（要詳細確認）", "cv_condition": "要確認", "last_verified": "2026-08-26", "note": "affisearch系サイトで案件掲載サイトとして確認"}
+          {
+            "asp": "A8.net 等",
+            "reward_yen": null,
+            "status": "案件存在を確認（要詳細確認）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-26",
+            "note": "affisearch系サイトで案件掲載サイトとして確認"
+          }
         ],
         "source_url": "https://affisearch.com/"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "chef-muten-tukuritoki",
+      "name": "シェフの無添つくりおき",
+      "name_short": "シェフの無添つくりおき",
+      "operator": "株式会社タベナル",
+      "official_url": "https://store.tavenal.com/tsukurioki/",
+      "official_url_note": "公式サイト確認済み（2026-08-26）",
+      "meal_type": "冷凍惣菜・おかず宅配",
+      "meal_form": "冷凍",
+      "main_features": [
+        "一流シェフが化学調味料を一切使わず丁寧に手作りするお惣菜",
+        "保存料・化学調味料など添加物不使用（無添加）",
+        "週替わりで自宅にお届け",
+        "スキップ可能な定期配送",
+        "冷凍・冷蔵保存OK、お弁当のおかずにも活用可能"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "食卓サポートプラン 通常5,173円（税込）+送料990円 / 食卓おまかせプラン 通常13,607円（税込）+送料990円（公式サイト2026-08-26確認）",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "chef-muten-first",
+        "summary": "初回お試し・キャンペーンの有無は公式サイトで要確認",
+        "detail": "A8.net案件（新規購入7,000円）が承認済み。初回割引の詳細は公式サイトで確認すること。",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": [
+        "健康志向",
+        "時短",
+        "無添加",
+        "家族"
+      ],
+      "tags": [
+        "無添加",
+        "冷凍",
+        "惣菜",
+        "週替わり",
+        "シェフ監修",
+        "時短"
+      ],
+      "pros": [
+        "無添加（保存料・化学調味料不使用）に徹底的にこだわる",
+        "一流シェフの手作りで味が期待できる",
+        "週替わりで飽きにくい",
+        "スキップ・冷凍保存に対応"
+      ],
+      "cons": [
+        "送料990円がかかる",
+        "単価は冷凍惣菜の中ではやや高め",
+        "冷凍庫のスペースが必要"
+      ],
+      "cancellation_note": "お届けスキップは指定期間のみ可能。解約条件は公式サイトで要確認。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": 7000,
+            "status": "提携承認済み",
+            "cv_condition": "新規購入",
+            "last_verified": "2026-08-26",
+            "program_id": "s00000024360001"
+          }
+        ],
+        "source_url": "https://store.tavenal.com/tsukurioki/"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "syokurakuzen",
+      "name": "食楽膳",
+      "name_short": "食楽膳",
+      "operator": "SOMPOケアソリューションズ（SOMPOグループ）",
+      "official_url": "https://shokurakuzen-sompocarefoods.com/",
+      "official_url_note": "公式サイト確認済み（2026-08-26）",
+      "meal_type": "冷凍惣菜・おかず宅配（個食タイプ）",
+      "meal_form": "冷凍",
+      "main_features": [
+        "SOMPOグループの冷凍おかず宅配サービス",
+        "個食タイプの冷凍惣菜",
+        "お肉・お魚・塩分控えめセット",
+        "7食/14食/21食/28食から選択可能",
+        "定期購入なら最大10%OFF、定期初回15%OFF"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "レギュラー選べる21食セット 7,380円 / 食楽膳プラス21食 11,130円 / 定期28食 15,512円 など（公式サイト2026-08-26確認）",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "syokurakuzen-first",
+        "summary": "定期初回15%OFFキャンペーン実施中（クーポンコードあり）",
+        "detail": "定期初回15%OFF、定期購入なら最大10%OFF（公式サイト2026-08-26確認）。",
+        "requires_verification": false,
+        "last_checked": "2026-08-26"
+      },
+      "target": [
+        "高齢者",
+        "塩分制限",
+        "健康志向"
+      ],
+      "tags": [
+        "冷凍",
+        "惣菜",
+        "個食",
+        "塩分控えめ",
+        "SOMPOグループ"
+      ],
+      "pros": [
+        "SOMPOグループの信頼性",
+        "個食タイプで食べきりやすい",
+        "塩分控えめセットが選べる",
+        "定期購入で割引（最大10%OFF）"
+      ],
+      "cons": [
+        "高齢者向けの訴求が強く若年層には馴染みにくい",
+        "冷凍庫のスペースが必要",
+        "おかず中心で主食（ごはん）は別途必要"
+      ],
+      "cancellation_note": "定期購入の解約条件は公式サイトで要確認。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": null,
+            "reward_text": "都度20% / 定期40%",
+            "status": "提携承認済み",
+            "cv_condition": "新規購入",
+            "last_verified": "2026-08-26",
+            "program_id": "s00000027451001"
+          }
+        ],
+        "source_url": "https://shokurakuzen-sompocarefoods.com/"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "yoshikei",
+      "name": "ヨシケイ",
+      "name_short": "ヨシケイ",
+      "operator": "ヨシケイグループ（地域のヨシケイ各社）",
+      "official_url": "https://www.yoshikei.co.jp/",
+      "official_url_note": "公式サイト確認済み（2026-08-26）。地域会社によりURLが異なる場合あり。",
+      "meal_type": "食材宅配（夕食食材・おかず）",
+      "meal_form": "日配（保冷ボックス）",
+      "main_features": [
+        "毎日の夕食食材をご自宅にお届け",
+        "毎週届くカタログからメニューを選ぶ",
+        "安心安全な食材をその日の分だけ宅配",
+        "保冷ボックスでお届け"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "プランは地域により異なる。公式サイト・各エリアのヨシケイで要確認（2026-08-26）",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "yoshikei-first",
+        "summary": "お試し・キャンペーンは地域により異なる（要確認）",
+        "detail": "A8.net案件（新規購入1,100円）が承認済み。初回キャンペーンの詳細は各エリアのヨシケイで要確認。",
+        "requires_verification": true,
+        "last_checked": "2026-08-26"
+      },
+      "target": [
+        "時短",
+        "家族"
+      ],
+      "tags": [
+        "食材宅配",
+        "日配",
+        "献立",
+        "保冷",
+        "時短"
+      ],
+      "pros": [
+        "全国展開の有名ブランドで安心感がある",
+        "毎日の献立を考える手間を省ける",
+        "その日の分だけ届き、食材の無駄が少ない",
+        "買い物の時間を節約できる"
+      ],
+      "cons": [
+        "配達エリアが地域により異なる",
+        "日配のため毎日の受け取りが必要",
+        "価格はプランにより異なり、公開情報が地域別"
+      ],
+      "cancellation_note": "会員制サービスのため、解約条件は各エリアのヨシケイで要確認。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": 1100,
+            "status": "提携承認済み",
+            "cv_condition": "新規購入",
+            "last_verified": "2026-08-26",
+            "program_id": "s00000008115003"
+          }
+        ],
+        "source_url": "https://www.yoshikei.co.jp/"
+      },
+      "last_checked": "2026-08-26"
+    },
+    {
+      "id": "kenko-chokkyokubin",
+      "name": "健康直球便",
+      "name_short": "健康直球便",
+      "operator": "株式会社シニアライフクリエイト",
+      "official_url": "https://kenko-chokkyubin.com/",
+      "official_url_note": "公式サイト確認済み（2026-08-26）",
+      "meal_type": "冷凍弁当（減塩・やわらか食）",
+      "meal_form": "冷凍",
+      "main_features": [
+        "減塩食・消化にやさしい食事・やわらかい食事の冷凍弁当",
+        "新規会員登録で3食無料キャンペーン",
+        "沖縄県以外は送料無料"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "商品別の価格は公式サイトで要確認（2026-08-26）",
+        "last_checked": "2026-08-26"
+      },
+      "first_time_campaign": {
+        "campaign_id": "kenko-chokkyokubin-first",
+        "summary": "新規会員登録で3食無料キャンペーン実施中",
+        "detail": "新規会員登録で3食無料、10%OFFクーポン（公式サイト2026-08-26確認）。",
+        "requires_verification": false,
+        "last_checked": "2026-08-26"
+      },
+      "target": [
+        "高齢者",
+        "塩分制限",
+        "健康志向"
+      ],
+      "tags": [
+        "減塩",
+        "冷凍",
+        "弁当",
+        "やわらか食",
+        "消化にやさしい"
+      ],
+      "pros": [
+        "減塩食・やわらか食・消化にやさしい食事に特化",
+        "新規登録で3食無料キャンペーン",
+        "沖縄県以外は送料無料"
+      ],
+      "cons": [
+        "減塩・やわらか食ニーズ以外の人には訴求しにくい",
+        "メニュー数・価格は要確認",
+        "冷凍庫のスペースが必要"
+      ],
+      "cancellation_note": "解約条件は公式サイトで要確認。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": 1000,
+            "reward_text": "1,000円 / 2,000円",
+            "status": "提携承認済み",
+            "cv_condition": "新規購入",
+            "last_verified": "2026-08-26",
+            "program_id": "s00000025169001"
+          }
+        ],
+        "source_url": "https://kenko-chokkyubin.com/"
       },
       "last_checked": "2026-08-26"
     }

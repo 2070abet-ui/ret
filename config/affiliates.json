@@ -50,6 +50,34 @@
       "actual_url": "",
       "fallback_url": "https://www.magokoro-care.com/",
       "note": "報酬要確認"
+    },
+    "chef-muten-tukuritoki": {
+      "asp": "A8.net",
+      "status": "提携承認済み（actual_url待ち）",
+      "actual_url": "",
+      "fallback_url": "https://store.tavenal.com/tsukurioki/",
+      "note": "新規購入7,000円（プログラムID: s00000024360001）。A8リンク取得後にactual_urlへ設定"
+    },
+    "syokurakuzen": {
+      "asp": "A8.net",
+      "status": "提携承認済み（actual_url待ち）",
+      "actual_url": "",
+      "fallback_url": "https://shokurakuzen-sompocarefoods.com/",
+      "note": "都度20%/定期40%（プログラムID: s00000027451001）。A8リンク取得後にactual_urlへ設定"
+    },
+    "yoshikei": {
+      "asp": "A8.net",
+      "status": "提携承認済み（actual_url待ち）",
+      "actual_url": "",
+      "fallback_url": "https://www.yoshikei.co.jp/",
+      "note": "新規購入1,100円（プログラムID: s00000008115003）。A8リンク取得後にactual_urlへ設定"
+    },
+    "kenko-chokkyokubin": {
+      "asp": "A8.net",
+      "status": "提携承認済み（actual_url待ち）",
+      "actual_url": "",
+      "fallback_url": "https://kenko-chokkyubin.com/",
+      "note": "新規購入1,000円/2,000円（プログラムID: s00000025169001）。A8リンク取得後にactual_urlへ設定"
     }
   }
 }

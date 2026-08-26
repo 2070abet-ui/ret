@@ -64,6 +64,15 @@ def yen(v):
     return f"{v:,}円"
 
 
+def reward_display(campaign):
+    """報酬表示。reward_text（歩合等）があればそれ、なければreward_yenを円表示。"""
+    t = campaign.get("reward_text", "")
+    if t:
+        return t
+    r = campaign.get("reward_yen")
+    return yen(r) if r else "要確認"
+
+
 # ---------- リンク生成 ----------
 
 def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
@@ -173,7 +182,7 @@ def build_service_page(service, aff_links):
         items = []
         for c in aff_campaigns:
             items.append(
-                f'<tr><td>{esc(c.get("asp", ""))}</td><td>{yen(c.get("reward_yen"))}</td>'
+                f'<tr><td>{esc(c.get("asp", ""))}</td><td>{reward_display(c)}</td>'
                 f'<td>{esc(c.get("status", ""))}</td><td>{esc(c.get("cv_condition", ""))}</td></tr>'
             )
         reward_html = f"""
@@ -254,8 +263,14 @@ def build_ranking_page(services, aff_links):
     rows = []
     for svc in services:
         aff = svc.get("affiliate", {}).get("campaigns", [])
-        max_reward = max([c.get("reward_yen") or 0 for c in aff]) if aff else None
-        reward_txt = yen(max_reward) if max_reward else "要確認"
+        numerics = [c.get("reward_yen") for c in aff if c.get("reward_yen")]
+        texts = [c.get("reward_text") for c in aff if c.get("reward_text")]
+        if texts:
+            reward_txt = texts[0]  # 歩合・範囲報酬はテキスト優先
+        elif numerics:
+            reward_txt = f"最大{yen(max(numerics))}"
+        else:
+            reward_txt = "要確認"
         cheapest = svc.get("price_plan", {}).get("lowest_per_meal_yen")
         cheapest_txt = f"{yen(cheapest)}/食" if cheapest else "要確認"
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
@@ -263,7 +278,7 @@ def build_ranking_page(services, aff_links):
         <tr>
           <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a><br>{tags}</td>
           <td>{cheapest_txt}</td>
-          <td><span class="reward-badge">最大{reward_txt}</span></td>
+          <td><span class="reward-badge">{reward_txt}</span></td>
           <td>{', '.join(svc.get('target', []))}</td>
           <td>{aff_link(aff_links, svc['id'], label='公式サイト', cls='btn-secondary')}</td>
         </tr>""")
@@ -304,8 +319,7 @@ def build_campaigns_page(campaigns, services, aff_links):
     for c in campaigns:
         svc = svc_by_id.get(c.get("service_id"))
         svc_name = svc["name"] if svc else "要確認"
-        reward = c.get("affiliate", {}).get("reward_yen")
-        reward_txt = yen(reward) if reward else "要確認"
+        reward_txt = reward_display(c.get("affiliate", {}))
         cards.append(f"""
         <div class="card">
           <h2>{esc(c['title'])}</h2>
