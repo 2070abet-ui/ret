@@ -1,15 +1,15 @@
 {
   "_comment": "宅配食 初回キャンペーン・お試し情報DB。最短CV導線のための最重要データ。valid_from/valid_toで期間管理し、毎週更新して鮮度を保つ。",
-  "updated_at": "2026-08-26",
+  "updated_at": "2026-08-27",
   "campaigns": [
     {
       "campaign_id": "nosh-first-202608",
       "service_id": "nosh",
       "title": "nosh 初回お試しキャンペーン",
-      "summary": "初回限定の割引価格でお試しできる",
-      "detail": "初回限定のお試し価格・割引キャンペーン。詳細な条件・金額は公式サイトで確認してください。",
-      "discount_type": "初回割引",
-      "conditions": "要確認（公式サイトで確認）",
+      "summary": "初回注文が¥1,500 OFF。2回目以降もnosh clubの継続割引あり",
+      "detail": "初回注文で¥1,500 OFF（税込）。継続購入するとnosh club割引で2回目の注文が¥1,000 OFF、3回目が¥500 OFFになる（公式サイト2026-08-27確認）。「食べるほどお得に。最安492円/食」という表記もあるが、具体的な達成条件は公式サイトに明記されていないため、この金額自体は未確認として扱う。",
+      "discount_type": "初回¥1,500 OFF＋継続割引（nosh club）",
+      "conditions": "定期配送サービスへの加入が必要（配送間隔：1週間/2週間/3週間から選択）",
       "valid_from": null,
       "valid_to": null,
       "source_url": "https://nosh.jp/",
@@ -18,8 +18,8 @@
         "reward_yen": 2500,
         "note": "報酬は新規購入完了時。A8.net 2,500円 / afb 2,750円（2026-08-26確認）"
       },
-      "requires_verification": true,
-      "last_checked": "2026-08-26"
+      "requires_verification": false,
+      "last_checked": "2026-08-27"
     },
     {
       "campaign_id": "watami-first-202608",
@@ -179,7 +179,7 @@
       "service_id": "kenko-chokkyokubin",
       "title": "健康直球便 新規登録で3食無料キャンペーン",
       "summary": "減塩・やわらか食の冷凍弁当。新規登録で3食無料",
-      "detail": "新規会員登録で3食無料、10%OFFクーポン（公式サイト2026-08-26確認）。",
+      "detail": "新規会員登録で3食無料、10%OFFクーポン（公式サイト2026-08-26確認）。このほか誕生日クーポン（1,000円OFF）も別途実施中（公式サイト2026-08-27確認、詳細な適用条件は未確認）。",
       "discount_type": "新規登録で3食無料",
       "conditions": "新規会員登録が対象（公式サイトで確認）",
       "valid_from": null,
@@ -192,7 +192,7 @@
         "note": "新規購入1,000円/2,000円（プログラムID: s00000025169001）"
       },
       "requires_verification": false,
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-27"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "_comment": "出典・最終確認日管理。全てのデータの鮮度と信頼性を担保するための台帳。",
-  "updated_at": "2026-08-26",
+  "updated_at": "2026-08-27",
   "sources": [
     {
       "id": "a8-nosh",
@@ -78,6 +78,62 @@
       "url": "https://kenko-chokkyubin.com/",
       "confirmed_at": "2026-08-26",
       "note": "減塩・やわらか食の冷凍弁当。新規登録3食無料・送料無料（沖縄除く）を確認"
+    },
+    {
+      "id": "nosh-shipping-202608",
+      "label": "nosh 送料一覧ページ",
+      "url": "https://nosh.jp/shipping",
+      "confirmed_at": "2026-08-27",
+      "note": "送料は地域・食数により変動（関西6食1,023円〜北海道12食1,992円）。送料無料の記載なし。ページ自体は2026-07-27改訂版"
+    },
+    {
+      "id": "nosh-club-202608",
+      "label": "nosh公式サイト・nosh club",
+      "url": "https://nosh.jp/",
+      "confirmed_at": "2026-08-27",
+      "note": "初回¥1,500 OFF、nosh club継続割引（2回目¥1,000 OFF・3回目¥500 OFF）。解約金なし・スキップ自由。「最安492円/食」は宣伝コピーのみで条件記載なし（未確認扱いとした根拠）"
+    },
+    {
+      "id": "shokutakubin-shop-202608",
+      "label": "食宅便 通販サイト（shop/default.aspx）",
+      "url": "http://shokutakubin.com/shop/default.aspx",
+      "confirmed_at": "2026-08-27",
+      "note": "送料：都度便1,330円/梱包、らくらく定期便940円/梱包（2セットまで）。週間人気商品：おまかせコース7食4,830円、塩分&カロリーケア7食5,180円（塩分2.0g未満）、低糖質セレクト7食5,180円（糖質10g以下/食）"
+    },
+    {
+      "id": "kenko-chokkyokubin-delivery-202608",
+      "label": "健康直球便 配送・支払いページ",
+      "url": "https://kenko-chokkyubin.com/user_data/delivery_payment",
+      "confirmed_at": "2026-08-27",
+      "note": "沖縄県以外は送料無料、沖縄県のみ1,000円。解約・スキップの具体条件はこのページには記載なし"
+    },
+    {
+      "id": "syokurakuzen-guide-202608",
+      "label": "食楽膳 ご利用ガイド（送料・解約）",
+      "url": "https://shokurakuzen-sompocarefoods.com/guide.html",
+      "confirmed_at": "2026-08-27",
+      "note": "送料は地域・商品種別で変動（北海道1,380/1,750円、本州等800/1,380円、沖縄2,200/3,360円）。変更・休止は5営業日前まで、解約は電話（0120-640-407）で5営業日前まで"
+    },
+    {
+      "id": "yoshikei-official-202608",
+      "label": "ヨシケイ公式サイト（配達料記載）",
+      "url": "https://www.yoshikei.co.jp/",
+      "confirmed_at": "2026-08-27",
+      "note": "「配達料・入会金無料」と明記。商品価格は地域会社ごとに異なるため引き続き未確認"
+    },
+    {
+      "id": "watami-blocked-202608",
+      "label": "ワタミの宅食ダイレクト 公式サイト（アクセス不可）",
+      "url": "https://watami-takushoku.com/",
+      "confirmed_at": "2026-08-27",
+      "note": "機械取得で403 Forbidden。campaigns.json記載の旧URL（direct.watami-takushoku.com）もDNS不通。データ更新は見送り、手動確認が必要（確認未達のブロッカー記録）"
+    },
+    {
+      "id": "mitsuboshi-blocked-202608",
+      "label": "三ツ星ファーム 公式サイト（本文取得不可）",
+      "url": "https://mitsuboshifarm.jp/",
+      "confirmed_at": "2026-08-27",
+      "note": "JavaScript描画のため本文取得不可。第三者アフィリエイトサイトに料金情報の言及はあるが一次情報でないため不採用。データ更新は見送り（確認未達のブロッカー記録）"
     }
   ]
 }

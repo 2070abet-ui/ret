@@ -22,6 +22,29 @@ def yen(v):
     return f"{v:,}円"
 
 
+def shipping_line(shipping_row):
+    """data/shipping.jsonの1行から送料の表示行を組み立てる。
+    地域・食数・プランで変動し単一値にできないサービスは notes の事実記述をそのまま表示する
+    （単一値への圧縮による誤誘導を避けるため）。
+    notesに"UNCOLLECTED"を含む行は、公式一次情報にまだ到達できていない内部管理用の記述
+    （ブロッカーの理由等）のため、ユーザー向けには一切表示しない。
+    確認できる公開情報が無ければ空文字を返す。"""
+    if not shipping_row:
+        return ""
+    fee = shipping_row.get("shipping_fee")
+    notes = (shipping_row.get("notes") or "").strip()
+    if "UNCOLLECTED" in notes:
+        notes = ""
+    if fee is not None:
+        fee_text = "送料無料" if fee == 0 else f"{yen(fee)}"
+        text = f"{fee_text}（{notes}）" if notes else fee_text
+    elif notes:
+        text = notes
+    else:
+        return ""
+    return f'<p><strong>送料：</strong>{esc(text)}</p>'
+
+
 # ---------- リンク生成 ----------
 
 def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
@@ -157,9 +180,10 @@ def page_footer(updated_date):
 
 # ---------- サービス詳細ページ ----------
 
-def build_service_page(service, aff_links):
+def build_service_page(service, aff_links, shipping_by_id=None):
     s_id = service["id"]
     s_name = service["name"]
+    shipping_html = shipping_line((shipping_by_id or {}).get(s_id))
 
     # 関連記事リンク（サービスDBに article_link があれば表示）
     article_link_html = ""
@@ -218,6 +242,7 @@ def build_service_page(service, aff_links):
 
     <div class="card">
       <h2>解約・送料について</h2>
+      {shipping_html}
       <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
     </div>
 

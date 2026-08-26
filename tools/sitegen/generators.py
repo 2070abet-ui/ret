@@ -8,6 +8,7 @@ from sitegen import templates
 
 def main():
     services, campaigns, shipping, sources, aff_links = data.load_data()
+    shipping_by_id = {s["service_id"]: s for s in shipping}
     out_dir = data.OUT_DIR
 
     # 出力先クリーン
@@ -65,7 +66,7 @@ def main():
     # サービス個別ページ
     for svc in services:
         (out_dir / "services" / f"{svc['id']}.html").write_text(
-            templates.build_service_page(svc, aff_links), encoding="utf-8")
+            templates.build_service_page(svc, aff_links, shipping_by_id), encoding="utf-8")
         pages.append(f"services/{svc['id']}.html")
 
     # 比較ページ（config/comparisons.json 駆動。中身のペアは従来のハードコードと同一）

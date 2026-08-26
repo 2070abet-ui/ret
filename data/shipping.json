@@ -1,38 +1,94 @@
 {
-  "_comment": "送料・解約条件・最低注文数DB。比較コンテンツの重要要素。要ASP/公式確認項目。",
-  "updated_at": "2026-08-26",
+  "_comment": "送料・解約条件・最低注文数DB。比較コンテンツの重要要素。地域・食数・プランで送料が変動するサービスはshipping_feeをnullにし、notesに事実をそのまま記述する（単一値への圧縮による誤誘導を避けるため）。UNCOLLECTEDは行はあるが未確認、notesにブロッカーの理由を明記する。",
+  "updated_at": "2026-08-27",
   "shipping_rules": [
     {
       "service_id": "nosh",
       "shipping_fee": null,
       "min_order": null,
-      "cancellation_condition": "要確認",
-      "notes": "送料・解約条件は公式サイト要確認（2026-08-26）",
-      "last_checked": "2026-08-26"
+      "cancellation_condition": "継続回数の制限や解約金はなし。スキップ・停止は何度でも可能（マイページ/アプリで手続き）（公式サイト2026-08-27確認）",
+      "notes": "送料は地域・食数により変動し単一値ではない（例：関西6食セット1,023円〜北海道12食セット1,992円）。送料無料になる条件の記載なし。地域は13エリアに分類（公式サイト nosh.jp/shipping、2026-07-27改訂版を2026-08-27確認）",
+      "last_checked": "2026-08-27"
     },
     {
       "service_id": "watami-takushoku",
       "shipping_fee": null,
       "min_order": null,
-      "cancellation_condition": "要確認",
-      "notes": "送料・解約条件は公式サイト要確認（2026-08-26）",
-      "last_checked": "2026-08-26"
+      "cancellation_condition": "公式確認中",
+      "notes": "UNCOLLECTED。公式サイト（watami-takushoku.com）へのアクセスが403 Forbiddenで機械取得不可。campaigns.json記載の旧出典URL（direct.watami-takushoku.com）もDNS不通で失効。手動でのブラウザ確認が必要（2026-08-27時点）",
+      "last_checked": "2026-08-27"
     },
     {
       "service_id": "mitsuboshi-farm",
       "shipping_fee": null,
       "min_order": null,
-      "cancellation_condition": "要確認",
-      "notes": "送料・解約条件は公式サイト要確認（2026-08-26）",
-      "last_checked": "2026-08-26"
+      "cancellation_condition": "公式確認中",
+      "notes": "UNCOLLECTED。公式サイト（mitsuboshifarm.jp）がJavaScript描画のため本文取得不可。第三者アフィリエイトサイトに料金情報の言及はあるが一次情報でないため不採用。手動でのブラウザ確認が必要（2026-08-27時点）",
+      "last_checked": "2026-08-27"
+    },
+    {
+      "service_id": "wellness-dining",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "一時休止・お届けペース変更はお届け予定日の7日前までに連絡（マイページ/フォーム/電話0120-503-999）。解約そのものの条件は公式サイト内で確認できず（2026-08-27確認）",
+      "notes": "送料の記載箇所を公式サイト（トップ・faq・modification）で確認できず、UNCOLLECTED（2026-08-27時点）",
+      "last_checked": "2026-08-27"
+    },
+    {
+      "service_id": "shokutakubin",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "公式確認中",
+      "notes": "送料は都度便1,330円/梱包、らくらく定期便940円/梱包（1梱包2セットまで。商品の組み合わせで出荷倉庫が分かれる場合はそれぞれに送料が発生）（公式サイト2026-08-27確認）",
+      "last_checked": "2026-08-27"
+    },
+    {
+      "service_id": "fit-food-home",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "公式確認中",
+      "notes": "UNCOLLECTED。公式ドメインが未確定（fitfoodhome.life等の候補はあるが公式と断定できず）のため送料情報も未取得（2026-08-27時点）",
+      "last_checked": "2026-08-27"
+    },
+    {
+      "service_id": "magokoro-care",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "公式確認中",
+      "notes": "UNCOLLECTED。公式サイト（magokoro-care.com）トップページは企業情報のみで料金・送料ページを特定できず。検索でも未発見（2026-08-27時点）",
+      "last_checked": "2026-08-27"
     },
     {
       "service_id": "chef-muten-tukuritoki",
       "shipping_fee": 990,
       "min_order": null,
       "cancellation_condition": "初回お届け分はキャンセル不可。2回目以降はお届け6日前までに手続きすればスキップ可能（九州・島根・青森は7日前）。休止（解約）は2回目以降いつでも可能・違約金なし",
-      "notes": "送料は1回あたり990円、初回は送料無料（公式サイト・公式FAQ 2026-08-26確認）",
-      "last_checked": "2026-08-26"
+      "notes": "初回は送料無料（公式サイト・公式FAQ 2026-08-26確認、2026-08-27再確認・変化なし）",
+      "last_checked": "2026-08-27"
+    },
+    {
+      "service_id": "syokurakuzen",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "次回お届け日の5営業日前までにマイページから変更・休止が可能。解約も同じく5営業日前までに電話（0120-640-407、平日10時〜17時）で連絡（公式サイト2026-08-27確認）",
+      "notes": "送料は地域・商品種別により変動（標準商品/麺類・サイドメニューのみ、の2区分）：北海道1,380円/1,750円、本州・四国・九州800円/1,380円、沖縄2,200円/3,360円。冷凍商品と常温商品を同時購入の場合はそれぞれに送料が発生（公式サイト shokurakuzen-sompocarefoods.com/guide.html 2026-08-27確認）",
+      "last_checked": "2026-08-27"
+    },
+    {
+      "service_id": "yoshikei",
+      "shipping_fee": 0,
+      "min_order": null,
+      "cancellation_condition": "会員制サービスのため、解約条件は各エリアのヨシケイで要確認",
+      "notes": "「配達料・入会金無料」と公式サイトに明記（公式サイト2026-08-27確認）。地域会社ごとにサイト・商品価格体系が異なるため、送料以外の料金は別途地域ごとの確認が必要",
+      "last_checked": "2026-08-27"
+    },
+    {
+      "service_id": "kenko-chokkyokubin",
+      "shipping_fee": 0,
+      "min_order": null,
+      "cancellation_condition": "公式確認中（配送・支払いページ、初めての方向けページのいずれにも解約・スキップの具体条件の記載を確認できず、2026-08-27時点）",
+      "notes": "沖縄県のみ商品1つにつき1,000円の負担（公式サイト2026-08-27確認）",
+      "last_checked": "2026-08-27"
     }
   ]
 }
