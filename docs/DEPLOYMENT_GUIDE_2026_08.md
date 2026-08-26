@@ -79,6 +79,7 @@ GitHubを使わず、ローカルから直接アップロードする方法。
 - [ ] 比較ページ `/comparisons/nosh-vs-mitsuboshi-farm.html`
 - [ ] サービスページ `/services/nosh.html`
 - [ ] 診断ツール `/tool/diagnosis.html` → JSが動作
+- [ ] 法務ページ `/privacy.html` `/disclaimer.html` `/operator.html` `/contact.html` → 200
 - [ ] `https://takushokuzukan.pages.dev/sitemap.xml` → XMLが返る
 - [ ] `https://takushokuzukan.pages.dev/robots.txt` → 表示
 - [ ] 存在しないURL（例 `/test.html`）→ カスタム404ページが表示
@@ -86,6 +87,26 @@ GitHubを使わず、ローカルから直接アップロードする方法。
 - [ ] 各ページのcanonicalが `https://takushokuzukan.pages.dev/...` を指す
 
 ※内部リンク・外部リンクは本番ビルド前に監査済み（壊れた内部リンクなし、外部リンクはFIT FOOD HOMEのみ要確認扱い）。
+
+## 4.5 法務ページ（ASP審査前の必須設定）
+
+プライバシーポリシー・免責事項・運営者情報・お問い合わせページは実装済み（`/privacy.html` `/disclaimer.html` `/operator.html` `/contact.html`）。
+
+**ASP審査前に必ず行うこと**: `config/site.json` の `operator` セクションに運営者名・メールアドレスを設定して再ビルドすること。
+
+```json
+{
+  "name": "宅食図鑑",
+  "url": "https://takushokuzukan.pages.dev",
+  "operator": {
+    "name": "あなたの名前（実名・ハンドル名）",
+    "email": "お問い合わせ用メールアドレス",
+    "note": "個人運営"
+  }
+}
+```
+
+未設定の間は「設定準備中です」と表示される。設定後に `python tools/build.py` で再生成する。
 
 ## 5. Google Search Console（無料）登録
 

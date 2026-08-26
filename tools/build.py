@@ -26,12 +26,14 @@ _DEFAULT_URL = "https://takushokuzukan.pages.dev"
 _site_config_path = CONFIG_DIR / "site.json"
 SITE_URL = os.environ.get("SITE_URL", _DEFAULT_URL)
 GSC_META = ""  # Google Search Console 所有権確認メタタグ
+OPERATOR = {"name": "", "email": "", "note": "個人運営"}
 if _site_config_path.exists():
     try:
         _site_config = json.loads(_site_config_path.read_text(encoding="utf-8"))
         SITE_URL = _site_config.get("url", SITE_URL)
         SITE_NAME = _site_config.get("name", SITE_NAME)
         GSC_META = _site_config.get("search_console_meta", "")
+        OPERATOR = _site_config.get("operator", OPERATOR)
     except (json.JSONDecodeError, OSError):
         pass
 
@@ -145,6 +147,12 @@ def page_footer(updated_date):
   <div class="container">
     <p>{SITE_NAME}は宅配食サービスの比較情報を提供するサイトです。各サービスの価格・キャンペーン情報は常に変動します。</p>
     <p>当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
+    <nav class="footer-nav" style="margin-top:12px;font-size:13px;">
+      <a href="/privacy.html" style="color:#eee;margin:0 8px;">プライバシーポリシー</a>｜
+      <a href="/disclaimer.html" style="color:#eee;margin:0 8px;">免責事項</a>｜
+      <a href="/operator.html" style="color:#eee;margin:0 8px;">運営者情報</a>｜
+      <a href="/contact.html" style="color:#eee;margin:0 8px;">お問い合わせ</a>
+    </nav>
   </div>
 </footer>
 </body>
@@ -536,14 +544,207 @@ body {{ font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif; background:
 h1 {{ font-size:1.5rem; margin-bottom:16px; }}
 p {{ margin-bottom:16px; color:#666; }}
 a {{ color:#e8552d; }}
+.footer {{ margin-top:48px; font-size:12px; color:#999; }}
 </style>
 </head>
 <body>
 <h1>ページが見つかりません（404）</h1>
 <p>お探しのページは移動したか、存在しない可能性があります。</p>
 <p><a href="/">ホームに戻る</a> ｜ <a href="/ranking.html">宅配食の比較一覧を見る</a> ｜ <a href="/campaigns.html">初回キャンペーンを見る</a></p>
+<p class="footer">
+<a href="/privacy.html" style="color:#999;margin:0 6px;">プライバシーポリシー</a>｜
+<a href="/disclaimer.html" style="color:#999;margin:0 6px;">免責事項</a>｜
+<a href="/operator.html" style="color:#999;margin:0 6px;">運営者情報</a>｜
+<a href="/contact.html" style="color:#999;margin:0 6px;">お問い合わせ</a>
+</p>
 </body>
 </html>"""
+
+
+# ---------- 法務ページ（プライバシー・免責・運営者・お問い合わせ） ----------
+
+def _operator_name():
+    return OPERATOR.get("name", "").strip() or "（運営者名は設定準備中です）"
+
+
+def _operator_email():
+    return OPERATOR.get("email", "").strip()
+
+
+def build_privacy_page():
+    title = "プライバシーポリシー"
+    desc = f"{SITE_NAME}（宅配食比較サイト）のプライバシーポリシー。個人情報の取り扱い、Cookie・アクセス解析、アフィリエイト広告について説明します。"
+    html = page_header(title, desc, "privacy.html")
+    html += f"""
+    <h1>プライバシーポリシー</h1>
+    <p>{SITE_NAME}（以下「当サイト」）は、個人情報の保護に関する法律および関連法令を遵守し、以下の方針に基づいて個人情報を適正に取り扱います。</p>
+
+    <div class="card">
+      <h2>1. 個人情報の収集について</h2>
+      <p>当サイトは、現時点ではユーザー登録・入力フォームによる個人情報の収集は行っておりません。</p>
+      <p>お問い合わせをいただいた際に、メールアドレスや氏名などの情報を送信いただく場合があります。これらの情報は、お問い合わせへの対応にのみ利用し、それ以外の目的には利用いたしません。</p>
+    </div>
+
+    <div class="card">
+      <h2>2. Cookieについて</h2>
+      <p>当サイトでは、以下の目的でCookieを使用する場合があります。</p>
+      <ul class="feature-list">
+        <li>アクセス解析（サイトの利用状況の把握）</li>
+        <li>広告配信（訪問履歴に基づく広告の表示）</li>
+        <li>アフィリエイトプログラムの成果判定</li>
+      </ul>
+      <p>Cookieには氏名・住所・電話番号などの個人を特定する情報は含まれません。Cookieの無効化は、お使いのブラウザの設定で行うことができます。</p>
+    </div>
+
+    <div class="card">
+      <h2>3. アクセス解析について</h2>
+      <p>当サイトでは、サイト改善のためにアクセス解析ツール（Google Analytics 等）を利用する場合があります。この際、Cookieを通じて、お使いのブラウザの種類・OS・アクセス日時・参照元などの情報が収集されることがありますが、これらの情報から個人を特定することはできません。</p>
+      <p>Google Analyticsによるデータ収集を無効化したい場合は、Googleが提供するオプトアウトアドオンをご利用ください。</p>
+    </div>
+
+    <div class="card">
+      <h2>4. アフィリエイト広告について</h2>
+      <p>当サイトは、アフィリエイトプログラム（A8.net、afb、アクセストレード 等）に参加しています。記事内・ページ内のリンクから商品・サービスを購入された場合、当サイトに成果報酬が支払われることがあります。</p>
+      <p>アフィリエイト広告の成果判定にはCookieが使用される場合がありますが、個人を特定する情報は収集されません。</p>
+    </div>
+
+    <div class="card">
+      <h2>5. 個人情報の第三者提供について</h2>
+      <p>当サイトは、法令に基づく場合を除き、ご提供いただいた個人情報を事前の同意なく第三者に提供いたしません。</p>
+    </div>
+
+    <div class="card">
+      <h2>6. お問い合わせ</h2>
+      <p>個人情報の取り扱いに関するお問い合わせは、<a href="/contact.html">お問い合わせページ</a>よりご連絡ください。</p>
+    </div>
+
+    <div class="card">
+      <h2>7. ポリシーの変更</h2>
+      <p>本ポリシーの内容は、法令の変更やサイトの運営方針に応じて予告なく変更する場合があります。変更後の内容は、本ページに掲載した時点で効力を生じるものとします。</p>
+      <p>最終更新日: 2026-08-26</p>
+    </div>
+    """
+    html += page_footer("2026-08-26")
+    return html
+
+
+def build_disclaimer_page():
+    title = "免責事項"
+    desc = f"{SITE_NAME}（宅配食比較サイト）の免責事項。情報の正確性、アフィリエイト広告、リンク先サイトについての注意事項を説明します。"
+    html = page_header(title, desc, "disclaimer.html")
+    html += f"""
+    <h1>免責事項</h1>
+
+    <div class="card">
+      <h2>1. 情報の正確性・最新性について</h2>
+      <p>当サイトでは、宅配食サービスの価格・キャンペーン・送料・メニューなどの情報を、できる限り正確かつ最新の状態で提供するよう努めています。ただし、各サービスの情報は頻繁に変更されるため、当サイトの情報が必ずしも最新・正確であることを保証するものではありません。</p>
+      <p><strong>実際の価格・条件・キャンペーン内容は、必ず各サービスの公式サイトでご確認ください。</strong></p>
+    </div>
+
+    <div class="card">
+      <h2>2. アフィリエイト広告について</h2>
+      <p>当サイトはアフィリエイト広告（PR）を含みます。記事内・ページ内のリンクから商品・サービスを購入・申し込んだ場合、当サイトに成果報酬が支払われることがあります。</p>
+      <p>アフィリエイトリンクの有無にかかわらず、当サイトの記事・比較内容は中立性を保って作成するよう努めていますが、すべての情報が完全に中立的であることを保証するものではありません。</p>
+    </div>
+
+    <div class="card">
+      <h2>3. 当サイトはサービス提供者ではありません</h2>
+      <p>当サイトは、紹介する宅配食サービスの運営会社・提供者ではありません。商品・サービスの品質、配送、契約、解約などのトラブルについては、各サービスの公式窓口にお問い合わせください。</p>
+    </div>
+
+    <div class="card">
+      <h2>4. 損害の責任について</h2>
+      <p>当サイトの情報の利用によって生じたいかなる損害（直接損害・間接損害を問いません）についても、当サイトは一切の責任を負いかねます。情報の利用は利用者ご自身の判断と責任で行ってください。</p>
+    </div>
+
+    <div class="card">
+      <h2>5. リンク先サイトについて</h2>
+      <p>当サイトからリンクされている外部サイト（公式サイト・ASP・その他）の内容、および外部サイトで提供される情報・サービスについて、当サイトは責任を負いません。</p>
+    </div>
+
+    <div class="card">
+      <h2>6. 情報の更新について</h2>
+      <p>当サイトの情報は毎週更新することを目標としていますが、更新頻度や最終更新日時によって最新性は変動します。各ページに記載された最終更新日をご確認ください。</p>
+      <p>最終更新日: 2026-08-26</p>
+    </div>
+    """
+    html += page_footer("2026-08-26")
+    return html
+
+
+def build_operator_page():
+    title = "運営者情報"
+    desc = f"{SITE_NAME}の運営者情報。サイトの運営目的、連絡先、各サービスとの関係性について説明します。"
+    email = _operator_email()
+    contact_html = f'<a href="mailto:{esc(email)}">{esc(email)}</a>' if email else "（お問い合わせメールアドレスは設定準備中です）"
+    html = page_header(title, desc, "operator.html")
+    html += f"""
+    <h1>運営者情報</h1>
+
+    <div class="card">
+      <h2>運営者</h2>
+      <table>
+        <tr><th>運営者名</th><td>{esc(_operator_name())}</td></tr>
+        <tr><th>運営形態</th><td>{esc(OPERATOR.get("note", "個人運営"))}</td></tr>
+        <tr><th>お問い合わせ</th><td>{contact_html}</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>サイトの目的</h2>
+      <p>当サイトは、宅配食・宅配弁当サービスを検討されている方に向けて、各サービスの特徴・料金・初回キャンペーン情報を比較して提供することを目的としています。</p>
+      <p>情報の鮮度を保つため、価格・キャンペーン情報は定期的に更新し、各ページに最終確認日を記載しています。</p>
+    </div>
+
+    <div class="card">
+      <h2>各サービスとの関係性</h2>
+      <p>当サイトは、紹介する各宅配食サービス（nosh、ワタミの宅食ダイレクト、三ツ星ファーム 等）の公式サイト・運営会社とは一切関係のない、独立した第三者の個人サイトです。</p>
+      <p>当サイトはアフィリエイトプログラムに参加しており、リンク経由での購入により報酬を得る場合があります。</p>
+    </div>
+
+    <div class="card">
+      <h2>免責</h2>
+      <p>当サイトの情報は、正確性・最新性に努めていますが、その完全性を保証するものではありません。詳細は<a href="/disclaimer.html">免責事項</a>をご確認ください。</p>
+    </div>
+    """
+    html += page_footer("2026-08-26")
+    return html
+
+
+def build_contact_page():
+    title = "お問い合わせ"
+    desc = f"{SITE_NAME}へのお問い合わせ方法。誤情報のご指摘、削除依頼、その他のご連絡を受け付けています。"
+    email = _operator_email()
+    if email:
+        contact_html = f'<p>以下のメールアドレスまでご連絡ください。</p><p style="font-size:1.1rem;"><a href="mailto:{esc(email)}">{esc(email)}</a></p>'
+    else:
+        contact_html = '<p>お問い合わせメールアドレスは設定準備中です。公開までしばらくお待ちください。</p>'
+    html = page_header(title, desc, "contact.html")
+    html += f"""
+    <h1>お問い合わせ</h1>
+
+    <div class="card">
+      <h2>お問い合わせ方法</h2>
+      {contact_html}
+      <p style="font-size:13px;color:#666;">返信には数日かかる場合があります。あらかじめご了承ください。</p>
+    </div>
+
+    <div class="card">
+      <h2>お問い合わせいただける内容</h2>
+      <ul class="feature-list">
+        <li>記事・情報の誤りについてのご指摘</li>
+        <li>掲載情報の削除依頼（当サイトが独自に作成したコンテンツに限ります）</li>
+        <li>サイトに関するご質問・ご意見</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>ご注意</h2>
+      <p>当サイトは各宅配食サービスの運営会社ではありません。サービス自体の注文・解約・配送に関するお問い合わせは、各サービスの公式窓口にお願いいたします。</p>
+    </div>
+    """
+    html += page_footer("2026-08-26")
+    return html
 
 
 # ---------- sitemap / robots ----------
@@ -595,6 +796,17 @@ def main():
     # 診断ツール
     (OUT_DIR / "tool" / "diagnosis.html").write_text(build_diagnosis_tool(services), encoding="utf-8")
     pages.append("tool/diagnosis.html")
+
+    # 法務ページ
+    legal_pages = [
+        ("privacy.html", build_privacy_page),
+        ("disclaimer.html", build_disclaimer_page),
+        ("operator.html", build_operator_page),
+        ("contact.html", build_contact_page),
+    ]
+    for fname, fn in legal_pages:
+        (OUT_DIR / fname).write_text(fn(), encoding="utf-8")
+        pages.append(fname)
 
     # サービス個別ページ
     for svc in services:
