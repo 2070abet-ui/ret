@@ -201,7 +201,9 @@ def main():
         pages.append(fname)
 
     # サービス個別ページ
-    for svc in services:
+    # 保存方法（冷凍/冷蔵/日配）を ranking/diagnosis と同じ正規化で表示するため、
+    # services_with_mealform（meal_form_categories 付与の複製）を使う。データ自体は不変。
+    for svc in services_with_mealform:
         (out_dir / "services" / f"{svc['id']}.html").write_text(
             templates.build_service_page(
                 svc, aff_links, shipping_by_id, related_by_id.get(svc["id"], []), sources_by_id,

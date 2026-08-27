@@ -283,6 +283,7 @@ tr:last-child td { border-bottom:none; }
 .checks label:has(input:checked) { background:var(--color-primary); border-color:var(--color-primary); color:#fff; }
 .checks label:has(input:checked)::after { content:"✓"; margin-left:2px; font-weight:700; }
 .checks input[type=checkbox] { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
+.checks label:has(input:focus-visible) { outline:none; box-shadow:var(--shadow-focus); }
 
 /* ---------- 診断（14章） ---------- */
 .diag-summary { font:var(--text-body-sm); color:var(--color-text-muted); margin-top:var(--space-3); font-weight:600; }
@@ -817,7 +818,7 @@ def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
     note = ""
     if actual:
         note = f'<span class="aff-note">（{esc(target)}経由）</span>'
-    return f'<a class="{cls}" href="{esc(url)}" rel="nofollow sponsored" target="_blank" rel="noopener">{esc(label)}{note}</a>'
+    return f'<a class="{cls}" href="{esc(url)}" rel="nofollow sponsored noopener" target="_blank">{esc(label)}{note}</a>'
 
 
 # ---------- 共通メタ基盤（favicon / OGP / JSON-LD）----------
@@ -894,7 +895,7 @@ def page_header(title, description, canonical_path):
   <div class="container">
     <a href="/" class="site-logo">{SITE_NAME}</a>
     <nav class="main">
-      <a href="/ranking.html">おすすめ比較</a>
+      <a href="/ranking.html">比較一覧</a>
       <a href="/campaigns.html">初回キャンペーン</a>
       <a href="/tool/diagnosis.html">診断ツール</a>
     </nav>
@@ -1026,6 +1027,12 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
 
     # メニュー・栄養
     feature_list = "".join(f"<li>{esc(f)}</li>" for f in service.get("main_features", []))
+
+    # 保存方法は ranking/diagnosis と同じ正規化3カテゴリ（冷凍/冷蔵/日配）を表示し、
+    # 比較一覧・診断ツールとの表記を揃える（generators.main() が meal_form_categories を付与）。
+    # 付与が無い場合のみ従来の meal_form 全文にフォールバックする。
+    _mfc = service.get("meal_form_categories") or []
+    storage_txt = "・".join(_mfc) if _mfc else service.get("meal_form", "公式確認中")
     pros = "".join(f"<li>{esc(p)}</li>" for p in service.get("pros", []))
     cons = "".join(f"<li>{esc(c)}</li>" for c in service.get("cons", []))
     tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service.get("tags", []))
@@ -1057,7 +1064,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       <table>
         <tr><th>運営会社</th><td>{esc(service.get("operator", "公式確認中"))}</td></tr>
         <tr><th>形態</th><td>{esc(service.get("meal_type", ""))}（{esc(service.get("meal_form", ""))}）</td></tr>
-        <tr><th>保存方法</th><td>{esc(service.get("meal_form", "公式確認中"))}</td></tr>
+        <tr><th>保存方法</th><td>{esc(storage_txt)}</td></tr>
         <tr><th>対象</th><td>{", ".join(service.get("target", []))}</td></tr>
       </table>
     </div>
@@ -1096,7 +1103,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     </div>
     <div class="svc-card-footer" style="margin-top:16px;">
       {article_link_html}
-      <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>
+      <a class="btn-secondary" href="/ranking.html">← 比較一覧に戻る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
     </div>
     """
@@ -1403,7 +1410,7 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
       <a class="btn-secondary" href="/tool/diagnosis.html">診断ツールで選ぶ</a>
     </div>
     """
-    html += page_footer(LAST_VERIFIED_DATE)
+    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=True)
     return html
 
 
@@ -1599,12 +1606,6 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
       <ul class="feature-list">{camp_items or '<li>更新中</li>'}</ul>
       <p style="margin-top:8px;"><a class="text-link" href="/campaigns.html">すべてのキャンペーンを見る →</a></p>
-    </div>
-
-    <div class="card">
-      <h2>自分に合うサービスを探す</h2>
-      <p>「一人暮らし」「糖質制限」「ダイエット」など、あなたの条件に合うサービスを診断します。</p>
-      <p style="margin-top:8px;"><a class="btn-secondary" href="/tool/diagnosis.html">診断ツールを開く →</a></p>
     </div>
 
     <div class="service-list-section">
