@@ -19,15 +19,17 @@
       ],
       "price_plan": {
         "lowest_per_meal_yen": null,
-        "plan_notes": "公式サイトのプラン表は8食¥644/食・10食¥620/食・12食¥487/食(初回)等で、いずれも「492円」とは一致しない。「食べるほどお得に。最安492円/食」という記載はトップページの宣伝コピーとして存在するが、具体的な条件（必要食数・継続回数等）の説明がなく根拠を再確認できなかったため、公式確認中（PENDING_VERIFICATION）に差し戻す（2026-08-27再確認）。",
-        "last_checked": "2026-08-27"
+        "plan_notes": "12食プランが通常価格で最安（公式/packageに明記）。通常価格は8食719円・10食644円・12食620円・6食612円/食（税抜表記とみられる）、初回特別価格は税込で8食470円・10食457円・12食471円・6食487円等。公式の「最安492円/食」の宣伝コピーはプラン表と一致しないため不採用。税込/税抜と食数の対応がJS描画のため完全に確定できず、公式確認中（PENDING_VERIFICATION）（2026-08-27再確認）",
+        "last_checked": "2026-08-27",
+        "source_id": "nosh-package-202608"
       },
       "first_time_campaign": {
         "campaign_id": "nosh-first",
-        "summary": "初回お試し価格あり（1食あたり特別価格、詳細は公式要確認）",
-        "detail": "初回限定の割引・お試しセットが存在する。正確な条件・金額は公式サイトで確認すること。",
-        "requires_verification": true,
-        "last_checked": "2026-08-26"
+        "summary": "初回購入時¥1,500 OFF",
+        "detail": "初回購入時に¥1,500 OFF。2回目以降もnosh club継続割引あり（公式/package 2026-08-27確認）",
+        "requires_verification": false,
+        "last_checked": "2026-08-27",
+        "source_id": "nosh-package-202608"
       },
       "target": [
         "一人暮らし",
@@ -79,7 +81,7 @@
       "name": "ワタミの宅食ダイレクト",
       "name_short": "ワタミの宅食",
       "operator": "ワタミ株式会社",
-      "official_url": "https://watami-takushoku.com/",
+      "official_url": "https://www.watami-takushoku.co.jp/",
       "meal_type": "冷凍総菜・宅配食",
       "meal_form": "冷凍",
       "main_features": [
@@ -89,15 +91,17 @@
       ],
       "price_plan": {
         "lowest_per_meal_yen": null,
-        "plan_notes": "要確認（公式サイトで確認すること）",
-        "last_checked": "2026-08-26"
+        "plan_notes": "通常価格はお届け先（郵便番号入力）により地域別で単一値化不可。2週間おためしセット（10食）はコースにより割引価格3,700円〜7,900円（税込・370〜790円/食）を公式で確認。公式確認中（PENDING_VERIFICATION）（2026-08-27確認）",
+        "last_checked": "2026-08-27",
+        "source_id": "watami-official-202608"
       },
       "first_time_campaign": {
         "campaign_id": "watami-first",
-        "summary": "初回お試しキャンペーンあり（詳細は公式要確認）",
-        "detail": "初回限定のお試し・割引があると見られる。正確な条件は公式サイト要確認。",
-        "requires_verification": true,
-        "last_checked": "2026-08-26"
+        "summary": "2週間おためしセット（実質無料）・初回割引",
+        "detail": "初回限定の2週間おためしセット（実質無料）と初回割引を公式サイトで確認（watami-takushoku.co.jp 2026-08-27確認）",
+        "requires_verification": false,
+        "last_checked": "2026-08-27",
+        "source_id": "watami-official-202608"
       },
       "target": [
         "一人暮らし",
@@ -154,7 +158,8 @@
         ],
         "source_url": "https://affisearch.com/campaigns/a8-s00000018527007"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "official_url_note": "公式サイトはwatami-takushoku.co.jp（2026-08-27確認）。旧watami-takushoku.comは403でアクセス不可"
     },
     {
       "id": "mitsuboshi-farm",
@@ -170,16 +175,18 @@
         "有名店シェフの味を自宅で"
       ],
       "price_plan": {
-        "lowest_per_meal_yen": null,
-        "plan_notes": "要確認（公式サイトで確認すること）",
-        "last_checked": "2026-08-26"
+        "lowest_per_meal_yen": 711,
+        "plan_notes": "21食コース 658円(税抜)/711円(税込)が最安（1食あたり）。7食コース858円(税抜)/927円(税込)・14食コース758円(税抜)/819円(税込)。14食・21食コースは初回送料無料（公式プランページ2026-08-27確認）",
+        "last_checked": "2026-08-27",
+        "source_id": "mitsuboshi-plan-202608"
       },
       "first_time_campaign": {
         "campaign_id": "mitsuboshi-first",
-        "summary": "初回お試しキャンペーンあり（詳細は公式要確認）",
-        "detail": "購入促進プロモーションを確認。正確な条件は公式サイトで確認中。",
-        "requires_verification": true,
-        "last_checked": "2026-08-26"
+        "summary": "定期初回40%OFF（14食コース初回6,958円税込・送料無料・1食497円）",
+        "detail": "定期初回は14食コース6,958円（税込・送料無料）＝1食497円（定価11,458円より40%OFF）。7食コースは初回から送料加算（公式LP 2026-08-27確認）",
+        "requires_verification": false,
+        "last_checked": "2026-08-27",
+        "source_id": "mitsuboshi-lp-202608"
       },
       "target": [
         "一人暮らし",
@@ -231,16 +238,18 @@
         "医療・介護領域の実績"
       ],
       "price_plan": {
-        "lowest_per_meal_yen": null,
-        "plan_notes": "要確認（公式サイトで確認すること）",
-        "last_checked": "2026-08-26"
+        "lowest_per_meal_yen": 751,
+        "plan_notes": "気配り宅配食 21食15,768円(税込)÷21=751円/食が最安。7食5,508円(税込)÷7=787円/食・14食10,854円(税込)÷14=775円/食（公式商品ページ2026-08-27確認）",
+        "last_checked": "2026-08-27",
+        "source_id": "wellness-product-202608"
       },
       "first_time_campaign": {
         "campaign_id": "wellness-first",
-        "summary": "お試しセットあり（詳細は公式要確認）",
-        "detail": "要確認",
-        "requires_verification": true,
-        "last_checked": "2026-08-26"
+        "summary": "お試し注文・初回送料無料（お試し定期8回すべて送料無料）",
+        "detail": "お試し注文は初回送料無料（当社負担）。お試し定期注文は8回すべて送料無料（公式商品ページ2026-08-27確認）",
+        "requires_verification": false,
+        "last_checked": "2026-08-27",
+        "source_id": "wellness-product-202608"
       },
       "target": [
         "糖質制限",
@@ -345,8 +354,8 @@
       "name": "FIT FOOD HOME",
       "name_short": "FIT FOOD HOME",
       "operator": "株式会社FIT FOOD HOME",
-      "official_url": "",
-      "official_url_note": "公式ドメイン未確認（2026-08-26）。fitfoodhome.jpはDNS解決せず。A8.net案件は存在（2,000円/1,500円）。",
+      "official_url": "https://store.tavenal.com/",
+      "official_url_note": "公式購入サイトはタベナルストア（store.tavenal.com）。FIT FOOD HOME専用ドメインは存在しない（2026-08-27確認）",
       "meal_type": "宅配食（カロリー・栄養管理）",
       "meal_form": "冷凍",
       "main_features": [
@@ -356,8 +365,9 @@
       ],
       "price_plan": {
         "lowest_per_meal_yen": null,
-        "plan_notes": "要確認",
-        "last_checked": "2026-08-26"
+        "plan_notes": "公式store.tavenal.com（FIT FOOD HOME公式購入サイト）はアラカルト方式で、商品により税込653円〜2,891円/個。数量割引：10個入り最大5%OFF・14個入り最大8%OFF・20個入り最大12%OFF。単一の「1食あたり最安」は商品選択に依存するため確定できない。公式確認中（PENDING_VERIFICATION）（2026-08-27確認）",
+        "last_checked": "2026-08-27",
+        "source_id": "tavenal-ffh-202608"
       },
       "first_time_campaign": {
         "campaign_id": "fitfood-first",
@@ -406,7 +416,7 @@
       "name": "まごころケア食",
       "name_short": "まごころケア食",
       "operator": "ニチレイフーズグループ関連",
-      "official_url": "https://www.magokoro-care.com/",
+      "official_url": "https://magokoro-care-shoku.com/",
       "meal_type": "宅配食（高齢者・健康配慮）",
       "meal_form": "冷凍",
       "main_features": [
@@ -415,16 +425,18 @@
         "配達エリアが広い"
       ],
       "price_plan": {
-        "lowest_per_meal_yen": null,
-        "plan_notes": "要確認",
-        "last_checked": "2026-08-26"
+        "lowest_per_meal_yen": 398,
+        "plan_notes": "2回目以降は1食398円（健康バランス14食セット5,572円税込÷14）。初回限定14食2,660円（税込）＝1食190円（66%OFF）。21食お得便8,274円÷21=394円/食（公式magokoro-care-shoku.com 2026-08-27確認）",
+        "last_checked": "2026-08-27",
+        "source_id": "magokoro-shoku-202608"
       },
       "first_time_campaign": {
         "campaign_id": "magokoro-first",
-        "summary": "お試し・キャンペーンあり（詳細は公式要確認）",
-        "detail": "要確認",
-        "requires_verification": true,
-        "last_checked": "2026-08-26"
+        "summary": "初回限定お得便（14食2,660円税込・1食190円・66%OFF）",
+        "detail": "初回限定まごころお得便：健康バランス食14食セット2,660円（税込）＝1食190円（66%OFF）。2回目以降は1食398円（公式magokoro-care-shoku.com 2026-08-27確認）",
+        "requires_verification": false,
+        "last_checked": "2026-08-27",
+        "source_id": "magokoro-shoku-202608"
       },
       "target": [
         "高齢者",
@@ -461,7 +473,8 @@
         ],
         "source_url": "https://affisearch.com/"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "official_url_note": "公式サイトはmagokoro-care-shoku.com（2026-08-27確認）。magokoro-care.comは法人情報サイト"
     },
     {
       "id": "chef-muten-tukuritoki",
@@ -687,7 +700,7 @@
       ],
       "price_plan": {
         "lowest_per_meal_yen": 578,
-        "plan_notes": "算出値（DERIVED）：公式サイトトップページ掲載の人気商品のうち「カロリー・塩分調整食Aセット/Bセット」10食分5,780円÷10食=578円/食が最安（同ページには「消化にやさしい食Aセット」「やわらか食Aセット/Bセット」10食分6,780円＝678円/食も掲載）。これは公式サイトトップページに掲載された商品の中での最安であり、全商品・全プラン中の最安値であることは確認できていない（公式サイト2026-08-27確認）。",
+        "plan_notes": "カロリー・塩分調整食A/Bセット10食分5,780円÷10=578円/食が全商品中最安。全5商品（消化にやさしい食A6,780円・やわらか食A/B6,780円等）を確認し、5,780円未満の商品は存在しない（公式サイト2026-08-27確認）",
         "last_checked": "2026-08-27",
         "source_id": "kenko-chokkyokubin-price-202608"
       },

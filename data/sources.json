@@ -155,6 +155,69 @@
       "url": "https://fitfoodhome.life/",
       "confirmed_at": "2026-08-27",
       "note": "PHASE1データ充足作業でfitfoodhome.lifeを取得試行したがJS描画等により本文がほぼ取得できず、運営会社名・価格の確認に至らなかった。WebSearchでは「シェフの無添つくりおき」と同一運営基盤（store.tavenal.com、株式会社タベナル）である可能性を示す記述（articles/chef-muten-tukuritoki-kuchikomi.htmlの記事本文にも同旨の記載あり）を確認したが、FIT FOOD HOME自体の公式ドメインと断定できる一次情報には至らなかった。services.jsonのofficial_urlは空欄のまま据え置く。"
+    },
+    {
+      "id": "mitsuboshi-plan-202608",
+      "label": "三ツ星ファーム 公式プラン料金ページ",
+      "url": "https://mitsuboshifarm.jp/contents/?contents_id=mitsuboshi_plan",
+      "confirmed_at": "2026-08-27",
+      "note": "7食927円/14食819円/21食711円(税込)・送料990円(北海道沖縄2,500円)・14/21食初回送料無料"
+    },
+    {
+      "id": "mitsuboshi-lp-202608",
+      "label": "三ツ星ファーム 公式LP（定期初回40%OFF）",
+      "url": "https://mitsuboshifarm.jp/lp/unrecog/13/campaign29/",
+      "confirmed_at": "2026-08-27",
+      "note": "定期初回40%OFF。14食初回6,958円(税込・送料無料)=1食497円"
+    },
+    {
+      "id": "wellness-product-202608",
+      "label": "ウェルネスダイニング 公式商品ページ（気配り宅配食）",
+      "url": "https://www.wellness-dining.com/kikubari/products/k110/",
+      "confirmed_at": "2026-08-27",
+      "note": "7食5,508円/14食10,854円/21食15,768円(税込)・初回送料無料・お試し注文あり"
+    },
+    {
+      "id": "magokoro-shoku-202608",
+      "label": "まごころケア食 公式サイト",
+      "url": "https://magokoro-care-shoku.com/",
+      "confirmed_at": "2026-08-27",
+      "note": "初回14食2,660円(税込)=190円/食(66%OFF)・2回目以降1食398円・21食お得便394円/食"
+    },
+    {
+      "id": "magokoro-guide-202608",
+      "label": "まごころケア食 公式ご利用ガイド（送料）",
+      "url": "https://magokoro-care-shoku.com/help/guide",
+      "confirmed_at": "2026-08-27",
+      "note": "送料980円(税込)・沖縄県や離島1,480円・全国宅配OK"
+    },
+    {
+      "id": "tavenal-ffh-202608",
+      "label": "store.tavenal.com（FIT FOOD HOME公式購入サイト）",
+      "url": "https://store.tavenal.com/",
+      "confirmed_at": "2026-08-27",
+      "note": "FIT FOOD HOMEはアラカルト方式。税込653円〜2,891円/個・数量割引(5〜12%OFF)"
+    },
+    {
+      "id": "tavenal-commercial-202608",
+      "label": "store.tavenal.com 特定商取引法表記（送料）",
+      "url": "https://store.tavenal.com/special-commercial",
+      "confirmed_at": "2026-08-27",
+      "note": "都度購入990円(税込)・北海道550円・沖縄1,100円・定期購入0円"
+    },
+    {
+      "id": "watami-official-202608",
+      "label": "ワタミの宅食 公式サイト（watami-takushoku.co.jp）",
+      "url": "https://www.watami-takushoku.co.jp/",
+      "confirmed_at": "2026-08-27",
+      "note": "2週間おためしセット(10食・割引3,700円〜7,900円税込)・初回割引。価格は郵便番号により地域別"
+    },
+    {
+      "id": "nosh-package-202608",
+      "label": "nosh 公式料金プランページ",
+      "url": "https://nosh.jp/package",
+      "confirmed_at": "2026-08-27",
+      "note": "12食プランが通常価格最安。通常価格(税抜表記とみられる)8食719円/10食644円/12食620円/6食612円・初回特別価格(税込)470/457/471/487円等"
     }
   ]
 }

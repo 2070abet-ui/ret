@@ -16,24 +16,27 @@
       "shipping_fee": null,
       "min_order": null,
       "cancellation_condition": "公式確認中",
-      "notes": "UNCOLLECTED。公式サイト（watami-takushoku.com）へのアクセスが403 Forbiddenで機械取得不可。campaigns.json記載の旧出典URL（direct.watami-takushoku.com）もDNS不通で失効。手動でのブラウザ確認が必要（2026-08-27時点）",
-      "last_checked": "2026-08-27"
+      "notes": "送料はお届け先（郵便番号入力）により異なるため単一値化不可。公式watami-takushoku.co.jpで郵便番号により確認（2026-08-27確認）",
+      "last_checked": "2026-08-27",
+      "source_id": "watami-official-202608"
     },
     {
       "service_id": "mitsuboshi-farm",
-      "shipping_fee": null,
+      "shipping_fee": 990,
       "min_order": null,
       "cancellation_condition": "公式確認中",
-      "notes": "UNCOLLECTED。公式サイト（mitsuboshifarm.jp）がJavaScript描画のため本文取得不可。第三者アフィリエイトサイトに料金情報の言及はあるが一次情報でないため不採用。手動でのブラウザ確認が必要（2026-08-27時点）",
-      "last_checked": "2026-08-27"
+      "notes": "送料は全国一律990円（税込）。北海道・沖縄・一部離島は2,500円（税込）。14食・21食コースは初回送料無料（公式プランページ2026-08-27確認）",
+      "last_checked": "2026-08-27",
+      "source_id": "mitsuboshi-plan-202608"
     },
     {
       "service_id": "wellness-dining",
       "shipping_fee": null,
       "min_order": null,
       "cancellation_condition": "一時休止・お届けペース変更はお届け予定日の7日前までに連絡（マイページ/フォーム/電話0120-503-999）。解約そのものの条件は公式サイト内で確認できず（2026-08-27確認）",
-      "notes": "送料の記載箇所を公式サイト（トップ・faq・modification）で確認できず、UNCOLLECTED（2026-08-27時点）",
-      "last_checked": "2026-08-27"
+      "notes": "お試し注文・お試し定期注文は送料無料（当社負担）。定期注文はずっと送料無料。北海道・沖縄は追加送料あり（公式商品ページ2026-08-27確認）",
+      "last_checked": "2026-08-27",
+      "source_id": "wellness-product-202608"
     },
     {
       "service_id": "shokutakubin",
@@ -49,16 +52,18 @@
       "shipping_fee": null,
       "min_order": null,
       "cancellation_condition": "公式確認中",
-      "notes": "UNCOLLECTED。公式ドメインが未確定（fitfoodhome.life等の候補はあるが公式と断定できず）のため送料情報も未取得（2026-08-27時点）",
-      "last_checked": "2026-08-27"
+      "notes": "都度購入は990円（税込）／北海道550円・沖縄1,100円。定期購入は送料0円（公式store.tavenal.com特定商取引法表記2026-08-27確認）",
+      "last_checked": "2026-08-27",
+      "source_id": "tavenal-commercial-202608"
     },
     {
       "service_id": "magokoro-care",
-      "shipping_fee": null,
+      "shipping_fee": 980,
       "min_order": null,
       "cancellation_condition": "公式確認中",
-      "notes": "UNCOLLECTED。公式サイト（magokoro-care.com）トップページは企業情報のみで料金・送料ページを特定できず。検索でも未発見（2026-08-27時点）",
-      "last_checked": "2026-08-27"
+      "notes": "送料は980円（税込）／沖縄県や離島は1,480円。全国宅配OK（ヤマト運輸）（公式ご利用ガイド2026-08-27確認）",
+      "last_checked": "2026-08-27",
+      "source_id": "magokoro-guide-202608"
     },
     {
       "service_id": "chef-muten-tukuritoki",

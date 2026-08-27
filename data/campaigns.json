@@ -25,47 +25,47 @@
       "campaign_id": "watami-first-202608",
       "service_id": "watami-takushoku",
       "title": "ワタミの宅食ダイレクト 初回お試し",
-      "summary": "初回限定のお試しキャンペーンあり",
-      "detail": "初回限定のお試し・割引キャンペーン。詳細な条件・金額は公式サイトで確認してください。",
-      "discount_type": "初回割引",
+      "summary": "初回限定の2週間おためしセット（実質無料）と初回割引",
+      "detail": "初回限定の2週間おためしセット（実質無料）と初回割引を公式サイトで確認（watami-takushoku.co.jp 2026-08-27確認）。通常価格・送料はお届け先（郵便番号）により異なる",
+      "discount_type": "2週間おためしセット・初回割引",
       "conditions": "要確認（公式サイトで確認）",
       "valid_from": null,
       "valid_to": null,
-      "source_url": "https://direct.watami-takushoku.com/",
+      "source_url": "https://www.watami-takushoku.co.jp/",
       "affiliate": {
         "asp": "A8.net / afb / アクセストレード",
         "reward_yen": 3095,
         "note": "報酬は新規申込時。A8.net最大3,095円（2026-08-26確認）"
       },
-      "requires_verification": true,
-      "last_checked": "2026-08-26"
+      "requires_verification": false,
+      "last_checked": "2026-08-27"
     },
     {
       "campaign_id": "mitsuboshi-first-202608",
       "service_id": "mitsuboshi-farm",
       "title": "三ツ星ファーム 初回お試しキャンペーン",
-      "summary": "購入促進プロモーション実施中",
-      "detail": "購入促進プロモーションを確認。初回お試し・割引の詳細は公式サイトで確認してください。",
-      "discount_type": "初回割引",
+      "summary": "定期初回40%OFF（14食コース初回6,958円税込・送料無料・1食497円）",
+      "detail": "定期初回は14食コース6,958円（税込・送料無料）＝1食497円（定価11,458円より40%OFF）。7食コースは初回から送料加算。14食・21食は初回送料無料（公式LP 2026-08-27確認）",
+      "discount_type": "定期初回40%OFF（14食初回1食497円）",
       "conditions": "要確認（公式サイトで確認）",
       "valid_from": null,
       "valid_to": null,
-      "source_url": "https://mitsuboshifarm.jp/",
+      "source_url": "https://mitsuboshifarm.jp/lp/unrecog/13/campaign29/",
       "affiliate": {
         "asp": "アクセストレード",
         "reward_yen": 3080,
         "note": "報酬3,080円を確認したが、一部掲載終了表示あり。ASPで要再確認（2026-08-26）"
       },
-      "requires_verification": true,
-      "last_checked": "2026-08-26"
+      "requires_verification": false,
+      "last_checked": "2026-08-27"
     },
     {
       "campaign_id": "wellness-first-202608",
       "service_id": "wellness-dining",
       "title": "ウェルネスダイニング お試し",
-      "summary": "制限食のお試しセットあり",
-      "detail": "要確認（公式サイトで確認）",
-      "discount_type": "お試し",
+      "summary": "お試し注文・初回送料無料（お試し定期8回すべて送料無料）",
+      "detail": "お試し注文は初回送料無料（当社負担）。お試し定期注文は8回すべて送料無料（公式商品ページ2026-08-27確認）",
+      "discount_type": "お試し注文・初回送料無料",
       "conditions": "要確認（公式サイトで確認）",
       "valid_from": null,
       "valid_to": null,
@@ -75,15 +75,15 @@
         "reward_yen": null,
         "note": "案件存在を確認。報酬は要ASPログイン確認（2026-08-26）"
       },
-      "requires_verification": true,
-      "last_checked": "2026-08-26"
+      "requires_verification": false,
+      "last_checked": "2026-08-27"
     },
     {
       "campaign_id": "shokutakubin-first-202608",
       "service_id": "shokutakubin",
       "title": "食宅便 お試しプラン",
       "summary": "お試しプランあり",
-      "detail": "要確認（公式サイトで確認）",
+      "detail": "お試しプランの存在は確認できるが、具体条件の裏付けが取れないため確認中。送料は都度便1,330円・らくらく定期便940円（公式shop 2026-08-27確認）",
       "discount_type": "お試し",
       "conditions": "要確認（公式サイトで確認）",
       "valid_from": null,
@@ -95,26 +95,26 @@
         "note": "A8.netに案件あり。報酬は要ASPログイン確認（2026-08-26）"
       },
       "requires_verification": true,
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-27"
     },
     {
       "campaign_id": "fitfood-first-202608",
       "service_id": "fit-food-home",
       "title": "FIT FOOD HOME 初回キャンペーン",
       "summary": "ダイエット・ボディメイク向け宅配食の初回キャンペーン",
-      "detail": "要確認（公式サイトで確認）",
+      "detail": "公式購入サイトはstore.tavenal.com（タベナル）。お試しセットの存在は確認できるが、具体価格・条件は商品により異なるため確認中（2026-08-27確認）",
       "discount_type": "初回割引",
       "conditions": "要確認（公式サイトで確認）",
       "valid_from": null,
       "valid_to": null,
-      "source_url": "https://fitfoodhome.jp/",
+      "source_url": "https://store.tavenal.com/",
       "affiliate": {
         "asp": "A8.net",
         "reward_yen": 2000,
         "note": "A8.net 2,000円 / 1,500円（2026-08-26確認）"
       },
       "requires_verification": true,
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-27"
     },
     {
       "campaign_id": "chef-muten-first-202608",
@@ -160,7 +160,7 @@
       "service_id": "yoshikei",
       "title": "ヨシケイ お試し・入会キャンペーン",
       "summary": "全国のヨシケイで夕食食材を宅配",
-      "detail": "お試し・キャンペーンは地域により異なるため確認中。",
+      "detail": "試食キャンペーンは地域会社ごとに異なるため確認中。配達料・入会金は無料と公式サイトに明記（2026-08-27確認）",
       "discount_type": "要確認",
       "conditions": "地域により異なる（各エリアのヨシケイで確認）",
       "valid_from": null,
@@ -172,7 +172,7 @@
         "note": "新規購入1,100円（プログラムID: s00000008115003）"
       },
       "requires_verification": true,
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-27"
     },
     {
       "campaign_id": "kenko-chokkyokubin-first-202608",
@@ -190,6 +190,25 @@
         "reward_yen": 1000,
         "reward_text": "1,000円 / 2,000円",
         "note": "新規購入1,000円/2,000円（プログラムID: s00000025169001）"
+      },
+      "requires_verification": false,
+      "last_checked": "2026-08-27"
+    },
+    {
+      "campaign_id": "magokoro-first-202608",
+      "service_id": "magokoro-care",
+      "title": "まごころケア食 初回限定お得便",
+      "summary": "初回限定お得便（14食2,660円税込・1食190円・66%OFF）",
+      "detail": "初回限定まごころお得便：健康バランス食14食セット2,660円（税込）＝1食190円（66%OFF）。2回目以降は1食398円（公式magokoro-care-shoku.com 2026-08-27確認）",
+      "discount_type": "初回限定66%OFF（14食2,660円税込・1食190円）",
+      "conditions": "初回限定。2回目以降は1食398円",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://magokoro-care-shoku.com/",
+      "affiliate": {
+        "asp": "A8.net 等",
+        "reward_yen": null,
+        "note": "ASP報酬情報は未確認（2026-08-27）"
       },
       "requires_verification": false,
       "last_checked": "2026-08-27"
