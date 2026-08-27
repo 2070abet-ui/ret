@@ -253,6 +253,14 @@ tr:last-child td { border-bottom:none; }
   padding:2px 0; line-height:1.5;
 }
 .purpose-services a:hover { color:var(--color-primary); border-bottom-color:var(--color-primary); }
+/* TOP専用：詳細ページ直リンクの隣に、TOP自身の一覧内カードへのページ内アンカーを追加
+   （TOP_PROGRESSIVE_DISCLOSURE_FINAL_AUDIT_2026_08_28.md）。既存リンクは維持し選択肢を1つ追加するのみ。 */
+.purpose-service-link { display:inline-flex; align-items:center; gap:1px; }
+.purpose-services a.purpose-anchor {
+  font-size:11px; color:var(--color-text-faint); text-decoration:none;
+  border-bottom:none; padding:2px 3px; line-height:1.5;
+}
+.purpose-services a.purpose-anchor:hover { color:var(--color-primary); }
 
 /* ---------- Trust Panel（8章） ---------- */
 .trust-panel {
@@ -336,6 +344,27 @@ tr:last-child td { border-bottom:none; }
    隣の主CTA「詳しく見る」ボタンの幅を圧迫して折り返す事象が実機で判明したため、
    主CTAは常に内容幅を維持し、長いtext-linkの方だけ折り返すようにする（F節）。 */
 .svc-card-top .svc-card-footer .btn-primary { flex:0 0 auto; }
+/* TOP段階開示（TOP_PROGRESSIVE_DISCLOSURE_FINAL_AUDIT_2026_08_28.md）。
+   5・6枚目はPC（900px以上、3列gridが有効になる幅）でのみ常時表示し、
+   900px未満（モバイル・タブレット2列時）は<details>側の展開に含める。 */
+.svc-extra-initial { display:none; }
+@media (min-width:900px) {
+  .svc-extra-initial { display:flex; }
+}
+/* 「残りを見る」：既存のFAQアコーディオン（.faq-item）と同じくJS不要のネイティブdetails。
+   .btn-primary（実CTA）とは明確に見た目を分け、押し売り感を出さない中立トーンにする。
+   新しい色トークンは追加せず既存の--color-primary/--color-border-strongのみ使用。 */
+.svc-more { margin:var(--space-4) 0; border:none; }
+.svc-more summary {
+  cursor:pointer; list-style:none; text-align:center;
+  padding:var(--space-3); font-weight:700; color:var(--color-primary);
+  border:1px solid var(--color-border-strong); border-radius:var(--radius-sm);
+}
+.svc-more summary::-webkit-details-marker { display:none; }
+.svc-more summary::after { content:" ▾"; }
+.svc-more[open] summary::after { content:" ▴"; }
+.svc-more[open] summary { margin-bottom:var(--space-4); }
+.svc-more .service-grid { margin:0; }
 
 /* ---------- 選択チップ（診断・フィルタ、12章・14章） ---------- */
 .checks { display:flex; flex-wrap:wrap; gap:var(--space-2); }
@@ -535,7 +564,7 @@ def trust_panel(coverage, num_services, link_to_dashboard=True, compact=False):
     </div>"""
 
 
-def purpose_chips_block(purpose_matches, extra_class=""):
+def purpose_chips_block(purpose_matches, extra_class="", with_anchor=False):
     """目的別導線チップ（REDESIGN_UI_SPEC.md 7章）。既存tags/targetに一致するサービスへの
     直接リンク集約のみで、新規フィルタエンジン・新規ページ・新規データフィールドは作らない。
     該当社が無いカテゴリはそもそも渡されない（generators.py compute_purpose_matches()側で除外済み）。
@@ -543,15 +572,28 @@ def purpose_chips_block(purpose_matches, extra_class=""):
     各サービスリンクの遷移先（/services/{id}.html）は変更しない（既存CTA遷移先の維持）。
     カテゴリチップ自体はナビゲーションではなくラベルであり、順位・おすすめ度を表さない。
     extra_class: TOPページのみ"purpose-section-top"を渡し、色帯ゾーンとして格上げする
-    （TOP_LAYOUT_IMPLEMENTATION_PLAN_2026_08_28.md）。他ページの呼び出しは既定の空文字のまま。"""
+    （TOP_LAYOUT_IMPLEMENTATION_PLAN_2026_08_28.md）。他ページの呼び出しは既定の空文字のまま。
+    with_anchor: TOPページのみTrue。各サービスリンクの隣に、TOP自身のサービス一覧内の
+    該当カード（id="svc-{id}"）へのページ内アンカーを追加する（既存の詳細ページ直リンクは
+    そのまま維持し、選択肢を1つ追加するだけ）。他ページはid="svc-*"を持たないため既定False。
+    （TOP_PROGRESSIVE_DISCLOSURE_FINAL_AUDIT_2026_08_28.md）"""
     if not purpose_matches:
         return ""
     groups = ""
     for _cat_id, label, matched in purpose_matches:
-        links = "".join(
-            f'<a href="/services/{esc(s["id"])}.html">{esc(s["name"])}</a>'
-            for s in matched
-        )
+        if with_anchor:
+            links = "".join(
+                f'<span class="purpose-service-link">'
+                f'<a href="/services/{esc(s["id"])}.html">{esc(s["name"])}</a>'
+                f'<a href="#svc-{esc(s["id"])}" class="purpose-anchor" '
+                f'aria-label="{esc(s["name"])}を一覧で見る">↓</a></span>'
+                for s in matched
+            )
+        else:
+            links = "".join(
+                f'<a href="/services/{esc(s["id"])}.html">{esc(s["name"])}</a>'
+                for s in matched
+            )
         groups += (f'<div class="purpose-group">'
                    f'<span class="purpose-chip">{esc(label)}</span>'
                    f'<div class="purpose-services">{links}</div></div>')
@@ -1714,7 +1756,7 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
 
     # TOP再設計：目的で探すを検証カバレッジより上位の「入口」として扱う（extra_classで色帯ゾーン化）。
     # 検証カバレッジはcompact=Trueでスリムな信頼帯にする。数値・バッジ・文言は無変更。
-    purpose_html = purpose_chips_block(purpose_matches, extra_class="purpose-section-top")
+    purpose_html = purpose_chips_block(purpose_matches, extra_class="purpose-section-top", with_anchor=True)
     trust_html = trust_panel(coverage, num_services, compact=True) if coverage else ""
 
     # ヒーローのリード文：ファーストビューで差別化資産（検証カバレッジ）を具体的に伝える。
@@ -1736,8 +1778,11 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     # 公式サイトCTA（アフィリエイト）はUI_DESIGN_PRINCIPLES.md 5.2「情報が不足している段階では
     # 外部CTAを主役にしない」に合わせ、TOPでは.text-link（既存クラス）に変更。href/rel/aff_link()の
     # ロジック・遷移先は無変更（FINAL_REDESIGN_SPEC.md 6章の「比較→納得→信頼→公式クリックを最短化」）。
-    svc_cards = ""
-    for svc in services:
+    # TOP段階開示（TOP_PROGRESSIVE_DISCLOSURE_FINAL_AUDIT_2026_08_28.md）。
+    # servicesの並び順（services.json記載順）はそのまま使い、表示位置を4分割するだけで
+    # 並び替え・フィルタ・スコアリングは一切行わない（評価・ランキングの新設ではない）。
+    # 1〜4枚目=常時表示／5〜6枚目=PC(900px以上)のみ常時表示／7枚目以降=<details>で段階開示。
+    def _svc_card_html(svc, extra_class=""):
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
         # 「誰向けか」を価格の次に提示する（食欲喚起UI監査§11.4 提案1。既存targetをそのまま使用、
         # 新規文言は作らない。空なら非表示）。1行クランプで密度を下げる（文言・データは無変更）。
@@ -1749,8 +1794,9 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
         # _price_inline_html を使うため表記はページ間で統一）。検証状態バッジを価格と一体化し、
         # 値単位の信頼（同4.2.1）を数値の根拠として見せる。未確認の値は控えめに「公式確認中」表示。
         price_inline = _price_inline_html(_pricing_of(svc))
-        svc_cards += f"""
-        <div class="svc-card svc-card-top">
+        cls = f"svc-card svc-card-top {extra_class}".strip()
+        return f"""
+        <div class="{cls}" id="svc-{esc(svc['id'])}">
           <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
           <div class="svc-card-price-row">{price_inline}</div>
           {target_html}
@@ -1760,6 +1806,29 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
             {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='text-link')}
           </div>
         </div>"""
+
+    svc_primary = "".join(_svc_card_html(svc) for svc in services[:4])
+    svc_extra = "".join(_svc_card_html(svc, extra_class="svc-extra-initial") for svc in services[4:6])
+    svc_more_list = services[6:]
+    svc_more = "".join(_svc_card_html(svc) for svc in svc_more_list)
+    svc_more_block = (f"""
+    <details class="svc-more">
+      <summary>残り{len(svc_more_list)}社をすべて見る</summary>
+      <div class="service-grid">{svc_more}</div>
+    </details>""" if svc_more_list else "")
+    # 任意の補助JS：フラグメント遷移で<details>内のカードを開く挙動はHTML標準でChromium系が
+    # ネイティブ対応済みだが、非対応ブラウザでも確実に開くための補強（無くても機能は壊れない。
+    # 既存の診断ツールと同種のインラインscriptで、新規の依存ライブラリは追加しない）。
+    svc_more_anchor_script = ("""
+    <script>
+    (function(){
+      var id = location.hash.slice(1);
+      if (!id) return;
+      var el = document.getElementById(id);
+      var details = el && el.closest('details.svc-more');
+      if (details && !details.open) details.open = true;
+    })();
+    </script>""" if svc_more_list else "")
 
     title = f"{SITE_NAME}｜宅配食の比較・初回キャンペーン情報"
     desc = SITE_DESC
@@ -1782,8 +1851,10 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
 
     <div class="service-list-section">
       <h2>📊 主要サービス一覧</h2>
-      <div class="service-grid">{svc_cards}</div>
+      <div class="service-grid">{svc_primary}{svc_extra}</div>
+      {svc_more_block}
     </div>
+    {svc_more_anchor_script}
 
     <div class="card panel-accent">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
