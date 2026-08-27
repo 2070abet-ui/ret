@@ -16,6 +16,340 @@ def esc(s):
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
+# ---------- デザインシステム（REDESIGN_UI_SPEC.md 2章〜16章）----------
+# 既存データ・生成ロジックには一切触れず、UI層（CSS）のみをトークン体系へ再構築する。
+# 値の数値・検証状態の意味は変更しない（confirmed/derived/pending/uncollected は
+# 「情報の検証状態」であり優劣を表さない）。
+_CSS = """/* ===== 宅食図鑑 デザインシステム（REDESIGN_UI_SPEC.md） ===== */
+:root {
+  /* ブランド（既存#e8552dを維持。再ブランディングしない） */
+  --color-primary:#E8552D;
+  --color-primary-hover:#C8431F;
+  --color-primary-active:#A8371A;
+  --color-primary-subtle:#FDEEE8;
+
+  /* ニュートラル */
+  --color-text:#1F2328;
+  --color-text-muted:#5B6470;
+  --color-text-faint:#8A9099;
+  --color-border:#E7E2DB;
+  --color-border-strong:#D3CCC1;
+  --color-bg:#FAF7F5;
+  --color-surface:#FFFFFF;
+  --color-surface-alt:#FFF8F0;
+
+  /* 検証状態（4状態のセマンティックカラー。意味は変更しない） */
+  --status-confirmed-fg:#1E7E34; --status-confirmed-bg:#E6F4EA;
+  --status-derived-fg:#1A56DB;   --status-derived-bg:#E8F0FE;
+  --status-pending-fg:#B45300;   --status-pending-bg:#FFF4E5;
+  --status-uncollected-fg:#6B7280; --status-uncollected-bg:#F1F1F1;
+
+  /* 全項目確認済みバッジ（primaryの輪郭のみ。★・金色は使わない） */
+  --badge-full-fg:var(--color-primary);
+  --badge-full-border:var(--color-primary);
+
+  /* タイポグラフィ（2.2節） */
+  --font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",system-ui,sans-serif;
+  --text-display:700 1.875rem/1.3 var(--font-family);
+  --text-h1:700 1.5rem/1.35 var(--font-family);
+  --text-h2:700 1.125rem/1.4 var(--font-family);
+  --text-h3:600 1rem/1.4 var(--font-family);
+  --text-body:400 1rem/1.7 var(--font-family);
+  --text-body-sm:400 0.875rem/1.6 var(--font-family);
+  --text-meta:400 0.8125rem/1.5 var(--font-family);
+  --text-micro:600 0.6875rem/1.3 var(--font-family);
+  --price-figure:700 1.375rem/1.2 var(--font-family);
+
+  /* スペーシング（4px基準、2.3節） */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
+
+  /* 角丸・影・境界（2.4節） */
+  --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+  --shadow-sm:0 1px 2px rgba(31,35,40,.06);
+  --shadow-md:0 4px 16px rgba(31,35,40,.08);
+  --shadow-focus:0 0 0 3px rgba(232,85,45,.25);
+  --border-default:1px solid var(--color-border);
+  --border-strong:1px solid var(--color-border-strong);
+
+  /* モーション（状態変化のみ。演出目的のアニメーションは使わない） */
+  --transition-fast:120ms ease;
+  --transition-base:180ms ease;
+}
+
+/* ---------- ベース ---------- */
+* { box-sizing:border-box; margin:0; padding:0; }
+html { -webkit-text-size-adjust:100%; }
+body { font:var(--text-body); color:var(--color-text); background:var(--color-bg); line-height:1.7; }
+.container { max-width:1000px; margin:0 auto; padding:0 var(--space-4); }
+h1 { font:var(--text-h1); margin:var(--space-5) 0 var(--space-2); }
+h2 { font:var(--text-h2); margin:var(--space-5) 0 var(--space-2); }
+h3 { font:var(--text-h3); margin:var(--space-4) 0 var(--space-2); }
+p { margin-bottom:var(--space-2); }
+a { color:var(--color-primary); }
+ul, ol { padding-left:1.4em; }
+
+/* ---------- ヘッダー / ナビ（5章） ---------- */
+header.site { background:var(--color-primary); color:#fff; padding:var(--space-3) 0; }
+header.site .container { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); flex-wrap:wrap; }
+header.site .site-logo { color:#fff; font-size:18px; font-weight:700; text-decoration:none; letter-spacing:.02em; }
+nav.main { display:flex; align-items:center; gap:var(--space-4); flex-wrap:wrap; }
+nav.main a { color:rgba(255,255,255,.9); text-decoration:none; font-size:14px; font-weight:600; padding:6px 2px; border-bottom:2px solid transparent; transition:border-color var(--transition-fast), color var(--transition-fast); }
+nav.main a:hover { color:#fff; border-bottom-color:rgba(255,255,255,.85); }
+
+/* ---------- カード / テーブル ---------- */
+.card {
+  background:var(--color-surface);
+  border:var(--border-default);
+  border-radius:var(--radius-md);
+  padding:var(--space-4);
+  margin:var(--space-3) 0;
+  box-shadow:var(--shadow-sm);
+  overflow-x:auto;
+}
+.panel-accent { background:var(--color-surface-alt); border:var(--border-default); }
+table { width:100%; border-collapse:collapse; background:var(--color-surface); border-radius:var(--radius-md); overflow:hidden; font-size:14px; }
+th, td { padding:var(--space-3) var(--space-3); text-align:left; border-bottom:1px solid var(--color-border); vertical-align:top; }
+th { background:var(--color-surface-alt); font-weight:700; font-size:13px; white-space:nowrap; }
+tr:last-child td { border-bottom:none; }
+
+/* ---------- ボタン（10章） ---------- */
+.btn-primary {
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--color-primary); color:#fff;
+  padding:12px 24px; border-radius:var(--radius-sm);
+  text-decoration:none; font-weight:700; font-size:14px;
+  min-height:44px; border:none; cursor:pointer;
+  transition:background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+.btn-primary:hover { background:var(--color-primary-hover); transform:translateY(-1px); }
+.btn-primary:active { background:var(--color-primary-active); transform:none; }
+.btn-primary:focus-visible { outline:none; box-shadow:var(--shadow-focus); }
+.btn-secondary {
+  display:inline-flex; align-items:center; justify-content:center;
+  background:var(--color-surface); color:var(--color-text);
+  border:1px solid var(--color-border-strong);
+  padding:10px 20px; border-radius:var(--radius-sm);
+  text-decoration:none; font-weight:700; font-size:14px;
+  min-height:44px; cursor:pointer;
+  transition:background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.btn-secondary:hover { background:var(--color-surface-alt); border-color:var(--color-border-strong); }
+.btn-secondary:active { background:var(--color-border); }
+.btn-secondary:focus-visible { outline:none; box-shadow:var(--shadow-focus); }
+.btn-disabled {
+  display:inline-flex; align-items:center;
+  background:var(--status-uncollected-bg); color:var(--status-uncollected-fg);
+  padding:10px 20px; border-radius:var(--radius-sm);
+  font-size:13px; font-weight:700; min-height:44px;
+}
+.text-link { color:var(--color-primary); text-decoration:none; font-weight:700; }
+.text-link:hover { text-decoration:underline; }
+
+/* ---------- タグ / バッジ ---------- */
+.tag {
+  display:inline-block; background:var(--color-primary-subtle); color:var(--color-primary);
+  padding:2px var(--space-3); border-radius:999px;
+  font:var(--text-micro); letter-spacing:.02em; margin:2px 2px 2px 0;
+}
+.vstatus {
+  display:inline-flex; align-items:center; gap:3px;
+  padding:2px 8px; border-radius:999px;
+  font:var(--text-micro); letter-spacing:.02em; font-weight:700;
+  white-space:nowrap; vertical-align:middle;
+}
+.vstatus-confirmed { background:var(--status-confirmed-bg); color:var(--status-confirmed-fg); }
+.vstatus-derived { background:var(--status-derived-bg); color:var(--status-derived-fg); }
+.vstatus-pending { background:var(--status-pending-bg); color:var(--status-pending-fg); }
+.vstatus-uncollected { background:var(--status-uncollected-bg); color:var(--status-uncollected-fg); }
+.vfull-badge {
+  display:inline-block; padding:2px 8px;
+  border:1px solid var(--badge-full-border); color:var(--badge-full-fg);
+  border-radius:999px; font:var(--text-micro); letter-spacing:.02em; font-weight:700;
+  white-space:nowrap; margin-left:4px; vertical-align:middle;
+}
+.aff-note { font-size:11px; opacity:.8; font-weight:400; }
+
+/* ---------- 価格表示（4章・9章） ---------- */
+.price-figure { font:var(--price-figure); color:var(--color-text); white-space:nowrap; }
+.price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
+.price-meta { font:var(--text-meta); color:var(--color-text-faint); }
+.price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
+.source-link { font:var(--text-meta); color:var(--color-text-faint); }
+.source-link:hover { color:var(--color-primary); }
+
+/* ---------- Hero（7章） ---------- */
+.hero {
+  background:var(--color-surface-alt);
+  border:var(--border-default);
+  border-radius:var(--radius-lg);
+  padding:var(--space-6);
+  margin:var(--space-5) 0;
+}
+.hero h1 { font:var(--text-display); margin:0 0 var(--space-3); }
+.hero-lead { font:var(--text-body); color:var(--color-text-muted); margin:0 0 var(--space-5); max-width:44em; }
+.hero-actions { display:flex; gap:var(--space-4); align-items:center; flex-wrap:wrap; }
+.hero-sub-cta { font-weight:700; color:var(--color-primary); text-decoration:none; font-size:15px; }
+.hero-sub-cta:hover { text-decoration:underline; }
+
+/* ---------- ページ見出し（詳細ページ 12章） ---------- */
+.page-head { display:flex; align-items:baseline; justify-content:space-between; gap:var(--space-2); flex-wrap:wrap; margin:var(--space-5) 0 var(--space-2); }
+.page-head h1 { margin:0; }
+.page-head-meta { font:var(--text-meta); color:var(--color-text-faint); white-space:nowrap; }
+
+/* ---------- 目的別チップ（7章） ---------- */
+.purpose-section { margin:var(--space-5) 0; }
+.purpose-section h2 { margin-top:0; }
+.purpose-groups { display:flex; flex-wrap:wrap; gap:var(--space-4); }
+.purpose-group { flex:1 1 180px; min-width:180px; }
+.purpose-chip {
+  display:inline-flex; align-items:center;
+  background:var(--color-primary-subtle); color:var(--color-primary);
+  border:1px solid var(--color-primary);
+  border-radius:999px; padding:6px 14px;
+  font-size:13px; font-weight:700; letter-spacing:.02em;
+}
+.purpose-services { display:flex; flex-wrap:wrap; gap:4px 8px; margin-top:var(--space-2); }
+.purpose-services a {
+  font:var(--text-body-sm); color:var(--color-text);
+  text-decoration:none; border-bottom:1px solid var(--color-border-strong);
+  padding:2px 0; line-height:1.5;
+}
+.purpose-services a:hover { color:var(--color-primary); border-bottom-color:var(--color-primary); }
+
+/* ---------- Trust Panel（8章） ---------- */
+.trust-panel {
+  background:var(--color-surface);
+  border:var(--border-default);
+  border-radius:var(--radius-lg);
+  padding:var(--space-5);
+  margin:var(--space-5) 0;
+}
+.trust-panel h2 { margin-top:0; }
+.trust-stats { display:flex; gap:var(--space-6); flex-wrap:wrap; margin:var(--space-4) 0 var(--space-3); }
+.trust-stat { display:flex; flex-direction:column; gap:2px; }
+.trust-figure { font:var(--price-figure); font-size:2rem; line-height:1.1; }
+.trust-label { font:var(--text-meta); color:var(--color-text-faint); }
+.trust-bar { display:flex; height:12px; border-radius:999px; overflow:hidden; background:var(--color-border); margin:var(--space-3) 0; }
+.trust-bar > span { height:100%; min-width:2px; }
+.trust-bar-confirmed { background:var(--status-confirmed-fg); }
+.trust-bar-derived { background:var(--status-derived-fg); }
+.trust-bar-pending { background:var(--status-pending-fg); }
+.trust-bar-uncollected { background:var(--status-uncollected-fg); }
+.trust-legend { display:flex; gap:var(--space-3); flex-wrap:wrap; align-items:center; font:var(--text-meta); color:var(--color-text-muted); }
+.trust-link { display:inline-block; margin-top:var(--space-3); font-weight:700; }
+.trust-note { font:var(--text-meta); color:var(--color-text-faint); margin-top:var(--space-3); }
+
+/* ---------- Service Card（9章） ---------- */
+.svc-card {
+  background:var(--color-surface);
+  border:var(--border-default);
+  border-radius:var(--radius-md);
+  padding:var(--space-4);
+  margin:var(--space-3) 0;
+  box-shadow:var(--shadow-sm);
+  display:flex; flex-direction:column; gap:var(--space-2);
+}
+.svc-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-2); flex-wrap:wrap; }
+.svc-card-name { font:var(--text-h3); margin:0; }
+.svc-card-name a { color:var(--color-text); text-decoration:none; }
+.svc-card-name a:hover { color:var(--color-primary); }
+.svc-card-tags { display:flex; flex-wrap:wrap; gap:2px; }
+.svc-card-price-row { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
+.svc-card-meta { font:var(--text-meta); color:var(--color-text-faint); }
+.svc-card-campaign { font-size:14px; font-weight:600; }
+.svc-card-storage, .svc-card-target { font:var(--text-body-sm); color:var(--color-text-muted); }
+.svc-card-footer { display:flex; gap:var(--space-2); flex-wrap:wrap; margin-top:var(--space-2); }
+.service-list-section { margin:var(--space-4) 0; }
+.service-list-section h2 { margin-top:0; }
+
+/* ---------- 選択チップ（診断・フィルタ、12章・14章） ---------- */
+.checks { display:flex; flex-wrap:wrap; gap:var(--space-2); }
+.checks label {
+  display:inline-flex; align-items:center; gap:6px;
+  border:1px solid var(--color-border-strong);
+  border-radius:999px; padding:10px 16px;
+  background:var(--color-surface);
+  font-size:14px; font-weight:600; color:var(--color-text);
+  cursor:pointer; min-height:44px;
+  transition:background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+  user-select:none;
+}
+.checks label:hover { border-color:var(--color-primary); background:var(--color-primary-subtle); }
+.checks label:has(input:checked) { background:var(--color-primary); border-color:var(--color-primary); color:#fff; }
+.checks label:has(input:checked)::after { content:"✓"; margin-left:2px; font-weight:700; }
+.checks input[type=checkbox] { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
+
+/* ---------- 診断（14章） ---------- */
+.diag-summary { font:var(--text-body-sm); color:var(--color-text-muted); margin-top:var(--space-3); font-weight:600; }
+.diag-result-note { font:var(--text-meta); color:var(--color-text-faint); margin-top:var(--space-2); }
+
+/* ---------- FAQアコーディオン（12章） ---------- */
+.faq-item { border:var(--border-default); border-radius:var(--radius-sm); margin:var(--space-2) 0; background:var(--color-surface); }
+.faq-item summary {
+  cursor:pointer; padding:var(--space-3) var(--space-5) var(--space-3) var(--space-4);
+  font-weight:700; font-size:15px; list-style:none; position:relative;
+  transition:color var(--transition-fast);
+}
+.faq-item summary::-webkit-details-marker { display:none; }
+.faq-item summary:hover { color:var(--color-primary); }
+.faq-item summary::after {
+  content:"＋"; position:absolute; right:var(--space-3); top:50%; transform:translateY(-50%);
+  color:var(--color-primary); font-weight:700; font-size:16px;
+  transition:transform var(--transition-fast);
+}
+.faq-item[open] summary::after { content:"－"; }
+.faq-body { padding:0 var(--space-4) var(--space-3); font:var(--text-body-sm); color:var(--color-text-muted); }
+.faq-body p { margin-bottom:0; }
+
+/* ---------- pros/cons / feature-list ---------- */
+.pros-cons { display:flex; gap:var(--space-4); flex-wrap:wrap; }
+.pros-cons > div { flex:1; min-width:240px; }
+.pros li, .cons li { margin-left:20px; font-size:14px; }
+ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
+
+/* ---------- フッター ---------- */
+.updated { color:var(--color-text-muted); font-size:12px; margin-top:var(--space-5); border-top:1px solid var(--color-border); padding-top:var(--space-3); }
+footer.site { text-align:center; padding:var(--space-5) var(--space-4); color:var(--color-text-muted); font-size:12px; margin-top:var(--space-6); }
+footer.site .container p { margin-bottom:6px; }
+.footer-nav a { color:var(--color-text-faint); margin:0 8px; text-decoration:none; }
+.footer-nav a:hover { color:var(--color-text-muted); text-decoration:underline; }
+
+/* ---------- モバイル（640px以下、15章・16章） ---------- */
+.mobile-scroll-hint { display:none; }
+.ranking-mobile { display:none; }
+@media (max-width:640px) {
+  .container { padding:0 var(--space-3); }
+  /* 多列テーブル（verification・比較）は横スクロール方式を維持（9.4節・15.5節） */
+  table { min-width:520px; }
+  .mobile-scroll-hint { display:block; font-size:12px; color:var(--color-text-muted); margin:4px 0; }
+  /* 比較一覧：デスクトップ=テーブル / モバイル=Service Card縦積み（9.4節） */
+  .ranking-desktop { display:none; }
+  .ranking-mobile { display:block; }
+  /* Hero（15.1節） */
+  .hero { padding:var(--space-5); }
+  .hero h1 { font-size:1.5rem; }
+  .hero-actions { flex-direction:column; align-items:stretch; }
+  .hero-actions .btn-primary { width:100%; }
+  /* ナビ（5章） */
+  nav.main { gap:var(--space-2); }
+  nav.main a { font-size:13px; padding:4px 2px; }
+  /* Trust Panel（15.5節・16章：モバイルは3数値を縦積み3行に） */
+  .trust-stats { flex-direction:column; gap:var(--space-3); }
+  .trust-stat { flex-direction:row; align-items:baseline; gap:6px; }
+  .trust-figure { font-size:1.4rem; }
+  /* 目的別チップ（15.1節） */
+  .purpose-groups { gap:var(--space-3); }
+  .purpose-group { flex:1 1 45%; min-width:0; }
+  /* Service CardのCTA */
+  .svc-card-footer .btn-primary, .svc-card-footer .btn-secondary { flex:1; justify-content:center; }
+}
+@media (max-width:400px) {
+  .purpose-group { flex:1 1 100%; }
+}
+"""
+
+
 def yen(v):
     if v is None:
         return "公式確認中"
@@ -33,10 +367,21 @@ _VSTATUS_LABEL = {
     "uncollected": "未収集",
 }
 
+# 色覚に依存しない識別用の記号（REDESIGN_UI_SPEC.md 11章「表示の見方」）。
+# 検証状態の意味は変更しない（優劣を表す記号ではない）。
+_VSTATUS_SYMBOL = {
+    "confirmed": "✓",
+    "derived": "≈",
+    "pending": "…",
+    "uncollected": "—",
+}
+
 
 def vstatus_badge(status):
     label = _VSTATUS_LABEL.get(status, "確認中")
-    return f'<span class="vstatus vstatus-{status}">{esc(label)}</span>'
+    symbol = _VSTATUS_SYMBOL.get(status, "…")
+    return (f'<span class="vstatus vstatus-{status}">'
+            f'<span class="vstatus-symbol" aria-hidden="true">{symbol}</span>{esc(label)}</span>')
 
 
 def mobile_scroll_hint():
@@ -46,46 +391,67 @@ def mobile_scroll_hint():
     return '<p class="mobile-scroll-hint">◀ 表がはみ出す場合は横にスクロールしてご覧ください ▶</p>'
 
 
-def coverage_stat_html(coverage, link_to_dashboard=True):
-    """検証カバレッジの一言。33項目（11社×価格/送料/初回キャンペーン）中の確認済み件数を
-    正直に提示する。confirmedのみを「確認済み」件数に数え、derived/pending等は別途明記して
-    含めない（既存4状態の区別を壊さない）。トップページ・ranking・verification.htmlで
-    generators.py の compute_verification_coverage() を共有し、集計の不一致を防ぐ。
-    FINAL_REDESIGN_SPEC.md 4章・6章・7章・12章。"""
-    total = coverage.get("total", 0)
-    confirmed = coverage.get("confirmed", 0)
-    derived = coverage.get("derived", 0)
-    pending = coverage.get("pending", 0)
-    link = ' <a href="/verification.html">→ 確認状況を一覧で見る</a>' if link_to_dashboard else ""
-    return (
-        '<p style="font-size:13px;color:#666;">'
-        f'価格・送料・初回キャンペーン 計{total}項目中 <strong>{confirmed}件</strong>を公式一次情報で確認済み'
-        f'（算出値{derived}件・確認中{pending}件は含みません）'
-        f'{link}</p>'
-    )
+def trust_panel(coverage, num_services, link_to_dashboard=True):
+    """検証カバレッジのパネル（REDESIGN_UI_SPEC.md 8章・16章）。
+    サイト全体の情報収集状況を示す視覚的主役コンポーネントで、個社の優劣を示すものではない。
+    数値はハードコードせず generators.compute_verification_coverage() の集計値と
+    num_services（実際のサービス数）から表示する。confirmedのみを「確認済み」件数に数え、
+    derived/pending/uncollectedは凡例として別途明記する（既存4状態の区別を壊さない）。
+    TOP・ranking・verification.htmlで共有し、集計の不一致を防ぐ。"""
+    total = coverage.get("total", 0) or 0
+    confirmed = coverage.get("confirmed", 0) or 0
+    derived = coverage.get("derived", 0) or 0
+    pending = coverage.get("pending", 0) or 0
+    uncollected = coverage.get("uncollected", 0) or 0
+
+    def _pct(n):
+        return round(n * 100 / total) if total else 0
+
+    bar = (f'<span class="trust-bar-confirmed" style="width:{_pct(confirmed)}%"></span>'
+           f'<span class="trust-bar-derived" style="width:{_pct(derived)}%"></span>'
+           f'<span class="trust-bar-pending" style="width:{_pct(pending)}%"></span>'
+           f'<span class="trust-bar-uncollected" style="width:{_pct(uncollected)}%"></span>')
+    legend = (f'{vstatus_badge("confirmed")}{confirmed}件 '
+              f'{vstatus_badge("derived")}{derived}件 '
+              f'{vstatus_badge("pending")}{pending}件 '
+              f'{vstatus_badge("uncollected")}{uncollected}件')
+    link = ('<a class="trust-link" href="/verification.html">→ 確認状況を一覧で見る</a>'
+            if link_to_dashboard else "")
+    return f"""
+    <div class="trust-panel">
+      <h2>検証カバレッジ</h2>
+      <div class="trust-stats">
+        <div class="trust-stat"><span class="trust-figure">{num_services}</span><span class="trust-label">掲載サービス数</span></div>
+        <div class="trust-stat"><span class="trust-figure">{total}</span><span class="trust-label">確認対象の総数</span></div>
+        <div class="trust-stat"><span class="trust-figure">{confirmed}</span><span class="trust-label">公式一次情報で確認済み</span></div>
+      </div>
+      <div class="trust-bar">{bar}</div>
+      <div class="trust-legend">{legend}</div>
+      {link}
+      <p class="trust-note">※このパネルはサイト全体の情報収集状況を示すもので、サービスの優劣を示すものではありません。</p>
+    </div>"""
 
 
-def purpose_cards_block(purpose_matches):
-    """目的別導線カード（TOP・ranking.htmlで共有するコンポーネント）。既存tags/targetに
-    一致するサービスへの直接リンク集約のみで、新規フィルタエンジン・新規ページ・
-    新規データフィールドは作らない。該当社が無いカテゴリはそもそも渡されない
-    （generators.py compute_purpose_matches()側で除外済み）。
-    FINAL_REDESIGN_SPEC.md 6章・7章。"""
+def purpose_chips_block(purpose_matches):
+    """目的別導線チップ（REDESIGN_UI_SPEC.md 7章）。既存tags/targetに一致するサービスへの
+    直接リンク集約のみで、新規フィルタエンジン・新規ページ・新規データフィールドは作らない。
+    該当社が無いカテゴリはそもそも渡されない（generators.py compute_purpose_matches()側で除外済み）。
+    見た目は「チップ（カテゴリ名）+ 配下のサービステキストリンク」へ再設計するが、
+    各サービスリンクの遷移先（/services/{id}.html）は変更しない（既存CTA遷移先の維持）。
+    カテゴリチップ自体はナビゲーションではなくラベルであり、順位・おすすめ度を表さない。"""
     if not purpose_matches:
         return ""
-    # カードの中にカードを二重ネストしない（装飾過多を避ける、FINAL_REDESIGN_SPEC.md
-    # 「デザイン方針：必要以上にカード化・装飾化しない」）。外枠は1つの.cardのみとし、
-    # 各カテゴリは見出し+リンクの軽量なブロックに留める。
-    blocks = ""
+    groups = ""
     for _cat_id, label, matched in purpose_matches:
         links = "".join(
-            f'<a class="btn-secondary" href="/services/{esc(s["id"])}.html" style="margin-right:6px;margin-bottom:6px;">{esc(s["name"])}</a>'
+            f'<a href="/services/{esc(s["id"])}.html">{esc(s["name"])}</a>'
             for s in matched
         )
-        blocks += (f'<div style="flex:1;min-width:200px;">'
-                   f'<h3 style="margin-top:0;">{esc(label)}</h3><div>{links}</div></div>')
-    return (f'<div class="card"><h2>目的で探す</h2>'
-            f'<div style="display:flex;flex-wrap:wrap;gap:16px;">{blocks}</div></div>')
+        groups += (f'<div class="purpose-group">'
+                   f'<span class="purpose-chip">{esc(label)}</span>'
+                   f'<div class="purpose-services">{links}</div></div>')
+    return (f'<div class="purpose-section"><h2>目的で探す</h2>'
+            f'<div class="purpose-groups">{groups}</div></div>')
 
 
 def fully_verified_badge():
@@ -100,7 +466,7 @@ def fully_verified_badge():
 def vstatus_legend(link_to_dashboard=True):
     link = ' <a href="/verification.html">→ 全社の確認状況を一覧で見る</a>' if link_to_dashboard else ""
     return (
-        '<p style="font-size:12px;color:#666;margin-top:8px;">表示の見方：'
+        '<p class="price-meta" style="margin-top:8px;">表示の見方：'
         f'{vstatus_badge("confirmed")}＝公式一次情報で確認／'
         f'{vstatus_badge("derived")}＝公式情報から計算／'
         f'{vstatus_badge("pending")}＝情報はあるが裏付け不十分／'
@@ -141,14 +507,15 @@ def _campaign_status(first_time_campaign):
 def source_link(sources_by_id, source_id):
     """source_idに対応するsources.jsonエントリがあれば出典リンクを返す。
     source_idが無い、またはsources.json側にエントリが見つからない場合は空文字
-    （リンクできない出典を示さない。PHASE2_IMPLEMENTATION_PLAN.md 7章）。"""
+    （リンクできない出典を示さない。PHASE2_IMPLEMENTATION_PLAN.md 7章）。
+    見た目は--text-meta相当の補助情報クラス（.source-link）に統一する。"""
     if not source_id or not sources_by_id:
         return ""
     src = sources_by_id.get(source_id)
     if not src:
         return ""
-    return (f' <a href="{esc(src.get("url", ""))}" target="_blank" rel="noopener nofollow" '
-            f'style="font-size:12px;">出典を見る（確認日: {esc(src.get("confirmed_at", ""))}）</a>')
+    return (f' <a class="source-link" href="{esc(src.get("url", ""))}" target="_blank" rel="noopener nofollow">'
+            f'出典を見る（確認日: {esc(src.get("confirmed_at", ""))}）</a>')
 
 
 def price_cell_html(price_plan, sources_by_id=None):
@@ -170,6 +537,43 @@ def price_cell_html(price_plan, sources_by_id=None):
     else:
         date_html = ""
     return f"{cheapest_html}{date_html} {vstatus_badge(stat)}{src_link}"
+
+
+def price_figure_html(price_plan, sources_by_id=None):
+    """Service Card・詳細ページの料金ブロック用の価格表示（REDESIGN_UI_SPEC.md 4章・9章）。
+    数値部分（例:351）だけを--price-figureで大きくし、単位（円/食）・検証バッジ・
+    出典/確認日は補助情報として小さく下げる。未確認（pending/uncollected）の値には
+    確認日を出さない。既存の_price_status/source_linkロジックを再利用する。"""
+    price_plan = price_plan or {}
+    cheapest = price_plan.get("lowest_per_meal_yen")
+    stat = _price_status(price_plan)
+    badge = vstatus_badge(stat)
+    src = source_link(sources_by_id, price_plan.get("source_id"))
+    checked = price_plan.get("last_checked", "")
+    if src:
+        date_html = ""
+    elif stat in ("confirmed", "derived") and checked:
+        date_html = f"（{esc(checked)}時点）"
+    else:
+        date_html = ""
+    meta = "".join([f'<div class="svc-card-meta">{src}{date_html}</div>' if (src or date_html) else ""])
+    if cheapest is None:
+        return f'<div class="svc-card-price-row"><span class="price-unconfirmed">公式確認中</span> {badge}</div>{meta}'
+    price = f'<span class="price-figure">{cheapest:,}</span><span class="price-unit">円/食</span>'
+    return f'<div class="svc-card-price-row">{price} {badge}</div>{meta}'
+
+
+def _price_inline_html(price_plan, sources_by_id=None):
+    """比較テーブル（ranking・comparison）のセル用の価格表示（REDESIGN_UI_SPEC.md 9.4節・13章）。
+    数値部分だけを--price-figureで強調し、単位・検証バッジは補助情報として控えめに並べる。
+    未確認の値は価格として強調せず、淡いグレーの「公式確認中」+ バッジに留める。"""
+    price_plan = price_plan or {}
+    cheapest = price_plan.get("lowest_per_meal_yen")
+    stat = _price_status(price_plan)
+    badge = vstatus_badge(stat)
+    if cheapest is None:
+        return f'<span class="price-unconfirmed">公式確認中</span> {badge}'
+    return f'<span class="price-figure">{cheapest:,}</span><span class="price-unit">円/食</span> {badge}'
 
 
 def shipping_line(shipping_row, sources_by_id=None):
@@ -206,7 +610,7 @@ def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
     target = info.get("asp", "")
     label = label or "公式サイトを見る"
     if not url:
-        return f'<span class="btn-disabled" style="display:inline-block;background:#eee;color:#999;padding:8px 16px;border-radius:6px;font-size:13px;">公式サイト（公式確認中）</span>'
+        return '<span class="btn-disabled">公式サイト（公式確認中）</span>'
     note = ""
     if actual:
         note = f'<span class="aff-note">（{esc(target)}経由）</span>'
@@ -279,48 +683,13 @@ def page_header(title, description, canonical_path):
 {meta_block}
 {ga4_block}
 <style>
-:root {{ --primary:#e8552d; --text:#222; --bg:#faf7f5; --card:#fff; --muted:#666; }}
-* {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif; color:var(--text); background:var(--bg); line-height:1.7; }}
-.container {{ max-width:1000px; margin:0 auto; padding:0 16px; }}
-header.site {{ background:var(--primary); color:#fff; padding:16px 0; }}
-header.site .container {{ display:flex; align-items:center; justify-content:space-between; }}
-header.site a {{ color:#fff; text-decoration:none; }}
-nav.main a {{ margin-right:16px; font-size:14px; }}
-h1 {{ font-size:1.6rem; margin:24px 0 8px; }}
-h2 {{ font-size:1.25rem; margin:24px 0 8px; }}
-h3 {{ font-size:1.05rem; margin:16px 0 6px; }}
-.card {{ background:var(--card); border-radius:8px; padding:16px; margin:12px 0; box-shadow:0 1px 3px rgba(0,0,0,.08); overflow-x:auto; }}
-table {{ width:100%; border-collapse:collapse; background:var(--card); border-radius:8px; overflow:hidden; font-size:14px; }}
-th, td {{ padding:10px 12px; text-align:left; border-bottom:1px solid #eee; vertical-align:top; }}
-th {{ background:#f5ede8; font-weight:bold; }}
-.btn-primary {{ display:inline-block; background:var(--primary); color:#fff; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:bold; }}
-.btn-secondary {{ display:inline-block; background:#eee; color:#333; padding:8px 16px; border-radius:6px; text-decoration:none; font-weight:bold; }}
-.tag {{ display:inline-block; background:#f5ede8; color:var(--primary); padding:2px 10px; border-radius:12px; font-size:12px; margin:2px; }}
-.vstatus {{ display:inline-block; font-size:11px; padding:1px 8px; border-radius:10px; font-weight:bold; white-space:nowrap; }}
-.vstatus-confirmed {{ background:#e6f4ea; color:#1e7e34; }}
-.vstatus-derived {{ background:#e8f0fe; color:#1a56db; }}
-.vstatus-pending {{ background:#fff4e5; color:#b45300; }}
-.vstatus-uncollected {{ background:#f1f1f1; color:#777; }}
-.vfull-badge {{ display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--primary); color:var(--primary); border-radius:10px; font-weight:bold; white-space:nowrap; margin-left:4px; }}
-.aff-note {{ font-size:11px; opacity:.8; }}
-.updated {{ color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }}
-.pros-cons {{ display:flex; gap:16px; flex-wrap:wrap; }}
-.pros-cons > div {{ flex:1; min-width:240px; }}
-.pros li, .cons li {{ margin-left:20px; font-size:14px; }}
-footer.site {{ text-align:center; padding:24px 16px; color:var(--muted); font-size:12px; margin-top:32px; }}
-ul.feature-list li, ol.feature-list li {{ margin-left:20px; font-size:14px; }}
-.mobile-scroll-hint {{ display:none; }}
-@media (max-width:640px) {{
-  table {{ min-width:480px; }}
-  .mobile-scroll-hint {{ display:block; font-size:12px; color:var(--muted); margin:4px 0; }}
-}}
+{_CSS}
 </style>
 </head>
 <body>
 <header class="site">
   <div class="container">
-    <a href="/"><strong>{SITE_NAME}</strong></a>
+    <a href="/" class="site-logo">{SITE_NAME}</a>
     <nav class="main">
       <a href="/ranking.html">おすすめ比較</a>
       <a href="/campaigns.html">初回キャンペーン</a>
@@ -342,10 +711,10 @@ def page_footer(updated_date, show_vstatus_legend=False):
     <p>{SITE_NAME}は宅配食サービスの比較情報を提供するサイトです。各サービスの価格・キャンペーン情報は常に変動します。</p>
     <p>当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
     <nav class="footer-nav" style="margin-top:12px;font-size:13px;">
-      <a href="/privacy.html" style="color:#eee;margin:0 8px;">プライバシーポリシー</a>｜
-      <a href="/disclaimer.html" style="color:#eee;margin:0 8px;">免責事項</a>｜
-      <a href="/operator.html" style="color:#eee;margin:0 8px;">運営者情報</a>｜
-      <a href="/contact.html" style="color:#eee;margin:0 8px;">お問い合わせ</a>
+      <a href="/privacy.html">プライバシーポリシー</a>｜
+      <a href="/disclaimer.html">免責事項</a>｜
+      <a href="/operator.html">運営者情報</a>｜
+      <a href="/contact.html">お問い合わせ</a>
     </nav>
   </div>
 </footer>
@@ -367,7 +736,7 @@ def related_services_block(related):
     return f"""
     <div class="card">
       <h2>関連サービス</h2>
-      <p style="font-size:13px;color:#666;">共通する特徴・対象が多いサービスです。</p>
+      <p class="price-meta">共通する特徴・対象が多いサービスです。</p>
       <div style="margin-top:8px;">{items}</div>
     </div>"""
 
@@ -392,13 +761,14 @@ def comparison_links_block(comparison_links):
 def service_recommend_block(service):
     """「こんな方におすすめ」早期セクション。既存targetフィールドを、基本情報テーブルの
     1行から独立したカードへ格上げするだけで、新規データは使わない。
-    価格より前に提示する（silver-choice/my-best実測パターン、FINAL_REDESIGN_SPEC.md 8章）。"""
+    価格より前に提示し、--color-surface-alt背景で最初の視覚的着地点にする
+    （REDESIGN_UI_SPEC.md 12章・17章）。"""
     target = service.get("target", [])
     if not target:
         return ""
     items = "".join(f"<li>{esc(t)}</li>" for t in target)
     return f"""
-    <div class="card" style="background:#fff8f0;">
+    <div class="card panel-accent">
       <h2>こんな方におすすめ</h2>
       <ul class="feature-list">{items}</ul>
     </div>"""
@@ -406,7 +776,9 @@ def service_recommend_block(service):
 
 def service_faq_block(service, shipping_row):
     """よくある質問。既存のtarget/cancellation_note/shipping.notesをQ&A形式に
-    再構成するだけで、新規データ収集は行わない。FINAL_REDESIGN_SPEC.md 8章。"""
+    再構成するだけで、新規データ収集は行わない。FINAL_REDESIGN_SPEC.md 8章。
+    見た目を<details>/<summary>による開閉式アコーディオンへ変更（JS追加なし・内容は無変更）。
+    REDESIGN_UI_SPEC.md 12章・15.3節（モバイルの縦スクロール圧縮）。"""
     qa = []
     target_txt = "・".join(service.get("target", []))
     if target_txt:
@@ -418,7 +790,10 @@ def service_faq_block(service, shipping_row):
         qa.append(("送料はいくらですか？地域で変わりますか？", shipping_row["notes"]))
     if not qa:
         return ""
-    body = "".join(f"<h3>{esc(q)}</h3><p>{esc(a)}</p>" for q, a in qa)
+    body = "".join(
+        f'<details class="faq-item"><summary>{esc(q)}</summary><div class="faq-body"><p>{esc(a)}</p></div></details>'
+        for q, a in qa
+    )
     return f"""
     <div class="card">
       <h2>よくある質問</h2>
@@ -436,6 +811,8 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     recommend_html = service_recommend_block(service)
     faq_html = service_faq_block(service, shipping_row)
     last_checked = service.get("last_checked", "")
+    price_plan = service.get("price_plan", {})
+    first_camp = service.get("first_time_campaign", {})
 
     # 関連記事リンク（サービスDBに article_link があれば表示）
     article_link_html = ""
@@ -450,27 +827,48 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     cons = "".join(f"<li>{esc(c)}</li>" for c in service.get("cons", []))
     tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service.get("tags", []))
 
-    price_html = price_cell_html(service.get("price_plan", {}), sources_by_id)
+    # 価格は専用ブロックで大きく表示する（--price-figure、12章）。未確認の値は小さく控えめに。
+    price_block_html = price_figure_html(price_plan, sources_by_id)
 
     title = f"{s_name}の特徴・料金・初回キャンペーンを解説"
     desc = f"{s_name}の特徴・料金・初回キャンペーン・お試し情報をまとめました。{SITE_NAME}が公式サイトで最終確認した情報（2026年8月）に基づく内容です。"
 
     html = page_header(title, desc, f"services/{s_id}.html")
     html += f"""
-    <h1>{esc(s_name)}</h1>
-    <p style="font-size:12px;color:#666;">最終確認日: {esc(last_checked) or "未確認"}</p>
+    <div class="page-head">
+      <h1>{esc(s_name)}</h1>
+      <span class="page-head-meta">確認日: {esc(last_checked) or "未確認"}</span>
+    </div>
     <div>{tags}</div>
     {recommend_html}
+
+    <div class="card">
+      <h2>料金</h2>
+      {price_block_html}
+      <div class="svc-card-footer" style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで料金・キャンペーンを確認")}</div>
+    </div>
 
     <div class="card">
       <h2>基本情報</h2>
       <table>
         <tr><th>運営会社</th><td>{esc(service.get("operator", "公式確認中"))}</td></tr>
         <tr><th>形態</th><td>{esc(service.get("meal_type", ""))}（{esc(service.get("meal_form", ""))}）</td></tr>
-        <tr><th>最安料金</th><td>{price_html}</td></tr>
+        <tr><th>保存方法</th><td>{esc(service.get("meal_form", "公式確認中"))}</td></tr>
         <tr><th>対象</th><td>{", ".join(service.get("target", []))}</td></tr>
       </table>
-      <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで料金・キャンペーンを確認")}</div>
+    </div>
+
+    <div class="card">
+      <h2>初回キャンペーン・お試し</h2>
+      <p>{esc(first_camp.get("summary", "公式確認中"))} {vstatus_badge(_campaign_status(first_camp))}{source_link(sources_by_id, first_camp.get("source_id"))}</p>
+      <p class="price-meta">{esc(first_camp.get("detail", ""))}</p>
+      <div class="svc-card-footer" style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトでキャンペーンを確認", cls="btn-secondary")}</div>
+    </div>
+
+    <div class="card">
+      <h2>解約・送料について</h2>
+      {shipping_html}
+      <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
     </div>
 
     <div class="card">
@@ -485,19 +883,6 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
         <div><strong>気になる点</strong><ul class="feature-list">{cons}</ul></div>
       </div>
     </div>
-
-    <div class="card">
-      <h2>初回キャンペーン・お試し</h2>
-      <p>{esc(service.get("first_time_campaign", {}).get("summary", "公式確認中"))} {vstatus_badge(_campaign_status(service.get("first_time_campaign", {})))}{source_link(sources_by_id, service.get("first_time_campaign", {}).get("source_id"))}</p>
-      <p style="font-size:13px;color:#666;">{esc(service.get("first_time_campaign", {}).get("detail", ""))}</p>
-      <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトでキャンペーンを確認", cls="btn-secondary")}</div>
-    </div>
-
-    <div class="card">
-      <h2>解約・送料について</h2>
-      {shipping_html}
-      <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
-    </div>
     {faq_html}
     {related_html}
     {comparison_html}
@@ -505,7 +890,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       <p style="margin-bottom:8px;">{esc(s_name)}が気になった方は、公式サイトで最新の料金・キャンペーンをご確認ください。</p>
       {aff_link(aff_links, s_id, label="公式サイトを見る")}
     </div>
-    <div style="margin-top:16px;">
+    <div class="svc-card-footer" style="margin-top:16px;">
       {article_link_html}
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
@@ -536,7 +921,8 @@ def comparison_pairs_block(comparison_pairs):
 
 
 def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
-                        purpose_matches=None, coverage=None, fully_verified_ids=None):
+                        purpose_matches=None, coverage=None, fully_verified_ids=None,
+                        sources_by_id=None):
     # サービスID → 確認済みの初回キャンペーン特典（requires_verification=false のみ表示）
     # camp_txt/camp_badge は同じcampaigns.json（data/campaigns.json）を情報源として揃える
     # （services.json側のfirst_time_campaignは別データで鮮度がずれている場合があるため使わない）。
@@ -548,10 +934,9 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
             confirmed_camp[c.get("service_id")] = c.get("discount_type", "")
 
     rows = []
+    cards = []
     for svc in services:
-        cheapest = svc.get("price_plan", {}).get("lowest_per_meal_yen")
-        cheapest_txt = (f"{yen(cheapest)}/食") if cheapest else "公式確認中"
-        price_badge = vstatus_badge(_price_status(svc.get("price_plan", {})))
+        price_plan = svc.get("price_plan", {})
         camp_txt = confirmed_camp.get(svc["id"], "公式確認中")
         if svc["id"] in confirmed_camp:
             camp_status = "confirmed"
@@ -568,18 +953,40 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         mealform_attr = esc(" ".join(mealform_cats))
         # 「全項目確認済み」の事実バッジ（CONFIRMEDのみ、序列化には使わない。FINAL_REDESIGN_SPEC.md 5章）。
         full_badge = fully_verified_badge() if svc["id"] in (fully_verified_ids or set()) else ""
+        detail_link = f'<a class="btn-secondary" href="/services/{svc["id"]}.html">詳しく見る</a>'
+        # デスクトップテーブル用（補助CTA）とモバイルカード用（主CTA、9章のカードフッター指定）を分ける。
+        # いずれも既存の遷移先（公式URL/ASP actual_url）は不変。
+        aff_cta_table = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-secondary")
+        aff_cta_card = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-primary")
+
+        # デスクトップ：テーブル行（9.4節。価格セルだけ--price-figureで強調）
+        price_cell = _price_inline_html(price_plan, sources_by_id)
         rows.append(f"""
         <tr data-mealform="{mealform_attr}">
           <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}</td>
-          <td>{cheapest_txt} {price_badge}</td>
+          <td>{price_cell}</td>
           <td>{esc(camp_txt)} {camp_badge}</td>
           <td>{mealform_txt}</td>
           <td>{', '.join(svc.get('target', []))}</td>
-          <td>
-            <a class="btn-secondary" href="/services/{svc['id']}.html">詳しく見る</a>
-            {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}
-          </td>
+          <td>{detail_link} {aff_cta_table}</td>
         </tr>""")
+
+        # モバイル：Service Card縦積み（9章・15.2節。価格→保存方法/向いている人→検証→CTAの順）
+        price_html = price_figure_html(price_plan, sources_by_id)
+        target_txt = "・".join(svc.get("target", [])) or "公式確認中"
+        cards.append(f"""
+        <div class="svc-card" data-mealform="{mealform_attr}">
+          <div class="svc-card-header">
+            <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
+            {full_badge}
+          </div>
+          <div class="svc-card-tags">{tags}</div>
+          {price_html}
+          <div class="svc-card-campaign">初回：{esc(camp_txt)} {camp_badge}</div>
+          <div class="svc-card-storage">保存方法：{mealform_txt}</div>
+          <div class="svc-card-target">向いている人：{target_txt}</div>
+          <div class="svc-card-footer">{detail_link} {aff_cta_card}</div>
+        </div>""")
 
     # 「ランキング」は名乗らない：確認済み項目数等いかなる基準でも数値順位は付けない
     # （根拠のないランキングを作らないという既存方針。FINAL_REDESIGN_SPEC.md 5章の最終判断）。
@@ -587,12 +994,18 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     title = "宅配食 比較一覧【2026年8月最新】"
     desc = "宅配食・宅配弁当サービスの最新比較。nosh、ワタミの宅食ダイレクト、三ツ星ファームなど主要サービスの料金・特徴・初回キャンペーンを一覧で比較。順位付けはせず、確認できた情報のみを一覧にしています。"
 
+    num_services = len(services)
+    trust_html = trust_panel(coverage, num_services) if coverage else ""
+    full_badge_note = (f'<p class="price-meta" style="margin-top:8px;">{fully_verified_badge()}＝'
+                       '価格・送料・初回キャンペーンの3項目すべてを公式一次情報で確認済みという事実表示です。'
+                       '並び順・おすすめ度とは関係ありません（当サイトは順位付けを行いません）。</p>')
+
     html = page_header(title, desc, "ranking.html")
     html += f"""
     <h1>宅配食 比較一覧【2026年8月最新】</h1>
     <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（{LAST_VERIFIED_DATE}時点）。当サイトは独自の点数やランキング順位を付けていません。</p>
-    {purpose_cards_block(purpose_matches)}
-    {coverage_stat_html(coverage) if coverage else ""}
+    {purpose_chips_block(purpose_matches)}
+    {trust_html}
     <div class="card">
       <h3 style="margin-top:0;">保存方法で絞り込む（任意）</h3>
       <div id="mealform-filter" class="checks">
@@ -601,14 +1014,18 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         <label><input type="checkbox" value="日配" onchange="filterRankingByMealform()"> 日配</label>
       </div>
     </div>
-    {mobile_scroll_hint()}
-    <div class="card">
-      <table id="ranking-table">
-        <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
-        {''.join(rows)}
-      </table>
-      <p style="font-size:12px;color:#666;margin-top:8px;">{fully_verified_badge()}＝価格・送料・初回キャンペーンの3項目すべてを公式一次情報で確認済みという事実表示です。並び順・おすすめ度とは関係ありません（当サイトは順位付けを行いません）。</p>
+    <div class="ranking-desktop">
+      <div class="card">
+        <table id="ranking-table">
+          <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
+          {''.join(rows)}
+        </table>
+      </div>
     </div>
+    <div class="ranking-mobile">
+      {''.join(cards)}
+    </div>
+    {full_badge_note}
     <div class="card">
       <h2>選び方のポイント</h2>
       <ul class="feature-list">
@@ -619,14 +1036,14 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
       <p style="margin-top:12px;"><a class="btn-primary" href="/tool/diagnosis.html">自分に合うサービスを診断する →</a></p>
     </div>
     {comparison_pairs_block(comparison_pairs)}
-    <p style="font-size:13px;color:#666;">※各サービスの詳細はサービス名リンクから。価格・キャンペーン情報は常に変動するため、最新情報は公式サイトをご確認ください。</p>
+    <p class="price-meta">※各サービスの詳細はサービス名リンクから。価格・キャンペーン情報は常に変動するため、最新情報は公式サイトをご確認ください。</p>
     <script>
     function filterRankingByMealform() {{
       const checked = [...document.querySelectorAll('#mealform-filter input:checked')].map(x => x.value);
-      document.querySelectorAll('#ranking-table tr[data-mealform]').forEach(tr => {{
-        const forms = (tr.dataset.mealform || '').split(' ').filter(Boolean);
+      document.querySelectorAll('#ranking-table tr[data-mealform], .ranking-mobile .svc-card[data-mealform]').forEach(el => {{
+        const forms = (el.dataset.mealform || '').split(' ').filter(Boolean);
         const show = checked.length === 0 || forms.some(f => checked.includes(f));
-        tr.style.display = show ? '' : 'none';
+        el.style.display = show ? '' : 'none';
       }});
     }}
     </script>
@@ -709,14 +1126,14 @@ def _comparison_target_diff_html(service_a, service_b):
     return "".join(parts)
 
 
-def build_comparison_page(service_a, service_b, aff_links):
+def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     a_id, b_id = service_a["id"], service_b["id"]
     a_name, b_name = service_a["name"], service_b["name"]
 
-    a_cheapest = service_a.get("price_plan", {}).get("lowest_per_meal_yen")
-    b_cheapest = service_b.get("price_plan", {}).get("lowest_per_meal_yen")
-    a_price = (f"{yen(a_cheapest)}/食") if a_cheapest else "公式確認中"
-    b_price = (f"{yen(b_cheapest)}/食") if b_cheapest else "公式確認中"
+    # 価格セル：confirmed/derivedのみ--price-figureで強調し、未確認の値は控えめに沈める
+    # （REDESIGN_UI_SPEC.md 13章「データの確実性とUIの強調度を一致させる」）。
+    a_price = _price_inline_html(service_a.get("price_plan", {}), sources_by_id)
+    b_price = _price_inline_html(service_b.get("price_plan", {}), sources_by_id)
 
     a_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_a.get("tags", []))
     b_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_b.get("tags", []))
@@ -732,7 +1149,7 @@ def build_comparison_page(service_a, service_b, aff_links):
     <h1>{esc(a_name)}と{esc(b_name)}を徹底比較</h1>
     <p>どちらにするか迷っている人向けに、料金・特徴・初回キャンペーンを比較します。（2026年8月時点の情報）</p>
 
-    <div class="card" style="background:#fff8f0;">
+    <div class="card panel-accent">
       <h2>結論</h2>
       {price_diff_html}
       {target_diff_html}
@@ -740,10 +1157,10 @@ def build_comparison_page(service_a, service_b, aff_links):
 
     {mobile_scroll_hint()}
     <div class="card">
-      <table>
+      <table class="compare-table">
         <tr><th></th><th>{esc(a_name)}</th><th>{esc(b_name)}</th></tr>
         <tr><td><strong>特徴</strong></td><td>{a_tags}</td><td>{b_tags}</td></tr>
-        <tr><td><strong>最安料金</strong></td><td>{a_price}</td><td>{b_price}</td></tr>
+        <tr><td><strong>最安料金</strong></td><td class="price-cell">{a_price}</td><td class="price-cell">{b_price}</td></tr>
         <tr><td><strong>向いている人</strong></td><td>{', '.join(service_a.get('target', []))}</td><td>{', '.join(service_b.get('target', []))}</td></tr>
         <tr><td><strong>料金・特徴を詳しく見る</strong></td><td><a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細ページ</a></td><td><a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細ページ</a></td></tr>
         <tr><td><strong>公式サイト</strong></td><td>{aff_link(aff_links, a_id, label='公式サイトを確認', cls='btn-secondary')}</td><td>{aff_link(aff_links, b_id, label='公式サイトを確認', cls='btn-secondary')}</td></tr>
@@ -760,7 +1177,7 @@ def build_comparison_page(service_a, service_b, aff_links):
       <ul class="feature-list">{''.join(f'<li>{esc(p)}</li>' for p in service_b.get('pros', []))}</ul>
     </div>
 
-    <div style="margin-top:16px;">
+    <div class="svc-card-footer" style="margin-top:16px;">
       <a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細を見る</a>
       <a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細を見る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
@@ -816,7 +1233,8 @@ def build_diagnosis_tool(services, aff_links):
         <label><input type="checkbox" value="冷蔵"> 冷蔵</label>
         <label><input type="checkbox" value="日配"> 日配</label>
       </div>
-      <p style="margin-top:12px;"><button class="btn-primary" onclick="runDiag()">診断する</button></p>
+      <p id="diag-summary" class="diag-summary"></p>
+      <p style="margin-top:12px;"><button class="btn-primary" onclick="runDiag()">診断する →</button></p>
     </div>
 
     <div id="result" class="card" style="display:none;"></div>
@@ -826,9 +1244,20 @@ def build_diagnosis_tool(services, aff_links):
     // GA4計測（診断ツール専用。ページ遷移が無いGA4拡張計測ではカバーできないためこの2つのみ独自実装する。
     // PHASE4_FINAL_DECISION.md 1章）。診断開始は初回のチェック操作でのみ1回発火（多重発火防止）。
     let _diagStarted = false;
+    // 選択サマリー（REDESIGN_UI_SPEC.md 14章）。選択済みチェックボックスの個数・名称を
+    // 表示するだけの純粋な表示ロジックで、スコアリング・推薦アルゴリズムには一切影響しない。
+    function updateDiagSummary() {{
+      const goals = [...document.querySelectorAll('#goals input:checked')].map(x => x.parentNode.textContent.trim());
+      const mealForms = [...document.querySelectorAll('#mealforms input:checked')].map(x => x.parentNode.textContent.trim());
+      const parts = [];
+      if (goals.length) parts.push(goals.join('・'));
+      if (mealForms.length) parts.push('保存方法：' + mealForms.join('・'));
+      document.getElementById('diag-summary').textContent = parts.length ? '選択中：' + parts.join(' ／ ') : '';
+    }}
     document.querySelectorAll('#goals input, #mealforms input').forEach(el => {{
       el.addEventListener('change', () => {{
         if (!_diagStarted) {{ _diagStarted = true; gtag('event', 'diagnosis_start'); }}
+        updateDiagSummary();
       }});
     }});
     function runDiag() {{
@@ -867,21 +1296,27 @@ def build_diagnosis_tool(services, aff_links):
       if (scored.length === 0) {{
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
       }} else {{
-        html += '<table><tr><th>サービス</th><th>特徴</th><th>一致した条件</th><th>詳細</th><th>公式サイト</th></tr>';
         for (const s of topScored) {{
-          const detail = `<a href="${{s.detail_url}}">詳しく見る</a>`;
+          const detail = `<a class="btn-secondary" href="${{s.detail_url}}">詳しく見る</a>`;
           const url = s.aff_url || s.url || '';
           const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
           const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
-          const link = url ? `<a href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span style="color:#999">公式確認中</span>';
+          const link = url ? `<a class="btn-primary" href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span class="btn-disabled">公式確認中</span>';
           const reason = s.matchedGoals && s.matchedGoals.length > 0 ? s.matchedGoals.join('・') : '保存方法の条件に一致';
-          html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td>${{reason}}</td><td>${{detail}}</td><td>${{link}}</td></tr>`;
+          const tags = (s.tags || []).slice(0, 3).map(t => `<span class="tag">${{t}}</span>`).join('');
+          html += `<div class="svc-card">
+            <div class="svc-card-header">
+              <h3 class="svc-card-name">${{s.name}}</h3>
+            </div>
+            <div class="svc-card-tags">${{tags}}</div>
+            <div class="svc-card-meta">一致した条件：${{reason}}</div>
+            <div class="svc-card-footer">${{detail}} ${{link}}</div>
+          </div>`;
         }}
         if (scored.length > TOP_N) {{
-          html += `<tr><td colspan="5" style="font-size:13px;color:#666;">他にも${{scored.length - TOP_N}}件が条件に一致しています。<a href="/ranking.html">比較一覧で全件見る →</a></td></tr>`;
+          html += `<p class="diag-result-note">他にも${{scored.length - TOP_N}}件が条件に一致しています。<a class="text-link" href="/ranking.html">比較一覧で全件見る →</a></p>`;
         }}
-        html += '</table>';
-        html += '<p style="font-size:13px;color:#666;margin-top:12px;">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';
+        html += '<p class="diag-result-note">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';
       }}
       document.getElementById('result').style.display = 'block';
       document.getElementById('result').innerHTML = html;
@@ -896,6 +1331,7 @@ def build_diagnosis_tool(services, aff_links):
 
 def build_index_page(services, campaigns, aff_links, purpose_matches=None, coverage=None):
     svc_by_id = {s["id"]: s for s in services}
+    num_services = len(services)
     # キャンペーン一覧（確認済みのものを優先して最大3件。未確認のものより先に見せる。
     # 表示文言はcampaigns.htmlと同じdiscount_type（実額）を使う。titleは汎用ラベルのため
     # 使わない＝FINAL_REDESIGN_SPEC.md 6章「TOPのキャンペーン表示に実額を反映」）。
@@ -906,19 +1342,20 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
         value_text = c.get("discount_type") or c.get("title", "要確認")
         camp_items += f'<li><a href="/campaigns.html">{esc(svc_name)}：{esc(value_text)}</a></li>'
 
-    purpose_html = purpose_cards_block(purpose_matches)
-    coverage_html = coverage_stat_html(coverage) if coverage else ""
+    purpose_html = purpose_chips_block(purpose_matches)
+    trust_html = trust_panel(coverage, num_services) if coverage else ""
 
-    # サービス一覧カード
+    # 主要サービス一覧（9章のService Card簡易版。既存のCTA遷移先・CTA密度は変更しない）
     svc_cards = ""
     for svc in services:
+        tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
         svc_cards += f"""
-        <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-          <div>
-            <a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>
-            <div>{''.join(f'<span class="tag">{esc(t)}</span>' for t in svc.get('tags', [])[:3])}</div>
+        <div class="svc-card svc-card-simple">
+          <div class="svc-card-header">
+            <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
+            <div class="svc-card-tags">{tags}</div>
           </div>
-          <div>{aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}</div>
+          <div class="svc-card-footer">{aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}</div>
         </div>"""
 
     title = f"{SITE_NAME}｜宅配食の比較・初回キャンペーン情報"
@@ -926,25 +1363,31 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
 
     html = page_header(title, desc, "index.html")
     html += f"""
-    <h1>宅配食を、データで選ぶ。</h1>
-    <p>{SITE_NAME}は、宅配食・宅配弁当サービスの料金・初回キャンペーン情報を、公式サイトで最終確認したデータで比較するサイトです。最新のキャンペーン情報を毎週更新しています。</p>
+    <section class="hero">
+      <h1>宅配食、どれを選べばいい？</h1>
+      <p class="hero-lead">{num_services}社を公式情報ベースで比較。価格・送料・キャンペーンを1項目ずつ確認しています。</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="/tool/diagnosis.html">自分に合う宅配食を探す →</a>
+        <a class="hero-sub-cta" href="/ranking.html">{num_services}社を比較する →</a>
+      </div>
+    </section>
 
     {purpose_html}
-    {coverage_html}
+    {trust_html}
 
-    <div class="card" style="background:#fff8f0;">
+    <div class="card panel-accent">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
       <ul class="feature-list">{camp_items or '<li>更新中</li>'}</ul>
-      <p style="margin-top:8px;"><a class="btn-primary" href="/campaigns.html">すべてのキャンペーンを見る →</a></p>
+      <p style="margin-top:8px;"><a class="text-link" href="/campaigns.html">すべてのキャンペーンを見る →</a></p>
     </div>
 
     <div class="card">
       <h2>自分に合うサービスを探す</h2>
       <p>「一人暮らし」「糖質制限」「ダイエット」など、あなたの条件に合うサービスを診断します。</p>
-      <p style="margin-top:8px;"><a class="btn-primary" href="/tool/diagnosis.html">診断ツールを開く →</a></p>
+      <p style="margin-top:8px;"><a class="btn-secondary" href="/tool/diagnosis.html">診断ツールを開く →</a></p>
     </div>
 
-    <div class="card">
+    <div class="service-list-section">
       <h2>📊 主要サービス一覧</h2>
       {svc_cards}
     </div>
@@ -975,9 +1418,9 @@ def build_article_chef_muten_kuchikomi(aff_links):
 
     html += f"""
     <h1>シェフの無添つくりおきの口コミ・評判を徹底検証！料金・送料・メニュー・「まずい？」まで</h1>
-    <p style="font-size:13px;color:#666;">最終確認日：2026年8月26日 ｜ 情報源：公式サイト（store.tavenal.com）・公式FAQ</p>
+    <p class="price-meta">最終確認日：2026年8月26日 ｜ 情報源：公式サイト（store.tavenal.com）・公式FAQ</p>
 
-    <div class="card" style="background:#fff8f0;">
+    <div class="card panel-accent">
       <h2>結論：どんな人に向いている？</h2>
       <p>「シェフの無添つくりおき」は、<strong>添加物（保存料・化学調味料）を一切使わない無添加のお惣菜を、週替わりで届けてくれる冷蔵の惣菜宅配</strong>です。</p>
       <p>以下のような人に向いていると判断できます（公式情報に基づく）。</p>
@@ -1006,7 +1449,7 @@ def build_article_chef_muten_kuchikomi(aff_links):
         <tr><th>利用方法</th><td>毎週の定期購入。レンジで温めるだけ</td></tr>
         <tr><th>確認日</th><td>2026年8月26日（公式サイト）</td></tr>
       </table>
-      <p style="font-size:13px;color:#666;">※同じ運営グループの「FIT FOOD HOME」会員はログインして注文可能と公式サイトに記載があります。</p>
+      <p class="price-meta">※同じ運営グループの「FIT FOOD HOME」会員はログインして注文可能と公式サイトに記載があります。</p>
     </div>
 
     <div class="card">
@@ -1020,7 +1463,7 @@ def build_article_chef_muten_kuchikomi(aff_links):
         <tr><td><strong>通常価格（2回目以降）</strong></td><td>5,173円（税込）+送料990円</td><td>13,607円（税込）+送料990円</td></tr>
         <tr><td><strong>初回限定価格</strong></td><td><strong>3,799円（税込・送料無料）</strong></td><td><strong>9,980円（税込・送料無料）</strong></td></tr>
       </table>
-      <p style="font-size:13px;color:#666;">初回価格は「26%OFF」の限定価格で、ご契約者様1回目のご注文のみ適用（公式FAQより）。※価格は2026年8月26日時点の公式情報です。</p>
+      <p class="price-meta">初回価格は「26%OFF」の限定価格で、ご契約者様1回目のご注文のみ適用（公式FAQより）。※価格は2026年8月26日時点の公式情報です。</p>
       <div style="margin-top:12px;">{cta}</div>
     </div>
 
@@ -1064,7 +1507,7 @@ def build_article_chef_muten_kuchikomi(aff_links):
         <li><strong>人によって評価が分かれる点</strong>：味付けの好み、量の適正（家族構成による）、調理の手間感</li>
         <li><strong>特に確認したい点</strong>：家族構成に合った量か、週替わりメニューの好み、消費期限4日で食べ切れるか</li>
       </ul>
-      <p style="font-size:13px;color:#666;">※当サイトは他サイトの口コミ文を転載していません。購入を検討する際は、公式サイトの情報と、ご自身の家族構成・食習慣に照らして判断してください。</p>
+      <p class="price-meta">※当サイトは他サイトの口コミ文を転載していません。購入を検討する際は、公式サイトの情報と、ご自身の家族構成・食習慣に照らして判断してください。</p>
     </div>
 
     <div class="card">
@@ -1103,10 +1546,10 @@ def build_article_chef_muten_kuchikomi(aff_links):
         <tr><td>休止（解約）</td><td>2回目以降はいつでも可能・違約金なし</td></tr>
         <tr><td>退会</td><td>定期休止手続き後、退会申請。完了まで約1週間</td></tr>
       </table>
-      <p style="font-size:13px;color:#666;">初回はキャンセル不可・2回目以降はいつでも解約可能という点は、試しやすい一方で「初回分は必ず受け取る」必要がある点として押さえておきましょう。</p>
+      <p class="price-meta">初回はキャンセル不可・2回目以降はいつでも解約可能という点は、試しやすい一方で「初回分は必ず受け取る」必要がある点として押さえておきましょう。</p>
     </div>
 
-    <div class="card" style="background:#fff8f0;">
+    <div class="card panel-accent">
       <h2>まとめ：自分に合うかどうかの判断基準</h2>
       <p>「シェフの無添つくりおき」は、<strong>無添加・手作りにこだわりたい家族向けの冷蔵惣菜宅配</strong>です。</p>
       <ul class="feature-list">
@@ -1156,14 +1599,15 @@ def build_verification_dashboard(services, shipping_by_id, sources_by_id, covera
           <td>{camp_html}</td>
         </tr>""")
 
-    title = "全11社の価格・送料・キャンペーン確認状況一覧"
-    desc = f"{SITE_NAME}が11社それぞれの価格・送料・初回キャンペーンをどこまで公式一次情報で確認できているかを一覧で開示します。確認済みの項目には出典と確認日を明記しています。"
+    num_services = len(services)
+    title = f"全{num_services}社の価格・送料・キャンペーン確認状況一覧"
+    desc = f"{SITE_NAME}が{num_services}社それぞれの価格・送料・初回キャンペーンをどこまで公式一次情報で確認できているかを一覧で開示します。確認済みの項目には出典と確認日を明記しています。"
 
     html = page_header(title, desc, "verification.html")
     html += f"""
-    <h1>全11社の価格・送料・キャンペーン確認状況</h1>
+    <h1>全{num_services}社の価格・送料・キャンペーン確認状況</h1>
     <p>各サービスの価格・送料・初回キャンペーンについて、公式一次情報でどこまで確認できているかを一覧にしています。確認済み・算出値の項目には出典リンクと確認日を付けています。未確認の項目には出典・確認日を表示していません（存在しない裏付けを示さないため）。</p>
-    {coverage_stat_html(coverage, link_to_dashboard=False) if coverage else ""}
+    {trust_panel(coverage, num_services, link_to_dashboard=False) if coverage else ""}
     {vstatus_legend(link_to_dashboard=False)}
     {mobile_scroll_hint()}
     <div class="card">
@@ -1172,7 +1616,7 @@ def build_verification_dashboard(services, shipping_by_id, sources_by_id, covera
         {''.join(rows)}
       </table>
     </div>
-    <p style="font-size:13px;color:#666;">※このページはスコアやランキングを付けるものではなく、当サイトが確認できている範囲をそのまま開示するものです。最新情報は必ず公式サイトでご確認ください。</p>
+    <p class="price-meta">※このページはスコアやランキングを付けるものではなく、当サイトが確認できている範囲をそのまま開示するものです。最新情報は必ず公式サイトでご確認ください。</p>
     """
     html += page_footer(LAST_VERIFIED_DATE)
     return html
@@ -1376,7 +1820,7 @@ def build_contact_page():
     <div class="card">
       <h2>お問い合わせ方法</h2>
       {contact_html}
-      <p style="font-size:13px;color:#666;">返信には数日かかる場合があります。あらかじめご了承ください。</p>
+      <p class="price-meta">返信には数日かかる場合があります。あらかじめご了承ください。</p>
     </div>
 
     <div class="card">

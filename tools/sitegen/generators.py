@@ -168,7 +168,7 @@ def main():
     (out_dir / "ranking.html").write_text(
         templates.build_ranking_page(
             services_with_mealform, campaigns, aff_links, comparison_pairs_flat,
-            purpose_matches, coverage, fully_verified_ids),
+            purpose_matches, coverage, fully_verified_ids, sources_by_id),
         encoding="utf-8")
     pages.append("ranking.html")
 
@@ -218,7 +218,7 @@ def main():
     for a_id, b_id in comp_pairs:
         if a_id in svc_by_id and b_id in svc_by_id:
             (out_dir / "comparisons" / f"{a_id}-vs-{b_id}.html").write_text(
-                templates.build_comparison_page(svc_by_id[a_id], svc_by_id[b_id], aff_links), encoding="utf-8")
+                templates.build_comparison_page(svc_by_id[a_id], svc_by_id[b_id], aff_links, sources_by_id), encoding="utf-8")
             pages.append(f"comparisons/{a_id}-vs-{b_id}.html")
 
     # 404 / sitemap / robots
