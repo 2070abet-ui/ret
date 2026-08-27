@@ -13,6 +13,7 @@ data/*.json + config/*.json（単一情報源）→ tools/sitegen/*.py（描画�
 - site/ は tools/build.py の出力でGit管理外。**読まない・直接編集しない**。
 - サイトの現状確認は data/*.json と tools/sitegen/templates.py を見るか、
   `python tools/build.py` を実行して site/ を再生成する。
+- コード・データ検索は `git grep` を優先し、site/ 等の生成物を意図的に掘り込まない。
 
 ## docs/ の使い分け
 - 現行仕様: docs/FINAL_PRODUCT_DESIGN.md, docs/FINAL_REDESIGN_SPEC.md

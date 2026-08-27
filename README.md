@@ -53,6 +53,8 @@ ASP提携承認後、`config/affiliates.json` の `actual_url` を埋めると�
 
 ## ドキュメント
 
+docs/ の全体索引・分類（現行仕様/履歴/監査）は **`docs/README.md`** を参照。
+
 - `docs/AFFILIATE_MARKET_ENTRY_RESEARCH_2026_08.md` — 市場調査本編（24ジャンル評価）
 - `docs/AFFILIATE_MARKET_ENTRY_SHORTLIST_2026_08.md` — TOP10ショートリスト
 - `docs/DELIVERY_FOOD_AFFILIATE_NEXT_ACTION_2026_08.md` — 本プロジェクトの次の一手・実装判断

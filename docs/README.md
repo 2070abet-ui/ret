@@ -29,6 +29,8 @@ docs/ は「現行仕様」「実装記録」「監査記録」「過去資料�
 | `DATA_VERIFICATION_AUDIT_20260827.md` | 確認率改善の監査記録 |
 | `REMAINING_8_ITEMS_AUDIT_20260827.md` | 残り8項目の確認可能性監査 |
 | `REPOSITORY_CONTEXT_TOKEN_AUDIT.md` | context/token使用量監査 |
+| `REPOSITORY_CONTEXT_PHASE2_PLAN.md` | context最適化Phase2設計書（実装済み） |
+| `REPOSITORY_CONTEXT_PHASE3_AUDIT.md` | context最適化Phase3追加監査 |
 
 ## HISTORY（過去資料 / 原則読まない）
 - `AFFILIATE_MARKET_ENTRY_RESEARCH_2026_08.md` / `AFFILIATE_MARKET_ENTRY_SHORTLIST_2026_08.md` … 市場調査・ショートリスト
