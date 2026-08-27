@@ -95,6 +95,9 @@ _CSS = """/* ===== 宅食図鑑 デザインシステム（REDESIGN_UI_SPEC.md�
 html { -webkit-text-size-adjust:100%; }
 body { font:var(--text-body); color:var(--color-text); background:var(--color-bg); line-height:1.7; }
 .container { max-width:1000px; margin:0 auto; padding:0 var(--space-4); }
+/* TOPページ本文専用の広いコンテナ（ヘッダー/フッターの.containerは1000pxのまま据え置き）。
+   TOP_LAYOUT_IMPLEMENTATION_PLAN_2026_08_28.md H節「バリエーション2」採用。 */
+.container-top { max-width:1200px; margin:0 auto; padding:0 var(--space-4); }
 h1 { font:var(--text-h1); margin:var(--space-5) 0 var(--space-2); }
 h2 { font:var(--text-h2); margin:var(--space-5) 0 var(--space-2); }
 h3 { font:var(--text-h3); margin:var(--space-4) 0 var(--space-2); }
@@ -210,11 +213,14 @@ tr:last-child td { border-bottom:none; }
   background:var(--color-surface-alt);
   border:var(--border-default);
   border-radius:var(--radius-lg);
-  padding:var(--space-6);
-  margin:var(--space-5) 0;
+  /* TOP再設計：ページ内で最も重要なゾーンであることを影の強さで示す（E節「Tier2」）。
+     縦方向の余白はpadding/marginを1段階詰め、ファーストビューでのサービス到達を早める。 */
+  box-shadow:var(--shadow-md);
+  padding:var(--space-5) var(--space-6);
+  margin:var(--space-4) 0;
 }
 .hero h1 { font:var(--text-display); margin:0 0 var(--space-3); }
-.hero-lead { font:var(--text-body); color:var(--color-text-muted); margin:0 0 var(--space-5); max-width:44em; }
+.hero-lead { font:var(--text-body); color:var(--color-text-muted); margin:0 0 var(--space-4); max-width:44em; }
 .hero-actions { display:flex; gap:var(--space-4); align-items:center; flex-wrap:wrap; }
 .hero-sub-cta { font-weight:700; color:var(--color-primary); text-decoration:none; font-size:15px; }
 .hero-sub-cta:hover { text-decoration:underline; }
@@ -227,6 +233,10 @@ tr:last-child td { border-bottom:none; }
 /* ---------- 目的別チップ（7章） ---------- */
 .purpose-section { margin:var(--space-5) 0; }
 .purpose-section h2 { margin-top:0; }
+/* TOP専用：検証カバレッジより前段の「入口」として、白い箱ではなく色帯ゾーンにする（E節Tier2）。
+   chipと同系統の--color-primary-subtleを使い、新規色は追加しない。 */
+.purpose-section-top { background:var(--color-primary-subtle); border-radius:var(--radius-lg); padding:var(--space-5); }
+.purpose-section-top h2 { font:var(--text-h1); }
 .purpose-groups { display:flex; flex-wrap:wrap; gap:var(--space-4); }
 .purpose-group { flex:1 1 180px; min-width:180px; }
 .purpose-chip {
@@ -267,6 +277,17 @@ tr:last-child td { border-bottom:none; }
 .trust-legend-item { white-space:nowrap; }
 .trust-link { display:inline-block; margin-top:var(--space-3); font-weight:700; }
 .trust-note { font:var(--text-meta); color:var(--color-text-faint); margin-top:var(--space-3); }
+/* TOP専用：独立した「信頼ゾーン」だが主役にはしない（E節）。数値・バッジ・文言は無変更、
+   padding/フォントサイズのみ圧縮してサービス一覧を圧迫しないスリムな帯にする。 */
+.trust-panel-compact {
+  background:var(--color-surface-alt); border:none; border-left:4px solid var(--color-primary);
+  border-radius:var(--radius-sm); box-shadow:none; padding:var(--space-4) var(--space-5); margin:var(--space-4) 0;
+}
+.trust-panel-compact h2 { font:var(--text-h3); margin:0 0 var(--space-2); }
+.trust-panel-compact .trust-stats { margin:var(--space-2) 0; gap:var(--space-5); }
+.trust-panel-compact .trust-figure { font-size:1.5rem; }
+.trust-panel-compact .trust-bar { margin:var(--space-2) 0; }
+.trust-panel-compact .trust-note { margin-top:var(--space-2); }
 
 /* ---------- Service Card（9章） ---------- */
 .svc-card {
@@ -287,6 +308,8 @@ tr:last-child td { border-bottom:none; }
    ばらつかないよう最小高さを揃える（15社の価格表示リズム統一）。 */
 .svc-card-price-row { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; min-height:1.7rem; }
 .svc-card-meta { font:var(--text-meta); color:var(--color-text-faint); }
+/* TOP専用：targetの文章を1行にクランプし密度を下げる（D節）。文言・データは無変更、表示のみ圧縮。 */
+.svc-card-meta-clamp { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 /* ラベル+値のミニ項目（モバイルカードで文章の羅列を避け、拾い読みできるようにする） */
 .svc-card-specs { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2) var(--space-3); }
 .svc-spec { display:flex; flex-direction:column; gap:2px; min-width:0; }
@@ -296,6 +319,23 @@ tr:last-child td { border-bottom:none; }
 .svc-card-footer { display:flex; gap:var(--space-2); flex-wrap:wrap; margin-top:var(--space-2); }
 .service-list-section { margin:var(--space-4) 0; }
 .service-list-section h2 { margin-top:0; }
+/* TOP専用：900px以上で3列・640-899pxで2列、640px未満は従来の縦積み1列のまま（B節・C節）。
+   PCでは.svc-card自体の縦margin(--space-3)をgapに置き換えて重複を避ける。 */
+.service-grid .svc-card { margin:var(--space-3) 0; }
+@media (min-width:900px) {
+  .service-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-5) 20px; }
+  .service-grid .svc-card { margin:0; }
+}
+@media (min-width:640px) and (max-width:899px) {
+  .service-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:var(--space-4) 16px; }
+  .service-grid .svc-card { margin:0; }
+}
+/* TOP専用カード：既存.svc-cardをそのまま使いつつ、グリッド内での余白のみ調整。 */
+.svc-card-top { gap:var(--space-2); }
+/* TOP専用CTA行：公式サイトを確認をtext-link化した結果、A8.net経由の長いラベルが
+   隣の主CTA「詳しく見る」ボタンの幅を圧迫して折り返す事象が実機で判明したため、
+   主CTAは常に内容幅を維持し、長いtext-linkの方だけ折り返すようにする（F節）。 */
+.svc-card-top .svc-card-footer .btn-primary { flex:0 0 auto; }
 
 /* ---------- 選択チップ（診断・フィルタ、12章・14章） ---------- */
 .checks { display:flex; flex-wrap:wrap; gap:var(--space-2); }
@@ -365,21 +405,40 @@ footer.site .container p { margin-bottom:6px; }
   /* 比較一覧：デスクトップ=テーブル / モバイル=Service Card縦積み（9.4節） */
   .ranking-desktop { display:none; }
   .ranking-mobile { display:block; }
-  /* Hero（15.1節） */
-  .hero { padding:var(--space-5); }
+  /* Hero（15.1節）。TOP再設計：モバイルも縦余白を1段階詰めてサービス到達を早める。 */
+  .hero { padding:var(--space-4); }
   .hero h1 { font-size:1.5rem; }
   .hero-actions { flex-direction:column; align-items:stretch; }
   .hero-actions .btn-primary { width:100%; }
   /* ナビ（5章） */
   nav.main { gap:var(--space-2); }
   nav.main a { font-size:13px; padding:4px 2px; }
-  /* Trust Panel（15.5節・16章：モバイルは3数値を縦積み3行に） */
+  /* Trust Panel（15.5節・16章：モバイルは3数値を縦積み3行に。通常のtrust-panelは無変更） */
   .trust-stats { flex-direction:column; gap:var(--space-3); }
   .trust-stat { flex-direction:row; align-items:baseline; gap:6px; }
   .trust-figure { font-size:1.4rem; }
+  /* TOP専用compact：モバイルでも3数値を1行に維持し、縦積み3行化を避ける（実測に基づく追加調整）。
+     数値・ラベル文言・順序は無変更、レイアウトのみ横並びのまま縮小する。 */
+  .trust-panel-compact { padding:var(--space-3) var(--space-4); }
+  .trust-panel-compact .trust-stats { flex-direction:row; gap:var(--space-4); margin:var(--space-1) 0; }
+  .trust-panel-compact .trust-figure { font-size:1.15rem; }
+  .trust-panel-compact .trust-label { font-size:11px; }
+  .trust-panel-compact .trust-legend { gap:var(--space-2); margin-top:2px; }
+  .trust-panel-compact .trust-link { margin-top:var(--space-1); }
+  .trust-panel-compact .trust-note { font-size:11px; margin-top:var(--space-1); }
   /* 目的別チップ（15.1節） */
   .purpose-groups { gap:var(--space-3); }
   .purpose-group { flex:1 1 45%; min-width:0; }
+  /* TOP専用：目的で探すを検証カバレッジより上位の選択UIとして扱うため、
+     モバイルでも5カテゴリを2列gridで3行に収め、縦の占有を圧縮する（C節）。
+     カテゴリ・リンク・遷移先は無変更、表示密度のみ変更。
+     2列化で個々の列幅が狭まりサービス名の折り返しが増えて逆に高さが伸びたため
+     （実測）、パディング・行間・リンクのフォントサイズも合わせて詰める。 */
+  .purpose-section-top { padding:var(--space-4); }
+  .purpose-section-top .purpose-groups { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2) var(--space-3); }
+  .purpose-section-top .purpose-group { min-width:0; }
+  .purpose-section-top .purpose-services { gap:2px 6px; margin-top:4px; }
+  .purpose-section-top .purpose-services a { font-size:12.5px; line-height:1.4; }
   /* Service CardのCTA */
   .svc-card-footer .btn-primary, .svc-card-footer .btn-secondary { flex:1; justify-content:center; }
 }
@@ -431,13 +490,16 @@ def mobile_scroll_hint():
     return '<p class="mobile-scroll-hint">◀ 表がはみ出す場合は横にスクロールしてご覧ください ▶</p>'
 
 
-def trust_panel(coverage, num_services, link_to_dashboard=True):
+def trust_panel(coverage, num_services, link_to_dashboard=True, compact=False):
     """検証カバレッジのパネル（REDESIGN_UI_SPEC.md 8章・16章）。
     サイト全体の情報収集状況を示す視覚的主役コンポーネントで、個社の優劣を示すものではない。
     数値はハードコードせず generators.compute_verification_coverage() の集計値と
     num_services（実際のサービス数）から表示する。confirmedのみを「確認済み」件数に数え、
     derived/pending/uncollectedは凡例として別途明記する（既存4状態の区別を壊さない）。
-    TOP・ranking・verification.htmlで共有し、集計の不一致を防ぐ。"""
+    TOP・ranking・verification.htmlで共有し、集計の不一致を防ぐ。
+    compact=True: TOPページ専用。数値・バッジ・凡例・免責文言は一切変更せず、
+    padding/フォントサイズのみ圧縮した細い帯として表示する
+    （TOP_LAYOUT_IMPLEMENTATION_PLAN_2026_08_28.md E節）。他ページはFalseのまま＝無変更。"""
     total = coverage.get("total", 0) or 0
     confirmed = coverage.get("confirmed", 0) or 0
     derived = coverage.get("derived", 0) or 0
@@ -457,8 +519,9 @@ def trust_panel(coverage, num_services, link_to_dashboard=True):
               f'<span class="trust-legend-item">{vstatus_badge("uncollected")}{uncollected}件</span>')
     link = ('<a class="trust-link" href="/verification.html">→ 確認状況を一覧で見る</a>'
             if link_to_dashboard else "")
+    panel_class = "trust-panel trust-panel-compact" if compact else "trust-panel"
     return f"""
-    <div class="trust-panel">
+    <div class="{panel_class}">
       <h2>検証カバレッジ</h2>
       <div class="trust-stats">
         <div class="trust-stat"><span class="trust-figure">{num_services}</span><span class="trust-label">掲載サービス数</span></div>
@@ -472,13 +535,15 @@ def trust_panel(coverage, num_services, link_to_dashboard=True):
     </div>"""
 
 
-def purpose_chips_block(purpose_matches):
+def purpose_chips_block(purpose_matches, extra_class=""):
     """目的別導線チップ（REDESIGN_UI_SPEC.md 7章）。既存tags/targetに一致するサービスへの
     直接リンク集約のみで、新規フィルタエンジン・新規ページ・新規データフィールドは作らない。
     該当社が無いカテゴリはそもそも渡されない（generators.py compute_purpose_matches()側で除外済み）。
     見た目は「チップ（カテゴリ名）+ 配下のサービステキストリンク」へ再設計するが、
     各サービスリンクの遷移先（/services/{id}.html）は変更しない（既存CTA遷移先の維持）。
-    カテゴリチップ自体はナビゲーションではなくラベルであり、順位・おすすめ度を表さない。"""
+    カテゴリチップ自体はナビゲーションではなくラベルであり、順位・おすすめ度を表さない。
+    extra_class: TOPページのみ"purpose-section-top"を渡し、色帯ゾーンとして格上げする
+    （TOP_LAYOUT_IMPLEMENTATION_PLAN_2026_08_28.md）。他ページの呼び出しは既定の空文字のまま。"""
     if not purpose_matches:
         return ""
     groups = ""
@@ -490,7 +555,8 @@ def purpose_chips_block(purpose_matches):
         groups += (f'<div class="purpose-group">'
                    f'<span class="purpose-chip">{esc(label)}</span>'
                    f'<div class="purpose-services">{links}</div></div>')
-    return (f'<div class="purpose-section"><h2>目的で探す</h2>'
+    section_class = f"purpose-section {extra_class}".strip() if extra_class else "purpose-section"
+    return (f'<div class="{section_class}"><h2>目的で探す</h2>'
             f'<div class="purpose-groups">{groups}</div></div>')
 
 
@@ -906,7 +972,9 @@ def _ga4_block():
             f"gtag('js', new Date());gtag('config', '{gid}');</script>")
 
 
-def page_header(title, description, canonical_path):
+def page_header(title, description, canonical_path, main_class="container"):
+    """main_class: <main>のクラス。既定は全ページ共通の"container"（1000px）。
+    TOPページのみ"container-top"（1200px）を渡す（他ページは呼び出し元を変更しないため無影響）。"""
     canonical_url = f"{SITE_URL}/{canonical_path}"
     meta_block = _meta_block(title, description, canonical_url)
     ga4_block = _ga4_block()
@@ -936,7 +1004,7 @@ def page_header(title, description, canonical_path):
     </nav>
   </div>
 </header>
-<main class="container">
+<main class="{main_class}">
 """
 
 
@@ -1644,8 +1712,10 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
         value_text = c.get("discount_type") or c.get("title", "要確認")
         camp_items += f'<li><a href="/campaigns.html">{esc(svc_name)}：{esc(value_text)}</a></li>'
 
-    purpose_html = purpose_chips_block(purpose_matches)
-    trust_html = trust_panel(coverage, num_services) if coverage else ""
+    # TOP再設計：目的で探すを検証カバレッジより上位の「入口」として扱う（extra_classで色帯ゾーン化）。
+    # 検証カバレッジはcompact=Trueでスリムな信頼帯にする。数値・バッジ・文言は無変更。
+    purpose_html = purpose_chips_block(purpose_matches, extra_class="purpose-section-top")
+    trust_html = trust_panel(coverage, num_services, compact=True) if coverage else ""
 
     # ヒーローのリード文：ファーストビューで差別化資産（検証カバレッジ）を具体的に伝える。
     # coverage未渡し時は従来の汎用文言へフォールバック（FINAL_REDESIGN_SPEC.md 6章「検証カバレッジの一言」）。
@@ -1657,44 +1727,46 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     else:
         hero_lead = f"{num_services}社を公式情報ベースで比較。価格・送料・キャンペーンを1項目ずつ確認しています。"
 
-    # 主要サービス一覧（9章のService Card簡易版）。
-    # 各カードの主CTAを内部「詳しく見る」（詳細ページで価格・対象・FAQを確認→納得→信頼）にし、
-    # 公式サイトCTA（アフィリエイト）は補助に保つ。遷移先は不変（FINAL_REDESIGN_SPEC.md 6章の
-    # 「比較→納得→信頼→公式クリックを最短化」に沿う。11社個別CTA自体は維持）。
+    # 主要サービス一覧（9章のService Card簡易版）。TOP再設計により、視覚優先順位を
+    # 「サービス名＋価格（検証バッジ同居）」→「向いている人（1行クランプ）」→「タグ」→CTA に変更
+    # （TOP_LAYOUT_IMPLEMENTATION_PLAN_2026_08_28.md D節）。使用フィールドはtags/target/pricing/
+    # aff_linksいずれも既存のまま、新規データ・新規ロジックは追加しない。
+    # meal_form注記はTOPのみ非表示にする（詳細ページ＝pricing_detail_html等は無変更、_meal_form_note
+    # 自体も削除しない）。
+    # 公式サイトCTA（アフィリエイト）はUI_DESIGN_PRINCIPLES.md 5.2「情報が不足している段階では
+    # 外部CTAを主役にしない」に合わせ、TOPでは.text-link（既存クラス）に変更。href/rel/aff_link()の
+    # ロジック・遷移先は無変更（FINAL_REDESIGN_SPEC.md 6章の「比較→納得→信頼→公式クリックを最短化」）。
     svc_cards = ""
     for svc in services:
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
-        # 「誰向けか」を価格より先に提示し、自分ごと化を起こしてから価格・比較へ進ませる
-        # （食欲喚起UI監査§11.4 提案1。既存targetをそのまま使用、新規文言は作らない。空なら非表示）。
+        # 「誰向けか」を価格の次に提示する（食欲喚起UI監査§11.4 提案1。既存targetをそのまま使用、
+        # 新規文言は作らない。空なら非表示）。1行クランプで密度を下げる（文言・データは無変更）。
         target_txt = "・".join(esc(t) for t in svc.get("target", []) if t)
-        target_html = f'<div class="svc-card-meta">向いている人：{target_txt}</div>' if target_txt else ""
-        # meal_form内の（...）注記（食べ方の一言）があれば添える（同提案2）。無ければ非表示。
-        meal_note = _meal_form_note(svc.get("meal_form"))
-        meal_note_html = f'<div class="svc-card-meta">{esc(meal_note)}</div>' if meal_note else ""
+        target_html = (f'<div class="svc-card-meta svc-card-meta-clamp">向いている人：{target_txt}</div>'
+                       if target_txt else "")
         # 1食あたりの価格を発見段階で提示し、予算スクリーニングを短時間化する
         # （UI_DESIGN_PRINCIPLES.md 3.1「TOP=発見」・6.2「比較は同軸」。ranking表と同じ
         # _price_inline_html を使うため表記はページ間で統一）。検証状態バッジを価格と一体化し、
         # 値単位の信頼（同4.2.1）を数値の根拠として見せる。未確認の値は控えめに「公式確認中」表示。
         price_inline = _price_inline_html(_pricing_of(svc))
         svc_cards += f"""
-        <div class="svc-card svc-card-simple">
-          <div class="svc-card-header">
-            <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
-            <div class="svc-card-tags">{tags}</div>
-          </div>
-          {target_html}
-          {meal_note_html}
+        <div class="svc-card svc-card-top">
+          <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
           <div class="svc-card-price-row">{price_inline}</div>
+          {target_html}
+          <div class="svc-card-tags">{tags}</div>
           <div class="svc-card-footer">
             <a class="btn-primary" href="/services/{svc['id']}.html">詳しく見る</a>
-            {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}
+            {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='text-link')}
           </div>
         </div>"""
 
     title = f"{SITE_NAME}｜宅配食の比較・初回キャンペーン情報"
     desc = SITE_DESC
 
-    html = page_header(title, desc, "index.html")
+    # main要素をcontainer-top（1200px）にするのはTOPのみ。他ページのpage_header呼び出しは
+    # main_class未指定＝既定の"container"（1000px）のままで無変更（H節バリエーション2）。
+    html = page_header(title, desc, "index.html", main_class="container-top")
     html += f"""
     <section class="hero">
       <h1>宅配食、どれを選べばいい？</h1>
@@ -1705,18 +1777,18 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       </div>
     </section>
 
-    {trust_html}
     {purpose_html}
+    {trust_html}
+
+    <div class="service-list-section">
+      <h2>📊 主要サービス一覧</h2>
+      <div class="service-grid">{svc_cards}</div>
+    </div>
 
     <div class="card panel-accent">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
       <ul class="feature-list">{camp_items or '<li>更新中</li>'}</ul>
       <p style="margin-top:8px;"><a class="text-link" href="/campaigns.html">すべてのキャンペーンを見る →</a></p>
-    </div>
-
-    <div class="service-list-section">
-      <h2>📊 主要サービス一覧</h2>
-      {svc_cards}
     </div>
 
     <div class="card">
