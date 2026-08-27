@@ -16,6 +16,19 @@ def esc(s):
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
+def _meal_form_note(meal_form):
+    """meal_form内の（...）注記だけを抽出する（食欲喚起UI監査§11.4 提案2）。
+    新規データは作らず、既存文字列の一部をそのまま使う。（...）が無ければNone。"""
+    if not meal_form:
+        return None
+    start = meal_form.find("（")
+    end = meal_form.find("）", start)
+    if start == -1 or end == -1:
+        return None
+    note = meal_form[start + 1:end].strip()
+    return note or None
+
+
 # ---------- デザインシステム（REDESIGN_UI_SPEC.md 2章〜16章）----------
 # 既存データ・生成ロジックには一切触れず、UI層（CSS）のみをトークン体系へ再構築する。
 # 値の数値・検証状態の意味は変更しない（confirmed/derived/pending/uncollected は
@@ -324,6 +337,10 @@ tr:last-child td { border-bottom:none; }
 /* ---------- pros/cons / feature-list ---------- */
 .pros-cons { display:flex; gap:var(--space-4); flex-wrap:wrap; }
 .pros-cons > div { flex:1; min-width:240px; }
+/* 良い点[0]を「体験の一言」として視覚的に区別する（食欲喚起UI監査§11.4 提案3）。
+   後段の「良い点・気になる点」箇条書きと同じ文言を再掲するため、重複感が強くならないよう
+   罫線と太字だけで区別し、新規の装飾要素は追加しない。 */
+.pros-highlight { border-left:3px solid var(--color-primary); padding:2px var(--space-3); margin:var(--space-3) 0; font:var(--text-body); font-weight:600; color:var(--color-text); }
 .pros li, .cons li { margin-left:20px; font-size:14px; }
 ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
 
@@ -1047,8 +1064,12 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     # 付与が無い場合のみ従来の meal_form 全文にフォールバックする。
     _mfc = service.get("meal_form_categories") or []
     storage_txt = "・".join(_mfc) if _mfc else service.get("meal_form", "公式確認中")
-    pros = "".join(f"<li>{esc(p)}</li>" for p in service.get("pros", []))
+    pros_list = service.get("pros", [])
+    pros = "".join(f"<li>{esc(p)}</li>" for p in pros_list)
     cons = "".join(f"<li>{esc(c)}</li>" for c in service.get("cons", []))
+    # 良い点[0]を「体験の一言」として視覚的に区別し、確信形成段階での具体イメージを後押しする
+    # （食欲喚起UI監査§11.4 提案3）。文言はそのまま、後段のpros一覧とは罫線のみで区別する。空なら非表示。
+    pros_highlight_html = f'<p class="pros-highlight">{esc(pros_list[0])}</p>' if pros_list else ""
     tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service.get("tags", []))
 
     # 価格はdisplay価格を主表示し、全価格ポイントを一覧表示する（--price-figure、12章）。
@@ -1065,6 +1086,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       <span class="page-head-meta">確認日: {esc(last_checked) or "未確認"}</span>
     </div>
     <div>{tags}</div>
+    {pros_highlight_html}
     {recommend_html}
 
     <div class="card">
@@ -1076,11 +1098,13 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
 
     <div class="card">
       <h2>基本情報</h2>
+      <!-- 「対象」（向いている人）は上部の「こんな方におすすめ」カードとFAQで既に提示済みのため
+           ここでは重複させない（購買意思決定ファネル横断監査 提案3）。このテーブルは
+           運営会社/形態/保存方法という客観スペックに専念させる。 -->
       <table>
         <tr><th>運営会社</th><td>{esc(service.get("operator", "公式確認中"))}</td></tr>
         <tr><th>形態</th><td>{esc(service.get("meal_type", ""))}（{esc(service.get("meal_form", ""))}）</td></tr>
         <tr><th>保存方法</th><td>{esc(storage_txt)}</td></tr>
-        <tr><th>対象</th><td>{", ".join(service.get("target", []))}</td></tr>
       </table>
     </div>
 
@@ -1207,6 +1231,10 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         # モバイル：Service Card縦積み（9章・15.2節。価格→保存方法/向いている人→検証→CTAの順）
         price_html = price_figure_html(pricing, sources_by_id)
         target_txt = "・".join(svc.get("target", [])) or "公式確認中"
+        # 保存方法の値に、meal_form内の（...）食べ方注記があれば添える（食欲喚起UI監査§11.4 提案2）。
+        # デスクトップ表側のmealform_txtは変更しない（カードのみが対象）。
+        meal_note = _meal_form_note(svc.get("meal_form"))
+        mealform_card_txt = f"{mealform_txt}・{esc(meal_note)}" if meal_note else mealform_txt
         cards.append(f"""
         <div class="svc-card" data-mealform="{mealform_attr}">
           <div class="svc-card-header">
@@ -1217,7 +1245,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
           {price_html}
           <div class="svc-card-specs">
             <div class="svc-spec"><span class="svc-spec-label">初回キャンペーン</span><span class="svc-spec-value">{esc(camp_txt)} {camp_badge}</span></div>
-            <div class="svc-spec"><span class="svc-spec-label">保存方法</span><span class="svc-spec-value">{mealform_txt}</span></div>
+            <div class="svc-spec"><span class="svc-spec-label">保存方法</span><span class="svc-spec-value">{mealform_card_txt}</span></div>
             <div class="svc-spec svc-spec-wide"><span class="svc-spec-label">向いている人</span><span class="svc-spec-value">{target_txt}</span></div>
             {f'<div class="svc-spec svc-spec-wide"><span class="svc-spec-label">気になる点（1例）</span><span class="svc-spec-value">{esc(cons_first)}</span></div>' if cons_first else ''}
           </div>
@@ -1405,6 +1433,8 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
       <h2>結論</h2>
       {price_diff_html}
       {target_diff_html}
+      <!-- 公式サイトCTAはこの結論パネルのみに置く（購買意思決定ファネル横断監査 提案2）。
+           比較表内・下部フッターに同一リンクの「公式サイト」行は重複させない。 -->
       <div class="svc-card-footer" style="margin-top:12px;">
         {aff_link(aff_links, a_id, label=f'{a_name}の公式サイトを見る', cls='btn-primary')}
         {aff_link(aff_links, b_id, label=f'{b_name}の公式サイトを見る', cls='btn-primary')}
@@ -1420,7 +1450,6 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
         <tr><td><strong>1食あたりの料金</strong></td><td class="price-cell">{a_price}</td><td class="price-cell">{b_price}</td></tr>
         <tr><td><strong>向いている人</strong></td><td>{', '.join(service_a.get('target', []))}</td><td>{', '.join(service_b.get('target', []))}</td></tr>
         <tr><td><strong>料金・特徴を詳しく見る</strong></td><td><a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細ページ</a></td><td><a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細ページ</a></td></tr>
-        <tr><td><strong>公式サイト</strong></td><td>{aff_link(aff_links, a_id, label='公式サイトを確認', cls='btn-secondary')}</td><td>{aff_link(aff_links, b_id, label='公式サイトを確認', cls='btn-secondary')}</td></tr>
       </table>
     </div>
 
@@ -1441,8 +1470,6 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     </div>
 
     <div class="svc-card-footer" style="margin-top:16px;">
-      <a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細を見る</a>
-      <a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細を見る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
       <a class="btn-secondary" href="/tool/diagnosis.html">診断ツールで選ぶ</a>
     </div>
@@ -1453,18 +1480,24 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
 
 # ---------- 診断ツール ----------
 
-def build_diagnosis_tool(services, aff_links):
+def build_diagnosis_tool(services, aff_links, sources_by_id=None):
     # クライアントサイドで動作する条件検索ツール
     svc_data = []
     for svc in services:
         aff = aff_links.get(svc["id"], {})
-        _dp = _display_point(_pricing_of(svc))
+        pricing = _pricing_of(svc)
+        _dp = _display_point(pricing)
+        # 診断結果カードにもTOP/ranking/詳細と同じ価格表示・検証バッジを出す
+        # （購買意思決定ファネル横断監査 提案1。price_figure_htmlをそのまま再利用し、
+        # 新規の表示ロジック・新規データは作らない）。
+        price_html = price_figure_html(pricing, sources_by_id)
         svc_data.append({
             "id": svc["id"],
             "name": svc["name"],
             "tags": svc.get("tags", []),
             "target": svc.get("target", []),
             "price": _dp.get("price_per_meal_yen") if _dp else None,  # display価格（スカラーのみ）
+            "price_html": price_html,
             "meal_form_categories": svc.get("meal_form_categories", []),
             "url": svc.get("official_url", ""),
             "aff_url": aff.get("actual_url", ""),  # アフィリエイトリンク（あれば優先）
@@ -1573,6 +1606,7 @@ def build_diagnosis_tool(services, aff_links):
               <h3 class="svc-card-name">${{s.name}}</h3>
             </div>
             <div class="svc-card-tags">${{tags}}</div>
+            ${{s.price_html || ''}}
             <div class="svc-card-meta">一致した条件：${{reason}}</div>
             <div class="svc-card-footer">${{detail}} ${{link}}</div>
           </div>`;
@@ -1626,6 +1660,13 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     svc_cards = ""
     for svc in services:
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
+        # 「誰向けか」を価格より先に提示し、自分ごと化を起こしてから価格・比較へ進ませる
+        # （食欲喚起UI監査§11.4 提案1。既存targetをそのまま使用、新規文言は作らない。空なら非表示）。
+        target_txt = "・".join(esc(t) for t in svc.get("target", []) if t)
+        target_html = f'<div class="svc-card-meta">向いている人：{target_txt}</div>' if target_txt else ""
+        # meal_form内の（...）注記（食べ方の一言）があれば添える（同提案2）。無ければ非表示。
+        meal_note = _meal_form_note(svc.get("meal_form"))
+        meal_note_html = f'<div class="svc-card-meta">{esc(meal_note)}</div>' if meal_note else ""
         # 1食あたりの価格を発見段階で提示し、予算スクリーニングを短時間化する
         # （UI_DESIGN_PRINCIPLES.md 3.1「TOP=発見」・6.2「比較は同軸」。ranking表と同じ
         # _price_inline_html を使うため表記はページ間で統一）。検証状態バッジを価格と一体化し、
@@ -1637,6 +1678,8 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
             <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
             <div class="svc-card-tags">{tags}</div>
           </div>
+          {target_html}
+          {meal_note_html}
           <div class="svc-card-price-row">{price_inline}</div>
           <div class="svc-card-footer">
             <a class="btn-primary" href="/services/{svc['id']}.html">詳しく見る</a>

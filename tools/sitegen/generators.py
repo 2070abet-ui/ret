@@ -180,7 +180,7 @@ def main():
     pages.append("campaigns.html")
 
     # 診断ツール
-    (out_dir / "tool" / "diagnosis.html").write_text(templates.build_diagnosis_tool(services_with_mealform, aff_links), encoding="utf-8")
+    (out_dir / "tool" / "diagnosis.html").write_text(templates.build_diagnosis_tool(services_with_mealform, aff_links, sources_by_id), encoding="utf-8")
     pages.append("tool/diagnosis.html")
 
     # 記事ページ（シェフの無添つくりおき 口コミ・評判）
