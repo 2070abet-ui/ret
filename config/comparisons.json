@@ -1,8 +1,38 @@
 {
   "_comment": "比較ページのペア設定。tools/build.py にハードコードされていたcomp_pairsを外出ししたもの。既存2ペアはPHASE1_IMPLEMENTATION_PLAN.md 10章の評価により維持（両社ともASPプログラムは実在し、実測SERPで個人サイトが上位に入る実績があるため）。",
   "pairs": [
-    { "a": "nosh", "b": "mitsuboshi-farm" },
-    { "a": "nosh", "b": "watami-takushoku" },
-    { "a": "syokurakuzen", "b": "kenko-chokkyokubin", "_note": "両社ともA8提携承認済み。タグ一致4件（高齢者・塩分制限・健康志向・冷凍）で、同一ターゲット層への代替CV先としてSEO_FLOW_RESEARCH_2026_08.mdに記載済み（2026-08-27追加：PHASE1_IMPLEMENTATION_PLAN.md 10章）" }
+    {
+      "a": "nosh",
+      "b": "mitsuboshi-farm"
+    },
+    {
+      "a": "nosh",
+      "b": "watami-takushoku"
+    },
+    {
+      "a": "syokurakuzen",
+      "b": "kenko-chokkyokubin",
+      "_note": "両社ともA8提携承認済み。タグ一致4件（高齢者・塩分制限・健康志向・冷凍）で、同一ターゲット層への代替CV先としてSEO_FLOW_RESEARCH_2026_08.mdに記載済み（2026-08-27追加：PHASE1_IMPLEMENTATION_PLAN.md 10章）"
+    },
+    {
+      "a": "muscle-deli",
+      "b": "fit-food-home",
+      "_note": "タグ・target一致4件（ダイエット・ボディメイク・冷凍・高タンパク）。ボディメイク領域の直接競合として2026-08-27追加（15社化後のUIファネル再監査に基づく）"
+    },
+    {
+      "a": "magokoro-care",
+      "b": "shokutakubin",
+      "_note": "タグ・target一致5件（健康・健康志向・冷凍・制限食・高齢者）で候補中最高スコア。既存の高齢者向け4社間の識別しやすさを補強するため2026-08-27追加"
+    },
+    {
+      "a": "tsuklio",
+      "b": "chef-muten-tukuritoki",
+      "_note": "同一meal_type（冷蔵惣菜）。tsuklio自身のcons欄に両社の違いの確認が必要と既存データで明記されていたため2026-08-27追加"
+    },
+    {
+      "a": "kit-oisix",
+      "b": "yoshikei",
+      "_note": "「要調理」という他社にない軸での比較。kit-oisixは価格が公式確認中のため結論欄の価格差セクションは表示されない点に留意（2026-08-27追加）"
+    }
   ]
 }
