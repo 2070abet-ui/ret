@@ -256,11 +256,18 @@ tr:last-child td { border-bottom:none; }
 /* TOP専用：詳細ページ直リンクの隣に、TOP自身の一覧内カードへのページ内アンカーを追加
    （TOP_PROGRESSIVE_DISCLOSURE_FINAL_AUDIT_2026_08_28.md）。既存リンクは維持し選択肢を1つ追加するのみ。 */
 .purpose-service-link { display:inline-flex; align-items:center; gap:1px; }
+/* TOP_P2_IMPROVEMENT_PLAN_2026_08_28.md 1b：発見性向上のため、文字装飾ではなく
+   独立した小さなチップ（背景+角丸）にする。色・文言・遷移先は無変更。 */
 .purpose-services a.purpose-anchor {
-  font-size:11px; color:var(--color-text-faint); text-decoration:none;
-  border-bottom:none; padding:2px 3px; line-height:1.5;
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:11px; color:var(--color-primary); text-decoration:none;
+  /* TOP_P2_IMPROVEMENT_IMPLEMENTATION_2026_08_28.md 追記：親セクション
+     (.purpose-section-top)の背景と同一トークンだったため溶け込んでいた。
+     既存の白系トークンに変更しコントラストを確保する（新規色は追加しない）。 */
+  background:var(--color-surface); border-radius:999px;
+  border-bottom:none; min-width:20px; height:20px; padding:0 5px; margin-left:2px; line-height:1.5;
 }
-.purpose-services a.purpose-anchor:hover { color:var(--color-primary); }
+.purpose-services a.purpose-anchor:hover { background:var(--color-primary); color:#fff; }
 
 /* ---------- Trust Panel（8章） ---------- */
 .trust-panel {
@@ -286,9 +293,11 @@ tr:last-child td { border-bottom:none; }
 .trust-link { display:inline-block; margin-top:var(--space-3); font-weight:700; }
 .trust-note { font:var(--text-meta); color:var(--color-text-faint); margin-top:var(--space-3); }
 /* TOP専用：独立した「信頼ゾーン」だが主役にはしない（E節）。数値・バッジ・文言は無変更、
-   padding/フォントサイズのみ圧縮してサービス一覧を圧迫しないスリムな帯にする。 */
+   padding/フォントサイズのみ圧縮してサービス一覧を圧迫しないスリムな帯にする。
+   TOP_P2_IMPROVEMENT_PLAN_2026_08_28.md 2a：背景はHeroと同一トークン(surface-alt)だったため
+   ゾームの区別が弱かった。ページ地色(--color-bg)に戻し、左罫線のみで識別する控えめな帯にする。 */
 .trust-panel-compact {
-  background:var(--color-surface-alt); border:none; border-left:4px solid var(--color-primary);
+  background:var(--color-bg); border:none; border-left:4px solid var(--color-primary);
   border-radius:var(--radius-sm); box-shadow:none; padding:var(--space-4) var(--space-5); margin:var(--space-4) 0;
 }
 .trust-panel-compact h2 { font:var(--text-h3); margin:0 0 var(--space-2); }
@@ -1853,6 +1862,10 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       <h2>📊 主要サービス一覧</h2>
       <div class="service-grid">{svc_primary}{svc_extra}</div>
       {svc_more_block}
+      <!-- TOP_P2_IMPROVEMENT_PLAN_2026_08_28.md 3a：Hero内CTA（発見段階の主役、btn-primary）とは
+           役割を分け、一覧を見た後の救済導線として控えめなtext-linkのみで提示する。
+           遷移先は既存の/tool/diagnosis.html、診断ロジック・クエリパラメータ等は無変更。 -->
+      <p class="price-meta" style="margin-top:12px;">決めきれない場合は <a class="text-link" href="/tool/diagnosis.html">診断ツールで絞り込む →</a></p>
     </div>
     {svc_more_anchor_script}
 
