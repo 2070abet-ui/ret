@@ -22,7 +22,7 @@ description: 宅食図鑑のUI改善依頼（「UI改善して」「このペー
 - デザイントークンは `templates.py` の `_CSS` `:root` に定義済み（`--color-*`, `--space-*`, `--radius-*`, タイポグラフィ等）。理由なく変更・破壊しない。
 - 検証: `python tools/sitegen/validate.py` / ビルド: `python tools/build.py`
 - 現行UI仕様: `docs/FINAL_REDESIGN_SPEC.md`。docsの分類・索引は `docs/README.md`。
-- `docs/UI_DESIGN_PRINCIPLES.md` が存在すれば必ず読む（無ければ現行仕様で代替）。
+- **`docs/UI_DESIGN_PRINCIPLES.md`（UI設計原則・基準文書）を必ず読む。** 本サイトのUI/UXを恒久的に導く設計の基準であり、すべてのUI改善はこの原則（時間短縮×確信、ページ役割分担、CTA階層、恒久非実装）に従う。
 - 検索は `git grep` を優先。`site/`, `__pycache__`, `data/snapshots/`, 巨大JSON, HISTORY docs を掘らない。
 
 ## ファネル構造
@@ -43,7 +43,7 @@ TOP（`index.html`）→ 比較一覧（`ranking.html`）→ 詳細（`services/
 - 既存デザインシステム: `_CSS` の `:root` トークン
 - responsive構造: `_CSS` 内の media query（640px等）
 - 既存UIの共通パターン: カード・テーブル・`btn-primary`/`btn-secondary`・検証ステータスバッジ等
-- 関連docs: `docs/UI_DESIGN_PRINCIPLES.md`（あれば必読）・現行UI仕様 `docs/FINAL_REDESIGN_SPEC.md` の必要箇所
+- 関連docs: **`docs/UI_DESIGN_PRINCIPLES.md`（必読・UI設計の基準）**・現行UI仕様 `docs/FINAL_REDESIGN_SPEC.md` の必要箇所
 
 不要な大量ファイル・生成物・`site/`・`node_modules`・build成果物は読み込まない。
 
@@ -51,9 +51,11 @@ TOP（`index.html`）→ 比較一覧（`ranking.html`）→ 詳細（`services/
 
 対象ページが購買意思決定ファネルのどこに位置するか判断する。
 
+**`docs/UI_DESIGN_PRINCIPLES.md` の「ページの役割分担（3章）」「CTA設計原則（5章）」「実装時の判断基準（7章）」に照らして監査する。**
+
 確認項目:
 
-- このページの目的（ファネル上の役割）
+- このページの目的（ファネル上の役割。発見→スクリーニング→評価→比較→確信→公式のどこか）
 - ユーザーが最初に理解すべき情報
 - first view（最初の1画面）
 - visual hierarchy / information density
@@ -74,6 +76,8 @@ TOP（`index.html`）→ 比較一覧（`ranking.html`）→ 詳細（`services/
 - Tone（トーン）
 - Constraints（制約: 既存トークン・既存仕様・検証状態の意味は変えない）
 - Differentiation（差別化要素）
+
+**必ず `docs/UI_DESIGN_PRINCIPLES.md` の2軸（時間短縮×確信）と「1画面1主CTA」「内部CTA上位」を反映する。** 装飾ではなく意思決定の支援として設計する。
 
 既存サイトのブランド（primary `#E8552D` 等）・デザインとの一貫性を維持し、テンプレート的なAI UIを避ける。既存デザインの良い部分を理由なく壊さない。
 

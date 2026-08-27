@@ -19,6 +19,7 @@ docs/ は「現行仕様」「実装記録」「監査記録」「過去資料�
 ## GOVERNANCE（決定・ルール）
 | ファイル | 内容 |
 |---|---|
+| `UI_DESIGN_PRINCIPLES.md` | UI設計原則（意思決定支援型アフィリエイトサイトの設計基準。ui-design-workflow SkillがUI改善時に必読） |
 | `SITE_NAME_DOMAIN_DECISION_2026_08.md` | サイト名・ドメイン決定 |
 | `PHASE4_FINAL_DECISION.md` | Phase4最終実装判断・収益計測設計 |
 | `DELIVERY_FOOD_AFFILIATE_NEXT_ACTION_2026_08.md` | 次の一手・ロードマップ |
