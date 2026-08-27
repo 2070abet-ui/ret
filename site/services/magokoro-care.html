@@ -41,6 +41,7 @@ th { background:#f5ede8; font-weight:bold; }
 .vstatus-derived { background:#e8f0fe; color:#1a56db; }
 .vstatus-pending { background:#fff4e5; color:#b45300; }
 .vstatus-uncollected { background:#f1f1f1; color:#777; }
+.vfull-badge { display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--primary); color:var(--primary); border-radius:10px; font-weight:bold; white-space:nowrap; margin-left:4px; }
 .aff-note { font-size:11px; opacity:.8; }
 .updated { color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }
 .pros-cons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -69,7 +70,13 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
 <main class="container">
 
     <h1>まごころケア食</h1>
+    <p style="font-size:12px;color:#666;">最終確認日: 2026-08-26</p>
     <div><span class="tag">高齢者</span><span class="tag">やわらか食</span><span class="tag">健康</span><span class="tag">冷凍</span></div>
+    
+    <div class="card" style="background:#fff8f0;">
+      <h2>こんな方におすすめ</h2>
+      <ul class="feature-list"><li>高齢者</li><li>健康志向</li><li>やわらかい食事</li><li>制限食</li></ul>
+    </div>
 
     <div class="card">
       <h2>基本情報</h2>
@@ -109,11 +116,20 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
     </div>
     
     <div class="card">
+      <h2>よくある質問</h2>
+      <h3>どんな人に向いていますか？</h3><p>高齢者・健康志向・やわらかい食事・制限食などのニーズに向いています。詳しくは上記「こんな方におすすめ」もご参照ください。</p><h3>解約・スキップはいつまでにすればいいですか？</h3><p>要確認</p><h3>送料はいくらですか？地域で変わりますか？</h3><p>UNCOLLECTED。公式サイト（magokoro-care.com）トップページは企業情報のみで料金・送料ページを特定できず。検索でも未発見（2026-08-27時点）</p>
+    </div>
+    
+    <div class="card">
       <h2>関連サービス</h2>
       <p style="font-size:13px;color:#666;">共通する特徴・対象が多いサービスです。</p>
       <div style="margin-top:8px;"><a class="btn-secondary" href="/services/shokutakubin.html">食宅便（日清医療食品）</a> <a class="btn-secondary" href="/services/kenko-chokkyokubin.html">健康直球便</a> <a class="btn-secondary" href="/services/syokurakuzen.html">食楽膳</a> </div>
     </div>
     
+    <div class="card" style="text-align:center;">
+      <p style="margin-bottom:8px;">まごころケア食が気になった方は、公式サイトで最新の料金・キャンペーンをご確認ください。</p>
+      <a class="btn-primary" href="https://www.magokoro-care.com/" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトを見る</a>
+    </div>
     <div style="margin-top:16px;">
       
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>

@@ -25,6 +25,62 @@ def meal_form_categories(meal_form_text):
     return cats
 
 
+# 目的別導線カード（TOP・ranking.htmlで共有するコンポーネント）の定義。
+# 既存のtags/target文字列に対する部分一致のみで、新規データフィールドは追加しない。
+# 「減塩」は表記ゆれ（減塩／塩分控えめ／塩分制限）が既存データに複数存在するため、
+# 同義語をOR条件でまとめる（正規化用の新規キーは作らない）。
+# FINAL_REDESIGN_SPEC.md 6章・7章。
+PURPOSE_CATEGORIES = [
+    ("mutenka", "無添加にこだわりたい", ["無添加"]),
+    ("koreisha", "高齢の家族に", ["高齢者"]),
+    ("gensen", "減塩・塩分が気になる", ["減塩", "塩分控えめ", "塩分制限"]),
+    ("hitorigurashi", "一人暮らし", ["一人暮らし"]),
+    ("diet", "ダイエット", ["ダイエット"]),
+]
+
+
+def compute_purpose_matches(services, max_items=4):
+    """目的別カテゴリごとに、tags+targetのいずれかに該当語を含むサービスを抽出する。
+    該当が無いカテゴリはそもそも出力に含めない（空のカードを出さない）。
+    戻り値: [(カテゴリID, ラベル, [該当service, ...]), ...]"""
+    result = []
+    for cat_id, label, terms in PURPOSE_CATEGORIES:
+        matched = [s for s in services if _tag_set(s) & set(terms)]
+        if matched:
+            result.append((cat_id, label, matched[:max_items]))
+    return result
+
+
+def compute_verification_coverage(services, shipping_by_id):
+    """全11社×価格/送料/初回キャンペーンの確認状況を集計する。
+    CONFIRMEDのみを「確認済み」件数に数え、DERIVED/PENDING/UNCOLLECTEDとは区別を保つ
+    （既存の4状態の区別を壊さない。REDESIGN_IMPLEMENTATION指示：全項目確認済み判定と
+    同じ基準をトップページ・ranking・verificationの集計表示に一貫して使う）。"""
+    counts = {"confirmed": 0, "derived": 0, "pending": 0, "uncollected": 0}
+    for svc in services:
+        for status in (
+            templates._price_status(svc.get("price_plan", {})),
+            templates._shipping_status(shipping_by_id.get(svc["id"])),
+            templates._campaign_status(svc.get("first_time_campaign", {})),
+        ):
+            counts[status] = counts.get(status, 0) + 1
+    counts["total"] = sum(counts.values())
+    return counts
+
+
+def compute_fully_verified_ids(services, shipping_by_id):
+    """価格・送料・初回キャンペーンの3項目すべてがCONFIRMED（算出値・確認中・未収集は
+    含めない）のサービスIDの集合を返す。序列化には使わない、事実表示のバッジ用のみ。
+    FINAL_REDESIGN_SPEC.md 4章・5章。"""
+    result = set()
+    for svc in services:
+        if (templates._price_status(svc.get("price_plan", {})) == "confirmed"
+                and templates._shipping_status(shipping_by_id.get(svc["id"])) == "confirmed"
+                and templates._campaign_status(svc.get("first_time_campaign", {})) == "confirmed"):
+            result.add(svc["id"])
+    return result
+
+
 def compute_comparison_links(comp_pairs, svc_by_id):
     """比較ページ（config/comparisons.json駆動）のURLを、サービス詳細ページ・ranking.html
     への内部リンクとして使える形に整理する。新規の比較ロジック・新規ページは作らず、
@@ -78,6 +134,9 @@ def main():
     # 診断ツールとranking.htmlの保存方法フィルタで同じ正規化ロジックを共有する
     # （PHASE3_IMPLEMENTATION_PLAN.md 2章：新しいmatching engineは作らず既存ロジックを再利用）。
     services_with_mealform = [dict(s, meal_form_categories=meal_form_categories(s.get("meal_form"))) for s in services]
+    purpose_matches = compute_purpose_matches(services)
+    coverage = compute_verification_coverage(services, shipping_by_id)
+    fully_verified_ids = compute_fully_verified_ids(services, shipping_by_id)
     out_dir = data.OUT_DIR
 
     # 出力先クリーン
@@ -100,12 +159,16 @@ def main():
     pages = []
 
     # トップ
-    (out_dir / "index.html").write_text(templates.build_index_page(services, campaigns, aff_links), encoding="utf-8")
+    (out_dir / "index.html").write_text(
+        templates.build_index_page(services, campaigns, aff_links, purpose_matches, coverage),
+        encoding="utf-8")
     pages.append("index.html")
 
-    # ランキング
+    # 比較一覧（旧称ランキング。FINAL_REDESIGN_SPEC.md 5章）
     (out_dir / "ranking.html").write_text(
-        templates.build_ranking_page(services_with_mealform, campaigns, aff_links, comparison_pairs_flat),
+        templates.build_ranking_page(
+            services_with_mealform, campaigns, aff_links, comparison_pairs_flat,
+            purpose_matches, coverage, fully_verified_ids),
         encoding="utf-8")
     pages.append("ranking.html")
 
@@ -147,7 +210,7 @@ def main():
     # sources.jsonは直接参照せず、既存のvstatus/source_linkロジックのみを再利用する。
     # PHASE3_IMPLEMENTATION_PLAN.md 3.2節）
     (out_dir / "verification.html").write_text(
-        templates.build_verification_dashboard(services, shipping_by_id, sources_by_id),
+        templates.build_verification_dashboard(services, shipping_by_id, sources_by_id, coverage),
         encoding="utf-8")
     pages.append("verification.html")
 

@@ -46,6 +46,57 @@ def mobile_scroll_hint():
     return '<p class="mobile-scroll-hint">◀ 表がはみ出す場合は横にスクロールしてご覧ください ▶</p>'
 
 
+def coverage_stat_html(coverage, link_to_dashboard=True):
+    """検証カバレッジの一言。33項目（11社×価格/送料/初回キャンペーン）中の確認済み件数を
+    正直に提示する。confirmedのみを「確認済み」件数に数え、derived/pending等は別途明記して
+    含めない（既存4状態の区別を壊さない）。トップページ・ranking・verification.htmlで
+    generators.py の compute_verification_coverage() を共有し、集計の不一致を防ぐ。
+    FINAL_REDESIGN_SPEC.md 4章・6章・7章・12章。"""
+    total = coverage.get("total", 0)
+    confirmed = coverage.get("confirmed", 0)
+    derived = coverage.get("derived", 0)
+    pending = coverage.get("pending", 0)
+    link = ' <a href="/verification.html">→ 確認状況を一覧で見る</a>' if link_to_dashboard else ""
+    return (
+        '<p style="font-size:13px;color:#666;">'
+        f'価格・送料・初回キャンペーン 計{total}項目中 <strong>{confirmed}件</strong>を公式一次情報で確認済み'
+        f'（算出値{derived}件・確認中{pending}件は含みません）'
+        f'{link}</p>'
+    )
+
+
+def purpose_cards_block(purpose_matches):
+    """目的別導線カード（TOP・ranking.htmlで共有するコンポーネント）。既存tags/targetに
+    一致するサービスへの直接リンク集約のみで、新規フィルタエンジン・新規ページ・
+    新規データフィールドは作らない。該当社が無いカテゴリはそもそも渡されない
+    （generators.py compute_purpose_matches()側で除外済み）。
+    FINAL_REDESIGN_SPEC.md 6章・7章。"""
+    if not purpose_matches:
+        return ""
+    # カードの中にカードを二重ネストしない（装飾過多を避ける、FINAL_REDESIGN_SPEC.md
+    # 「デザイン方針：必要以上にカード化・装飾化しない」）。外枠は1つの.cardのみとし、
+    # 各カテゴリは見出し+リンクの軽量なブロックに留める。
+    blocks = ""
+    for _cat_id, label, matched in purpose_matches:
+        links = "".join(
+            f'<a class="btn-secondary" href="/services/{esc(s["id"])}.html" style="margin-right:6px;margin-bottom:6px;">{esc(s["name"])}</a>'
+            for s in matched
+        )
+        blocks += (f'<div style="flex:1;min-width:200px;">'
+                   f'<h3 style="margin-top:0;">{esc(label)}</h3><div>{links}</div></div>')
+    return (f'<div class="card"><h2>目的で探す</h2>'
+            f'<div style="display:flex;flex-wrap:wrap;gap:16px;">{blocks}</div></div>')
+
+
+def fully_verified_badge():
+    """価格・送料・初回キャンペーンの3項目すべてが公式一次情報で確認済み（CONFIRMEDのみ。
+    算出値は含めない）であることを示す事実表示。序列化・スコアリングには一切使わない
+    （並び順はservices.json記載順のまま変更しない）。FINAL_REDESIGN_SPEC.md 4章・5章。"""
+    return ('<span class="vfull-badge" title="価格・送料・初回キャンペーンの3項目すべてを'
+            '公式一次情報で確認済みという事実表示です。総合評価やおすすめ度ではありません。">'
+            '3項目とも確認済み</span>')
+
+
 def vstatus_legend(link_to_dashboard=True):
     link = ' <a href="/verification.html">→ 全社の確認状況を一覧で見る</a>' if link_to_dashboard else ""
     return (
@@ -251,6 +302,7 @@ th {{ background:#f5ede8; font-weight:bold; }}
 .vstatus-derived {{ background:#e8f0fe; color:#1a56db; }}
 .vstatus-pending {{ background:#fff4e5; color:#b45300; }}
 .vstatus-uncollected {{ background:#f1f1f1; color:#777; }}
+.vfull-badge {{ display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--primary); color:var(--primary); border-radius:10px; font-weight:bold; white-space:nowrap; margin-left:4px; }}
 .aff-note {{ font-size:11px; opacity:.8; }}
 .updated {{ color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }}
 .pros-cons {{ display:flex; gap:16px; flex-wrap:wrap; }}
@@ -337,12 +389,53 @@ def comparison_links_block(comparison_links):
     </div>"""
 
 
+def service_recommend_block(service):
+    """「こんな方におすすめ」早期セクション。既存targetフィールドを、基本情報テーブルの
+    1行から独立したカードへ格上げするだけで、新規データは使わない。
+    価格より前に提示する（silver-choice/my-best実測パターン、FINAL_REDESIGN_SPEC.md 8章）。"""
+    target = service.get("target", [])
+    if not target:
+        return ""
+    items = "".join(f"<li>{esc(t)}</li>" for t in target)
+    return f"""
+    <div class="card" style="background:#fff8f0;">
+      <h2>こんな方におすすめ</h2>
+      <ul class="feature-list">{items}</ul>
+    </div>"""
+
+
+def service_faq_block(service, shipping_row):
+    """よくある質問。既存のtarget/cancellation_note/shipping.notesをQ&A形式に
+    再構成するだけで、新規データ収集は行わない。FINAL_REDESIGN_SPEC.md 8章。"""
+    qa = []
+    target_txt = "・".join(service.get("target", []))
+    if target_txt:
+        qa.append(("どんな人に向いていますか？", f"{target_txt}などのニーズに向いています。詳しくは上記「こんな方におすすめ」もご参照ください。"))
+    cancel = service.get("cancellation_note")
+    if cancel:
+        qa.append(("解約・スキップはいつまでにすればいいですか？", cancel))
+    if shipping_row and shipping_row.get("notes"):
+        qa.append(("送料はいくらですか？地域で変わりますか？", shipping_row["notes"]))
+    if not qa:
+        return ""
+    body = "".join(f"<h3>{esc(q)}</h3><p>{esc(a)}</p>" for q, a in qa)
+    return f"""
+    <div class="card">
+      <h2>よくある質問</h2>
+      {body}
+    </div>"""
+
+
 def build_service_page(service, aff_links, shipping_by_id=None, related=None, sources_by_id=None, comparison_links=None):
     s_id = service["id"]
     s_name = service["name"]
-    shipping_html = shipping_line((shipping_by_id or {}).get(s_id), sources_by_id)
+    shipping_row = (shipping_by_id or {}).get(s_id)
+    shipping_html = shipping_line(shipping_row, sources_by_id)
     related_html = related_services_block(related)
     comparison_html = comparison_links_block(comparison_links)
+    recommend_html = service_recommend_block(service)
+    faq_html = service_faq_block(service, shipping_row)
+    last_checked = service.get("last_checked", "")
 
     # 関連記事リンク（サービスDBに article_link があれば表示）
     article_link_html = ""
@@ -365,7 +458,9 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     html = page_header(title, desc, f"services/{s_id}.html")
     html += f"""
     <h1>{esc(s_name)}</h1>
+    <p style="font-size:12px;color:#666;">最終確認日: {esc(last_checked) or "未確認"}</p>
     <div>{tags}</div>
+    {recommend_html}
 
     <div class="card">
       <h2>基本情報</h2>
@@ -403,8 +498,13 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       {shipping_html}
       <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
     </div>
+    {faq_html}
     {related_html}
     {comparison_html}
+    <div class="card" style="text-align:center;">
+      <p style="margin-bottom:8px;">{esc(s_name)}が気になった方は、公式サイトで最新の料金・キャンペーンをご確認ください。</p>
+      {aff_link(aff_links, s_id, label="公式サイトを見る")}
+    </div>
     <div style="margin-top:16px;">
       {article_link_html}
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>
@@ -435,7 +535,8 @@ def comparison_pairs_block(comparison_pairs):
     </div>"""
 
 
-def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None):
+def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
+                        purpose_matches=None, coverage=None, fully_verified_ids=None):
     # サービスID → 確認済みの初回キャンペーン特典（requires_verification=false のみ表示）
     # camp_txt/camp_badge は同じcampaigns.json（data/campaigns.json）を情報源として揃える
     # （services.json側のfirst_time_campaignは別データで鮮度がずれている場合があるため使わない）。
@@ -465,9 +566,11 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None):
         mealform_cats = svc.get("meal_form_categories") or []
         mealform_txt = "・".join(mealform_cats) if mealform_cats else esc(svc.get("meal_form", "")) or "公式確認中"
         mealform_attr = esc(" ".join(mealform_cats))
+        # 「全項目確認済み」の事実バッジ（CONFIRMEDのみ、序列化には使わない。FINAL_REDESIGN_SPEC.md 5章）。
+        full_badge = fully_verified_badge() if svc["id"] in (fully_verified_ids or set()) else ""
         rows.append(f"""
         <tr data-mealform="{mealform_attr}">
-          <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a><br>{tags}</td>
+          <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}</td>
           <td>{cheapest_txt} {price_badge}</td>
           <td>{esc(camp_txt)} {camp_badge}</td>
           <td>{mealform_txt}</td>
@@ -478,13 +581,18 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None):
           </td>
         </tr>""")
 
-    title = "宅配食おすすめ比較ランキング【2026年8月最新】"
-    desc = "宅配食・宅配弁当サービスの最新比較。nosh、ワタミの宅食ダイレクト、三ツ星ファームなど主要サービスの料金・特徴・初回キャンペーンを一覧で比較。"
+    # 「ランキング」は名乗らない：確認済み項目数等いかなる基準でも数値順位は付けない
+    # （根拠のないランキングを作らないという既存方針。FINAL_REDESIGN_SPEC.md 5章の最終判断）。
+    # URL（ranking.html）・ナビゲーションのリンク先は変更しない。ページ内文言のみ「比較一覧」に改める。
+    title = "宅配食 比較一覧【2026年8月最新】"
+    desc = "宅配食・宅配弁当サービスの最新比較。nosh、ワタミの宅食ダイレクト、三ツ星ファームなど主要サービスの料金・特徴・初回キャンペーンを一覧で比較。順位付けはせず、確認できた情報のみを一覧にしています。"
 
     html = page_header(title, desc, "ranking.html")
     html += f"""
-    <h1>宅配食おすすめ比較ランキング【2026年8月最新】</h1>
-    <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（{LAST_VERIFIED_DATE}時点）。</p>
+    <h1>宅配食 比較一覧【2026年8月最新】</h1>
+    <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（{LAST_VERIFIED_DATE}時点）。当サイトは独自の点数やランキング順位を付けていません。</p>
+    {purpose_cards_block(purpose_matches)}
+    {coverage_stat_html(coverage) if coverage else ""}
     <div class="card">
       <h3 style="margin-top:0;">保存方法で絞り込む（任意）</h3>
       <div id="mealform-filter" class="checks">
@@ -499,6 +607,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None):
         <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
         {''.join(rows)}
       </table>
+      <p style="font-size:12px;color:#666;margin-top:8px;">{fully_verified_badge()}＝価格・送料・初回キャンペーンの3項目すべてを公式一次情報で確認済みという事実表示です。並び順・おすすめ度とは関係ありません（当サイトは順位付けを行いません）。</p>
     </div>
     <div class="card">
       <h2>選び方のポイント</h2>
@@ -566,6 +675,40 @@ def build_campaigns_page(campaigns, services, aff_links):
 
 # ---------- 比較ページ ----------
 
+def _comparison_price_diff_html(service_a, service_b):
+    """両社とも価格がconfirmed/derivedの場合のみ、価格差を算出して結論として先出しする。
+    片方でも未確認なら何も出さない（存在しない精度を主張しない）。新規スコアリングではなく
+    既存price_plan.lowest_per_meal_yenの引き算のみ。FINAL_REDESIGN_SPEC.md 4章・9章。"""
+    pa, pb = service_a.get("price_plan", {}), service_b.get("price_plan", {})
+    sa, sb = _price_status(pa), _price_status(pb)
+    va, vb = pa.get("lowest_per_meal_yen"), pb.get("lowest_per_meal_yen")
+    if sa not in ("confirmed", "derived") or sb not in ("confirmed", "derived") or va is None or vb is None:
+        return ""
+    diff = abs(va - vb)
+    if diff == 0:
+        return f"<p>{esc(service_a['name'])}と{esc(service_b['name'])}の1食あたり価格はほぼ同じです（確認済み・算出値どうしの比較）。</p>"
+    cheaper = service_a["name"] if va < vb else service_b["name"]
+    return f"<p><strong>{esc(cheaper)}の方が1食あたり{diff}円安い</strong>です（確認済み・算出値どうしの比較）。</p>"
+
+
+def _comparison_target_diff_html(service_a, service_b):
+    """targetの集合差分（A限定・B限定・共通）を提示する。新規スコアリングではなく
+    既存targetフィールドの集合演算のみ。FINAL_REDESIGN_SPEC.md 4章・9章。"""
+    a_list, b_list = service_a.get("target", []), service_b.get("target", [])
+    a_set, b_set = set(a_list), set(b_list)
+    only_a = [t for t in a_list if t not in b_set]
+    only_b = [t for t in b_list if t not in a_set]
+    common = [t for t in a_list if t in b_set]
+    parts = []
+    if only_a:
+        parts.append(f"<p><strong>{esc(service_a['name'])}が向いている人：</strong>{esc('・'.join(only_a))}</p>")
+    if only_b:
+        parts.append(f"<p><strong>{esc(service_b['name'])}が向いている人：</strong>{esc('・'.join(only_b))}</p>")
+    if common:
+        parts.append(f"<p><strong>どちらでも当てはまる人：</strong>{esc('・'.join(common))}</p>")
+    return "".join(parts)
+
+
 def build_comparison_page(service_a, service_b, aff_links):
     a_id, b_id = service_a["id"], service_b["id"]
     a_name, b_name = service_a["name"], service_b["name"]
@@ -578,6 +721,9 @@ def build_comparison_page(service_a, service_b, aff_links):
     a_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_a.get("tags", []))
     b_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_b.get("tags", []))
 
+    price_diff_html = _comparison_price_diff_html(service_a, service_b)
+    target_diff_html = _comparison_target_diff_html(service_a, service_b)
+
     title = f"{a_name}と{b_name}を徹底比較！どっちがおすすめ？【2026年】"
     desc = f"{a_name}と{b_name}を料金・特徴・初回キャンペーンで比較。一人暮らし・ダイエット・糖質制限など目的別におすすめを解説。"
 
@@ -585,6 +731,12 @@ def build_comparison_page(service_a, service_b, aff_links):
     html += f"""
     <h1>{esc(a_name)}と{esc(b_name)}を徹底比較</h1>
     <p>どちらにするか迷っている人向けに、料金・特徴・初回キャンペーンを比較します。（2026年8月時点の情報）</p>
+
+    <div class="card" style="background:#fff8f0;">
+      <h2>結論</h2>
+      {price_diff_html}
+      {target_diff_html}
+    </div>
 
     {mobile_scroll_hint()}
     <div class="card">
@@ -606,13 +758,6 @@ def build_comparison_page(service_a, service_b, aff_links):
     <div class="card">
       <h2>{esc(b_name)}のポイント</h2>
       <ul class="feature-list">{''.join(f'<li>{esc(p)}</li>' for p in service_b.get('pros', []))}</ul>
-    </div>
-
-    <div class="card">
-      <h2>まとめ：どっちを選ぶべき？</h2>
-      <p><strong>{esc(a_name)}が向いている人：</strong>{', '.join(service_a.get('target', []))}</p>
-      <p><strong>{esc(b_name)}が向いている人：</strong>{', '.join(service_b.get('target', []))}</p>
-      <p style="margin-top:12px;">どちらも初回キャンペーンがあります。まずはお試しで両方試して、自分に合う方を選ぶのがおすすめです。</p>
     </div>
 
     <div style="margin-top:16px;">
@@ -699,29 +844,41 @@ def build_diagnosis_tool(services, aff_links):
       if (mealForms.length > 0) {{
         candidates = candidates.filter(s => (s.meal_form_categories||[]).some(c => mealForms.includes(c)));
       }}
-      // タグ or ターゲットとの一致数でスコアリング（目的が未選択なら絞り込みのみ行う）
+      // タグ or ターゲットとの一致数でスコアリング（目的が未選択なら絞り込みのみ行う）。
+      // matchedGoalsは「一致理由」表示用に一致した目的タグ名をそのまま保持するだけで、
+      // 新しい推薦エンジンやスコアの重み付けは追加しない。
       const scored = goals.length === 0
-        ? candidates.map(s => ({{ ...s, score: 0 }}))
+        ? candidates.map(s => ({{ ...s, score: 0, matchedGoals: [] }}))
         : candidates.map(s => {{
             const pool = [...(s.tags||[]), ...(s.target||[])];
-            let score = 0;
-            for (const g of goals) {{ if (pool.includes(g)) score++; }}
-            return {{ ...s, score }};
+            const matchedGoals = goals.filter(g => pool.includes(g));
+            return {{ ...s, score: matchedGoals.length, matchedGoals }};
           }}).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
-      // 診断完了（「please select」の早期returnケースでは発火しない＝実際に診断を実行した回数のみ計測）
+      // 診断完了（「please select」の早期returnケースでは発火しない＝実際に診断を実行した回数のみ計測）。
+      // result_countは表示件数ではなく実際に条件へ一致した全件数を送る。
       gtag('event', 'diagnosis_complete', {{ goal_count: goals.length, mealform_count: mealForms.length, result_count: scored.length }});
-      let html = '<h2>あなたにおすすめのサービス</h2>';
+      // 結果は上位3件のみ表示する（推薦エンジンではなく、既存スコア計算の表示件数を絞るだけ。
+      // FINAL_REDESIGN_SPEC.md 10章）。
+      const TOP_N = 3;
+      const topScored = scored.slice(0, TOP_N);
+      let html = scored.length > 0
+        ? `<h2>あなたの条件に近い上位${{topScored.length}}社</h2>`
+        : '<h2>あなたにおすすめのサービス</h2>';
       if (scored.length === 0) {{
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
       }} else {{
-        html += '<table><tr><th>サービス</th><th>特徴</th><th>詳細</th><th>公式サイト</th></tr>';
-        for (const s of scored) {{
+        html += '<table><tr><th>サービス</th><th>特徴</th><th>一致した条件</th><th>詳細</th><th>公式サイト</th></tr>';
+        for (const s of topScored) {{
           const detail = `<a href="${{s.detail_url}}">詳しく見る</a>`;
           const url = s.aff_url || s.url || '';
           const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
           const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
           const link = url ? `<a href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span style="color:#999">公式確認中</span>';
-          html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td>${{detail}}</td><td>${{link}}</td></tr>`;
+          const reason = s.matchedGoals && s.matchedGoals.length > 0 ? s.matchedGoals.join('・') : '保存方法の条件に一致';
+          html += `<tr><td><strong>${{s.name}}</strong></td><td>${{(s.tags||[]).join('・')}}</td><td>${{reason}}</td><td>${{detail}}</td><td>${{link}}</td></tr>`;
+        }}
+        if (scored.length > TOP_N) {{
+          html += `<tr><td colspan="5" style="font-size:13px;color:#666;">他にも${{scored.length - TOP_N}}件が条件に一致しています。<a href="/ranking.html">比較一覧で全件見る →</a></td></tr>`;
         }}
         html += '</table>';
         html += '<p style="font-size:13px;color:#666;margin-top:12px;">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';
@@ -737,13 +894,20 @@ def build_diagnosis_tool(services, aff_links):
 
 # ---------- トップページ ----------
 
-def build_index_page(services, campaigns, aff_links):
+def build_index_page(services, campaigns, aff_links, purpose_matches=None, coverage=None):
     svc_by_id = {s["id"]: s for s in services}
-    # キャンペーン一覧（最新3件）
+    # キャンペーン一覧（確認済みのものを優先して最大3件。未確認のものより先に見せる。
+    # 表示文言はcampaigns.htmlと同じdiscount_type（実額）を使う。titleは汎用ラベルのため
+    # 使わない＝FINAL_REDESIGN_SPEC.md 6章「TOPのキャンペーン表示に実額を反映」）。
+    confirmed_first = sorted(campaigns, key=lambda c: c.get("requires_verification", True))
     camp_items = ""
-    for c in campaigns[:3]:
+    for c in confirmed_first[:3]:
         svc_name = svc_by_id.get(c["service_id"], {}).get("name", "要確認")
-        camp_items += f'<li><a href="/campaigns.html">{esc(svc_name)}：{esc(c["title"])}</a></li>'
+        value_text = c.get("discount_type") or c.get("title", "要確認")
+        camp_items += f'<li><a href="/campaigns.html">{esc(svc_name)}：{esc(value_text)}</a></li>'
+
+    purpose_html = purpose_cards_block(purpose_matches)
+    coverage_html = coverage_stat_html(coverage) if coverage else ""
 
     # サービス一覧カード
     svc_cards = ""
@@ -765,6 +929,9 @@ def build_index_page(services, campaigns, aff_links):
     <h1>宅配食を、データで選ぶ。</h1>
     <p>{SITE_NAME}は、宅配食・宅配弁当サービスの料金・初回キャンペーン情報を、公式サイトで最終確認したデータで比較するサイトです。最新のキャンペーン情報を毎週更新しています。</p>
 
+    {purpose_html}
+    {coverage_html}
+
     <div class="card" style="background:#fff8f0;">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
       <ul class="feature-list">{camp_items or '<li>更新中</li>'}</ul>
@@ -772,14 +939,14 @@ def build_index_page(services, campaigns, aff_links):
     </div>
 
     <div class="card">
-      <h2>📊 主要サービス一覧</h2>
-      {svc_cards}
-    </div>
-
-    <div class="card">
       <h2>自分に合うサービスを探す</h2>
       <p>「一人暮らし」「糖質制限」「ダイエット」など、あなたの条件に合うサービスを診断します。</p>
       <p style="margin-top:8px;"><a class="btn-primary" href="/tool/diagnosis.html">診断ツールを開く →</a></p>
+    </div>
+
+    <div class="card">
+      <h2>📊 主要サービス一覧</h2>
+      {svc_cards}
     </div>
 
     <div class="card">
@@ -965,7 +1132,7 @@ def build_article_chef_muten_kuchikomi(aff_links):
 
 # ---------- 検証状況ダッシュボード ----------
 
-def build_verification_dashboard(services, shipping_by_id, sources_by_id):
+def build_verification_dashboard(services, shipping_by_id, sources_by_id, coverage=None):
     """11社×価格・送料・キャンペーンの確認状況を1ページに集約するダッシュボード。
     data/sources.jsonは直接参照・列挙しない。既存の確認状態判定関数（_price_status/
     _shipping_status/_campaign_status）とprice_cell_html()/source_link()をそのまま
@@ -996,6 +1163,7 @@ def build_verification_dashboard(services, shipping_by_id, sources_by_id):
     html += f"""
     <h1>全11社の価格・送料・キャンペーン確認状況</h1>
     <p>各サービスの価格・送料・初回キャンペーンについて、公式一次情報でどこまで確認できているかを一覧にしています。確認済み・算出値の項目には出典リンクと確認日を付けています。未確認の項目には出典・確認日を表示していません（存在しない裏付けを示さないため）。</p>
+    {coverage_stat_html(coverage, link_to_dashboard=False) if coverage else ""}
     {vstatus_legend(link_to_dashboard=False)}
     {mobile_scroll_hint()}
     <div class="card">

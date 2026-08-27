@@ -41,6 +41,7 @@ th { background:#f5ede8; font-weight:bold; }
 .vstatus-derived { background:#e8f0fe; color:#1a56db; }
 .vstatus-pending { background:#fff4e5; color:#b45300; }
 .vstatus-uncollected { background:#f1f1f1; color:#777; }
+.vfull-badge { display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--primary); color:var(--primary); border-radius:10px; font-weight:bold; white-space:nowrap; margin-left:4px; }
 .aff-note { font-size:11px; opacity:.8; }
 .updated { color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }
 .pros-cons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -116,29 +117,41 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
       if (mealForms.length > 0) {
         candidates = candidates.filter(s => (s.meal_form_categories||[]).some(c => mealForms.includes(c)));
       }
-      // タグ or ターゲットとの一致数でスコアリング（目的が未選択なら絞り込みのみ行う）
+      // タグ or ターゲットとの一致数でスコアリング（目的が未選択なら絞り込みのみ行う）。
+      // matchedGoalsは「一致理由」表示用に一致した目的タグ名をそのまま保持するだけで、
+      // 新しい推薦エンジンやスコアの重み付けは追加しない。
       const scored = goals.length === 0
-        ? candidates.map(s => ({ ...s, score: 0 }))
+        ? candidates.map(s => ({ ...s, score: 0, matchedGoals: [] }))
         : candidates.map(s => {
             const pool = [...(s.tags||[]), ...(s.target||[])];
-            let score = 0;
-            for (const g of goals) { if (pool.includes(g)) score++; }
-            return { ...s, score };
+            const matchedGoals = goals.filter(g => pool.includes(g));
+            return { ...s, score: matchedGoals.length, matchedGoals };
           }).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
-      // 診断完了（「please select」の早期returnケースでは発火しない＝実際に診断を実行した回数のみ計測）
+      // 診断完了（「please select」の早期returnケースでは発火しない＝実際に診断を実行した回数のみ計測）。
+      // result_countは表示件数ではなく実際に条件へ一致した全件数を送る。
       gtag('event', 'diagnosis_complete', { goal_count: goals.length, mealform_count: mealForms.length, result_count: scored.length });
-      let html = '<h2>あなたにおすすめのサービス</h2>';
+      // 結果は上位3件のみ表示する（推薦エンジンではなく、既存スコア計算の表示件数を絞るだけ。
+      // FINAL_REDESIGN_SPEC.md 10章）。
+      const TOP_N = 3;
+      const topScored = scored.slice(0, TOP_N);
+      let html = scored.length > 0
+        ? `<h2>あなたの条件に近い上位${topScored.length}社</h2>`
+        : '<h2>あなたにおすすめのサービス</h2>';
       if (scored.length === 0) {
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
       } else {
-        html += '<table><tr><th>サービス</th><th>特徴</th><th>詳細</th><th>公式サイト</th></tr>';
-        for (const s of scored) {
+        html += '<table><tr><th>サービス</th><th>特徴</th><th>一致した条件</th><th>詳細</th><th>公式サイト</th></tr>';
+        for (const s of topScored) {
           const detail = `<a href="${s.detail_url}">詳しく見る</a>`;
           const url = s.aff_url || s.url || '';
           const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
           const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
           const link = url ? `<a href="${url}" ${rel} target="_blank" rel="noopener">${label}</a>` : '<span style="color:#999">公式確認中</span>';
-          html += `<tr><td><strong>${s.name}</strong></td><td>${(s.tags||[]).join('・')}</td><td>${detail}</td><td>${link}</td></tr>`;
+          const reason = s.matchedGoals && s.matchedGoals.length > 0 ? s.matchedGoals.join('・') : '保存方法の条件に一致';
+          html += `<tr><td><strong>${s.name}</strong></td><td>${(s.tags||[]).join('・')}</td><td>${reason}</td><td>${detail}</td><td>${link}</td></tr>`;
+        }
+        if (scored.length > TOP_N) {
+          html += `<tr><td colspan="5" style="font-size:13px;color:#666;">他にも${scored.length - TOP_N}件が条件に一致しています。<a href="/ranking.html">比較一覧で全件見る →</a></td></tr>`;
         }
         html += '</table>';
         html += '<p style="font-size:13px;color:#666;margin-top:12px;">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';

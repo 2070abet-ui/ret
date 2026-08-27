@@ -41,6 +41,7 @@ th { background:#f5ede8; font-weight:bold; }
 .vstatus-derived { background:#e8f0fe; color:#1a56db; }
 .vstatus-pending { background:#fff4e5; color:#b45300; }
 .vstatus-uncollected { background:#f1f1f1; color:#777; }
+.vfull-badge { display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--primary); color:var(--primary); border-radius:10px; font-weight:bold; white-space:nowrap; margin-left:4px; }
 .aff-note { font-size:11px; opacity:.8; }
 .updated { color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }
 .pros-cons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -69,7 +70,13 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
 <main class="container">
 
     <h1>ヨシケイ</h1>
+    <p style="font-size:12px;color:#666;">最終確認日: 2026-08-26</p>
     <div><span class="tag">食材宅配</span><span class="tag">日配</span><span class="tag">献立</span><span class="tag">保冷</span><span class="tag">時短</span></div>
+    
+    <div class="card" style="background:#fff8f0;">
+      <h2>こんな方におすすめ</h2>
+      <ul class="feature-list"><li>時短</li><li>家族</li></ul>
+    </div>
 
     <div class="card">
       <h2>基本情報</h2>
@@ -109,11 +116,20 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
     </div>
     
     <div class="card">
+      <h2>よくある質問</h2>
+      <h3>どんな人に向いていますか？</h3><p>時短・家族などのニーズに向いています。詳しくは上記「こんな方におすすめ」もご参照ください。</p><h3>解約・スキップはいつまでにすればいいですか？</h3><p>会員制サービスのため、解約条件は各エリアのヨシケイで要確認。</p><h3>送料はいくらですか？地域で変わりますか？</h3><p>「配達料・入会金無料」と公式サイトに明記（公式サイト2026-08-27確認）。地域会社ごとにサイト・商品価格体系が異なるため、送料以外の料金は別途地域ごとの確認が必要</p>
+    </div>
+    
+    <div class="card">
       <h2>関連サービス</h2>
       <p style="font-size:13px;color:#666;">共通する特徴・対象が多いサービスです。</p>
       <div style="margin-top:8px;"><a class="btn-secondary" href="/services/chef-muten-tukuritoki.html">シェフの無添つくりおき</a> </div>
     </div>
     
+    <div class="card" style="text-align:center;">
+      <p style="margin-bottom:8px;">ヨシケイが気になった方は、公式サイトで最新の料金・キャンペーンをご確認ください。</p>
+      <a class="btn-primary" href="https://px.a8.net/svt/ejp?a8mat=4BAEXJ+E80T0Y+1QM6+HZAGY" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトを見る<span class="aff-note">（A8.net経由）</span></a>
+    </div>
     <div style="margin-top:16px;">
       
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>

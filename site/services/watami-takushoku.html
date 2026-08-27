@@ -41,6 +41,7 @@ th { background:#f5ede8; font-weight:bold; }
 .vstatus-derived { background:#e8f0fe; color:#1a56db; }
 .vstatus-pending { background:#fff4e5; color:#b45300; }
 .vstatus-uncollected { background:#f1f1f1; color:#777; }
+.vfull-badge { display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--primary); color:var(--primary); border-radius:10px; font-weight:bold; white-space:nowrap; margin-left:4px; }
 .aff-note { font-size:11px; opacity:.8; }
 .updated { color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }
 .pros-cons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -69,7 +70,13 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
 <main class="container">
 
     <h1>ワタミの宅食ダイレクト</h1>
+    <p style="font-size:12px;color:#666;">最終確認日: 2026-08-26</p>
     <div><span class="tag">冷凍</span><span class="tag">管理栄養士監修</span><span class="tag">低糖質対応あり</span><span class="tag">セットプラン</span></div>
+    
+    <div class="card" style="background:#fff8f0;">
+      <h2>こんな方におすすめ</h2>
+      <ul class="feature-list"><li>一人暮らし</li><li>共働き</li><li>健康志向</li><li>時短</li></ul>
+    </div>
 
     <div class="card">
       <h2>基本情報</h2>
@@ -109,6 +116,11 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
     </div>
     
     <div class="card">
+      <h2>よくある質問</h2>
+      <h3>どんな人に向いていますか？</h3><p>一人暮らし・共働き・健康志向・時短などのニーズに向いています。詳しくは上記「こんな方におすすめ」もご参照ください。</p><h3>解約・スキップはいつまでにすればいいですか？</h3><p>要確認（公式サイト・利用規約で確認すること）</p><h3>送料はいくらですか？地域で変わりますか？</h3><p>UNCOLLECTED。公式サイト（watami-takushoku.com）へのアクセスが403 Forbiddenで機械取得不可。campaigns.json記載の旧出典URL（direct.watami-takushoku.com）もDNS不通で失効。手動でのブラウザ確認が必要（2026-08-27時点）</p>
+    </div>
+    
+    <div class="card">
       <h2>関連サービス</h2>
       <p style="font-size:13px;color:#666;">共通する特徴・対象が多いサービスです。</p>
       <div style="margin-top:8px;"><a class="btn-secondary" href="/services/nosh.html">nosh（ナッシュ）</a> <a class="btn-secondary" href="/services/shokutakubin.html">食宅便（日清医療食品）</a> <a class="btn-secondary" href="/services/chef-muten-tukuritoki.html">シェフの無添つくりおき</a> </div>
@@ -117,6 +129,10 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
     <div class="card">
       <h2>比較ページ</h2>
       <div style="margin-top:8px;"><a class="btn-secondary" href="/comparisons/nosh-vs-watami-takushoku.html" style="margin-right:8px;">nosh（ナッシュ）と比較する →</a></div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <p style="margin-bottom:8px;">ワタミの宅食ダイレクトが気になった方は、公式サイトで最新の料金・キャンペーンをご確認ください。</p>
+      <a class="btn-primary" href="https://watami-takushoku.com/" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトを見る</a>
     </div>
     <div style="margin-top:16px;">
       

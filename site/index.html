@@ -41,6 +41,7 @@ th { background:#f5ede8; font-weight:bold; }
 .vstatus-derived { background:#e8f0fe; color:#1a56db; }
 .vstatus-pending { background:#fff4e5; color:#b45300; }
 .vstatus-uncollected { background:#f1f1f1; color:#777; }
+.vfull-badge { display:inline-block; font-size:11px; padding:2px 8px; border:1px solid var(--primary); color:var(--primary); border-radius:10px; font-weight:bold; white-space:nowrap; margin-left:4px; }
 .aff-note { font-size:11px; opacity:.8; }
 .updated { color:var(--muted); font-size:12px; margin-top:24px; border-top:1px solid #ddd; padding-top:12px; }
 .pros-cons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -71,10 +72,19 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
     <h1>宅配食を、データで選ぶ。</h1>
     <p>宅食図鑑は、宅配食・宅配弁当サービスの料金・初回キャンペーン情報を、公式サイトで最終確認したデータで比較するサイトです。最新のキャンペーン情報を毎週更新しています。</p>
 
+    <div class="card"><h2>目的で探す</h2><div style="display:flex;flex-wrap:wrap;gap:16px;"><div style="flex:1;min-width:200px;"><h3 style="margin-top:0;">無添加にこだわりたい</h3><div><a class="btn-secondary" href="/services/chef-muten-tukuritoki.html" style="margin-right:6px;margin-bottom:6px;">シェフの無添つくりおき</a></div></div><div style="flex:1;min-width:200px;"><h3 style="margin-top:0;">高齢の家族に</h3><div><a class="btn-secondary" href="/services/shokutakubin.html" style="margin-right:6px;margin-bottom:6px;">食宅便（日清医療食品）</a><a class="btn-secondary" href="/services/magokoro-care.html" style="margin-right:6px;margin-bottom:6px;">まごころケア食</a><a class="btn-secondary" href="/services/syokurakuzen.html" style="margin-right:6px;margin-bottom:6px;">食楽膳</a><a class="btn-secondary" href="/services/kenko-chokkyokubin.html" style="margin-right:6px;margin-bottom:6px;">健康直球便</a></div></div><div style="flex:1;min-width:200px;"><h3 style="margin-top:0;">減塩・塩分が気になる</h3><div><a class="btn-secondary" href="/services/syokurakuzen.html" style="margin-right:6px;margin-bottom:6px;">食楽膳</a><a class="btn-secondary" href="/services/kenko-chokkyokubin.html" style="margin-right:6px;margin-bottom:6px;">健康直球便</a></div></div><div style="flex:1;min-width:200px;"><h3 style="margin-top:0;">一人暮らし</h3><div><a class="btn-secondary" href="/services/nosh.html" style="margin-right:6px;margin-bottom:6px;">nosh（ナッシュ）</a><a class="btn-secondary" href="/services/watami-takushoku.html" style="margin-right:6px;margin-bottom:6px;">ワタミの宅食ダイレクト</a><a class="btn-secondary" href="/services/mitsuboshi-farm.html" style="margin-right:6px;margin-bottom:6px;">三ツ星ファーム</a></div></div><div style="flex:1;min-width:200px;"><h3 style="margin-top:0;">ダイエット</h3><div><a class="btn-secondary" href="/services/nosh.html" style="margin-right:6px;margin-bottom:6px;">nosh（ナッシュ）</a><a class="btn-secondary" href="/services/mitsuboshi-farm.html" style="margin-right:6px;margin-bottom:6px;">三ツ星ファーム</a><a class="btn-secondary" href="/services/fit-food-home.html" style="margin-right:6px;margin-bottom:6px;">FIT FOOD HOME</a></div></div></div></div>
+    <p style="font-size:13px;color:#666;">価格・送料・初回キャンペーン 計33項目中 <strong>11件</strong>を公式一次情報で確認済み（算出値2件・確認中1件は含みません） <a href="/verification.html">→ 確認状況を一覧で見る</a></p>
+
     <div class="card" style="background:#fff8f0;">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
-      <ul class="feature-list"><li><a href="/campaigns.html">nosh（ナッシュ）：nosh 初回お試しキャンペーン</a></li><li><a href="/campaigns.html">ワタミの宅食ダイレクト：ワタミの宅食ダイレクト 初回お試し</a></li><li><a href="/campaigns.html">三ツ星ファーム：三ツ星ファーム 初回お試しキャンペーン</a></li></ul>
+      <ul class="feature-list"><li><a href="/campaigns.html">nosh（ナッシュ）：初回¥1,500 OFF＋継続割引（nosh club）</a></li><li><a href="/campaigns.html">シェフの無添つくりおき：初回26%OFF</a></li><li><a href="/campaigns.html">食楽膳：定期初回15%OFF</a></li></ul>
       <p style="margin-top:8px;"><a class="btn-primary" href="/campaigns.html">すべてのキャンペーンを見る →</a></p>
+    </div>
+
+    <div class="card">
+      <h2>自分に合うサービスを探す</h2>
+      <p>「一人暮らし」「糖質制限」「ダイエット」など、あなたの条件に合うサービスを診断します。</p>
+      <p style="margin-top:8px;"><a class="btn-primary" href="/tool/diagnosis.html">診断ツールを開く →</a></p>
     </div>
 
     <div class="card">
@@ -157,12 +167,6 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
           </div>
           <div><a class="btn-secondary" href="https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DUX9PU+5E7E+5ZEMQ" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトを確認<span class="aff-note">（A8.net経由）</span></a></div>
         </div>
-    </div>
-
-    <div class="card">
-      <h2>自分に合うサービスを探す</h2>
-      <p>「一人暮らし」「糖質制限」「ダイエット」など、あなたの条件に合うサービスを診断します。</p>
-      <p style="margin-top:8px;"><a class="btn-primary" href="/tool/diagnosis.html">診断ツールを開く →</a></p>
     </div>
 
     <div class="card">
