@@ -173,8 +173,12 @@ tr:last-child td { border-bottom:none; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
 .price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:999px; padding:1px 8px; white-space:nowrap; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
+.price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.price-points-table th, .price-points-table td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--color-border); font-size:13px; vertical-align:top; }
+.price-points-table th { font-size:12px; color:var(--color-text-muted); font-weight:600; white-space:nowrap; }
 
 /* ---------- Hero（7章） ---------- */
 .hero {
@@ -374,7 +378,7 @@ footer.site .container p { margin-bottom:6px; }
 
     <div class="card">
       <h2>料金</h2>
-      <div class="svc-card-price-row"><span class="price-unconfirmed">公式確認中</span> <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span></div>
+      <div class="pricing-detail"><div class="svc-card-price-row"><span class="price-unconfirmed">公式確認中</span> <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span></div><p class="price-meta">プランは地域により異なる。公式サイト・各エリアのヨシケイで要確認。配達料・入会金無料は公式サイトに明記。地域会社ごとにサイト・商品価格体系が異なるため、単一の価格は存在しない。</p></div>
       <div class="svc-card-footer" style="margin-top:12px;"><a class="btn-primary" href="https://px.a8.net/svt/ejp?a8mat=4BAEXJ+E80T0Y+1QM6+HZAGY" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトで料金・キャンペーンを確認<span class="aff-note">（A8.net経由）</span></a></div>
     </div>
 

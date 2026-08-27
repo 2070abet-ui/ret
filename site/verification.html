@@ -173,8 +173,12 @@ tr:last-child td { border-bottom:none; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
 .price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:999px; padding:1px 8px; white-space:nowrap; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
+.price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.price-points-table th, .price-points-table td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--color-border); font-size:13px; vertical-align:top; }
+.price-points-table th { font-size:12px; color:var(--color-text-muted); font-weight:600; white-space:nowrap; }
 
 /* ---------- Hero（7章） ---------- */
 .hero {
@@ -369,10 +373,10 @@ footer.site .container p { margin-bottom:6px; }
       <div class="trust-stats">
         <div class="trust-stat"><span class="trust-figure">11</span><span class="trust-label">掲載サービス数</span></div>
         <div class="trust-stat"><span class="trust-figure">33</span><span class="trust-label">確認対象の総数</span></div>
-        <div class="trust-stat"><span class="trust-figure">26</span><span class="trust-label">公式一次情報で確認済み</span></div>
+        <div class="trust-stat"><span class="trust-figure">28</span><span class="trust-label">公式一次情報で確認済み</span></div>
       </div>
-      <div class="trust-bar"><span class="trust-bar-confirmed" style="width:79%"></span><span class="trust-bar-derived" style="width:3%"></span><span class="trust-bar-pending" style="width:6%"></span><span class="trust-bar-uncollected" style="width:12%"></span></div>
-      <div class="trust-legend"><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span>26件 <span class="vstatus vstatus-derived"><span class="vstatus-symbol" aria-hidden="true">≈</span>算出値</span>1件 <span class="vstatus vstatus-pending"><span class="vstatus-symbol" aria-hidden="true">…</span>確認中</span>2件 <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span>4件</div>
+      <div class="trust-bar"><span class="trust-bar-confirmed" style="width:85%"></span><span class="trust-bar-derived" style="width:3%"></span><span class="trust-bar-pending" style="width:0%"></span><span class="trust-bar-uncollected" style="width:12%"></span></div>
+      <div class="trust-legend"><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span>28件 <span class="vstatus vstatus-derived"><span class="vstatus-symbol" aria-hidden="true">≈</span>算出値</span>1件 <span class="vstatus vstatus-pending"><span class="vstatus-symbol" aria-hidden="true">…</span>確認中</span>0件 <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span>4件</div>
       
       <p class="trust-note">※このパネルはサイト全体の情報収集状況を示すもので、サービスの優劣を示すものではありません。</p>
     </div>
@@ -384,67 +388,67 @@ footer.site .container p { margin-bottom:6px; }
         
         <tr>
           <td><a href="/services/nosh.html"><strong>nosh（ナッシュ）</strong></a></td>
-          <td>612円/食 <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://nosh.jp/package" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">612</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://nosh.jp/package" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://nosh.jp/shipping" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://nosh.jp/package" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
         </tr>
         <tr>
           <td><a href="/services/watami-takushoku.html"><strong>ワタミの宅食ダイレクト</strong></a></td>
-          <td>公式確認中 <span class="vstatus vstatus-pending"><span class="vstatus-symbol" aria-hidden="true">…</span>確認中</span> <a class="source-link" href="https://www.watami-takushoku.co.jp/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">370</span><span class="price-unit">円〜/食</span> <span class="price-basis">お試し（2週間おためし）</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.watami-takushoku.co.jp/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.watami-takushoku.co.jp/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.watami-takushoku.co.jp/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
         </tr>
         <tr>
           <td><a href="/services/mitsuboshi-farm.html"><strong>三ツ星ファーム</strong></a></td>
-          <td>711円/食 <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://mitsuboshifarm.jp/contents/?contents_id=mitsuboshi_plan" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">711</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://mitsuboshifarm.jp/contents/?contents_id=mitsuboshi_plan" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://mitsuboshifarm.jp/contents/?contents_id=mitsuboshi_plan" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://mitsuboshifarm.jp/lp/unrecog/13/campaign29/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
         </tr>
         <tr>
           <td><a href="/services/wellness-dining.html"><strong>ウェルネスダイニング</strong></a></td>
-          <td>751円/食 <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.wellness-dining.com/kikubari/products/k110/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">751</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.wellness-dining.com/kikubari/products/k110/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.wellness-dining.com/kikubari/products/k110/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.wellness-dining.com/kikubari/products/k110/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
         </tr>
         <tr>
           <td><a href="/services/shokutakubin.html"><strong>食宅便（日清医療食品）</strong></a></td>
-          <td>690円/食 <span class="vstatus vstatus-derived"><span class="vstatus-symbol" aria-hidden="true">≈</span>算出値</span> <a class="source-link" href="http://shokutakubin.com/shop/default.aspx" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">690</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格（おまかせ7食）</span> <span class="vstatus vstatus-derived"><span class="vstatus-symbol" aria-hidden="true">≈</span>算出値</span> <a class="source-link" href="http://shokutakubin.com/shop/default.aspx" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="http://shokutakubin.com/shop/default.aspx" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span></td>
         </tr>
         <tr>
           <td><a href="/services/fit-food-home.html"><strong>FIT FOOD HOME</strong></a></td>
-          <td>公式確認中 <span class="vstatus vstatus-pending"><span class="vstatus-symbol" aria-hidden="true">…</span>確認中</span> <a class="source-link" href="https://store.tavenal.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">653</span><span class="price-unit">円〜/食</span> <span class="price-basis">アラカルト</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://store.tavenal.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://store.tavenal.com/special-commercial" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span></td>
         </tr>
         <tr>
           <td><a href="/services/magokoro-care.html"><strong>まごころケア食</strong></a></td>
-          <td>398円/食 <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://magokoro-care-shoku.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">398</span><span class="price-unit">円/食</span> <span class="price-basis">2回目以降</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://magokoro-care-shoku.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://magokoro-care-shoku.com/help/guide" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://magokoro-care-shoku.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
         </tr>
         <tr>
           <td><a href="/services/chef-muten-tukuritoki.html"><strong>シェフの無添つくりおき</strong></a></td>
-          <td>1,035円/食 <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://store.tavenal.com/tsukurioki/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
+          <td><span class="price-figure">1,035</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://store.tavenal.com/tsukurioki/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://store.tavenal.com/tsukurioki/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://store.tavenal.com/tsukurioki/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
         </tr>
         <tr>
           <td><a href="/services/syokurakuzen.html"><strong>食楽膳</strong></a></td>
-          <td>351円/食 <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://shokurakuzen-sompocarefoods.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
+          <td><span class="price-figure">351</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://shokurakuzen-sompocarefoods.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://shokurakuzen-sompocarefoods.com/guide.html" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://shokurakuzen-sompocarefoods.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
         </tr>
         <tr>
           <td><a href="/services/yoshikei.html"><strong>ヨシケイ</strong></a></td>
-          <td>公式確認中 <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span></td>
+          <td><span class="price-unconfirmed">公式確認中</span> <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://www.yoshikei.co.jp/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span></td>
         </tr>
         <tr>
           <td><a href="/services/kenko-chokkyokubin.html"><strong>健康直球便</strong></a></td>
-          <td>578円/食 <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://kenko-chokkyubin.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="price-figure">578</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://kenko-chokkyubin.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://kenko-chokkyubin.com/user_data/delivery_payment" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span> <a class="source-link" href="https://kenko-chokkyubin.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-26）</a></td>
         </tr>

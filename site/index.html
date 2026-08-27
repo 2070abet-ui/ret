@@ -173,8 +173,12 @@ tr:last-child td { border-bottom:none; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
 .price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:999px; padding:1px 8px; white-space:nowrap; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
+.price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.price-points-table th, .price-points-table td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--color-border); font-size:13px; vertical-align:top; }
+.price-points-table th { font-size:12px; color:var(--color-text-muted); font-weight:600; white-space:nowrap; }
 
 /* ---------- Hero（7章） ---------- */
 .hero {
@@ -377,10 +381,10 @@ footer.site .container p { margin-bottom:6px; }
       <div class="trust-stats">
         <div class="trust-stat"><span class="trust-figure">11</span><span class="trust-label">掲載サービス数</span></div>
         <div class="trust-stat"><span class="trust-figure">33</span><span class="trust-label">確認対象の総数</span></div>
-        <div class="trust-stat"><span class="trust-figure">26</span><span class="trust-label">公式一次情報で確認済み</span></div>
+        <div class="trust-stat"><span class="trust-figure">28</span><span class="trust-label">公式一次情報で確認済み</span></div>
       </div>
-      <div class="trust-bar"><span class="trust-bar-confirmed" style="width:79%"></span><span class="trust-bar-derived" style="width:3%"></span><span class="trust-bar-pending" style="width:6%"></span><span class="trust-bar-uncollected" style="width:12%"></span></div>
-      <div class="trust-legend"><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span>26件 <span class="vstatus vstatus-derived"><span class="vstatus-symbol" aria-hidden="true">≈</span>算出値</span>1件 <span class="vstatus vstatus-pending"><span class="vstatus-symbol" aria-hidden="true">…</span>確認中</span>2件 <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span>4件</div>
+      <div class="trust-bar"><span class="trust-bar-confirmed" style="width:85%"></span><span class="trust-bar-derived" style="width:3%"></span><span class="trust-bar-pending" style="width:0%"></span><span class="trust-bar-uncollected" style="width:12%"></span></div>
+      <div class="trust-legend"><span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span>28件 <span class="vstatus vstatus-derived"><span class="vstatus-symbol" aria-hidden="true">≈</span>算出値</span>1件 <span class="vstatus vstatus-pending"><span class="vstatus-symbol" aria-hidden="true">…</span>確認中</span>0件 <span class="vstatus vstatus-uncollected"><span class="vstatus-symbol" aria-hidden="true">—</span>未収集</span>4件</div>
       <a class="trust-link" href="/verification.html">→ 確認状況を一覧で見る</a>
       <p class="trust-note">※このパネルはサイト全体の情報収集状況を示すもので、サービスの優劣を示すものではありません。</p>
     </div>

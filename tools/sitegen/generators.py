@@ -4,6 +4,7 @@
 """
 from sitegen import data
 from sitegen import templates
+from sitegen import validate
 
 
 def _tag_set(svc):
@@ -59,7 +60,7 @@ def compute_verification_coverage(services, shipping_by_id):
     counts = {"confirmed": 0, "derived": 0, "pending": 0, "uncollected": 0}
     for svc in services:
         for status in (
-            templates._price_status(svc.get("price_plan", {})),
+            templates._pricing_status(templates._pricing_of(svc)),
             templates._shipping_status(shipping_by_id.get(svc["id"])),
             templates._campaign_status(svc.get("first_time_campaign", {})),
         ):
@@ -74,7 +75,7 @@ def compute_fully_verified_ids(services, shipping_by_id):
     FINAL_REDESIGN_SPEC.md 4章・5章。"""
     result = set()
     for svc in services:
-        if (templates._price_status(svc.get("price_plan", {})) == "confirmed"
+        if (templates._pricing_status(templates._pricing_of(svc)) == "confirmed"
                 and templates._shipping_status(shipping_by_id.get(svc["id"])) == "confirmed"
                 and templates._campaign_status(svc.get("first_time_campaign", {})) == "confirmed"):
             result.add(svc["id"])
@@ -124,6 +125,8 @@ def compute_related(services, aff_links, min_score=2, max_items=3):
 
 def main():
     services, campaigns, shipping, sources, aff_links = data.load_data()
+    # Phase2: pricing schema の整合性をビルド時に検証する（invalidはValueErrorで明確に失敗）
+    validate.validate_services(services)
     shipping_by_id = {s["service_id"]: s for s in shipping}
     sources_by_id = {s["id"]: s for s in sources}
     related_by_id = compute_related(services, aff_links)

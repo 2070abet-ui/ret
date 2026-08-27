@@ -173,8 +173,12 @@ tr:last-child td { border-bottom:none; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
 .price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:999px; padding:1px 8px; white-space:nowrap; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
+.price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.price-points-table th, .price-points-table td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--color-border); font-size:13px; vertical-align:top; }
+.price-points-table th { font-size:12px; color:var(--color-text-muted); font-weight:600; white-space:nowrap; }
 
 /* ---------- Hero（7章） ---------- */
 .hero {
@@ -374,7 +378,17 @@ footer.site .container p { margin-bottom:6px; }
 
     <div class="card">
       <h2>料金</h2>
-      <div class="svc-card-price-row"><span class="price-figure">612</span><span class="price-unit">円/食</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></div><div class="svc-card-meta"> <a class="source-link" href="https://nosh.jp/package" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></div>
+      
+    <div class="pricing-detail">
+      <div class="svc-card-price-row"><span class="price-figure">612</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></div><div class="svc-card-meta"> <a class="source-link" href="https://nosh.jp/package" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></div>
+      <div class="table-scroll">
+        <table class="price-points-table">
+          <tr><th>基準</th><th>プラン</th><th>価格</th><th>送料</th><th>条件</th></tr>
+          <tr><td>通常</td><td>6食プラン</td><td>719円/食</td><td>送料別</td><td>通常価格（税込） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr><tr><td>通常</td><td>8食プラン</td><td>644円/食</td><td>送料別</td><td>通常価格（税込） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr><tr><td>通常</td><td>10食プラン</td><td>620円/食</td><td>送料別</td><td>通常価格（税込） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr><tr><td>通常 <span class="price-basis">★代表</span></td><td>12食プラン</td><td>612円/食</td><td>送料別</td><td>通常価格（税込・2回目以降も同額） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr><tr><td>初回</td><td>12食プラン</td><td>487円/食</td><td>送料別</td><td>初回¥1,500 OFF適用後（612-125=487） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr>
+        </table>
+      </div>
+      <p class="price-meta">※★代表は比較一覧に表示する価格です。12食プラン通常価格612円/食（税込）が最も安い（公式/packageに明記）。8食644円・10食620円・6食719円（税込）。初回特別価格は12食487円（税込）＝通常612円から初回¥1,500 OFF（612-125=487）で整合。公式の「最安492円/食」の広告コピーはプラン表と一致しないため不採用。nosh club継続割引あり（2回目¥1,000 OFF・3回目¥500 OFF）。送料は地域・食数により変動（shipping.json参照）。</p>
+    </div>
       <div class="svc-card-footer" style="margin-top:12px;"><a class="btn-primary" href="https://nosh.jp/" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトで料金・キャンペーンを確認</a></div>
     </div>
 

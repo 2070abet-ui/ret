@@ -1,5 +1,5 @@
 {
-  "_comment": "宅配食サービス マスタDB。last_checked=最終確認日。price_plan等は公式サイト・ASP公開情報ベース。未確認項目は要確認マーク。",
+  "_comment": "宅配食サービス マスタDB。last_checked=最終確認日。価格は pricing.price_points[]（初回/通常/お試し/アラカルト等をbasisで分離）で表現し、各価格ポイント単位でstatus/source_id/last_checkedを保持する。既存price_planは移行期間中のフォールバック用に一時的に残置。未確認項目は要確認マーク。",
   "updated_at": "2026-08-27",
   "services": [
     {
@@ -74,7 +74,90 @@
         ],
         "source_url": "https://affisearch.com/campaigns/a8-s00000017722002"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "12食プラン通常価格612円/食（税込）が最も安い（公式/packageに明記）。8食644円・10食620円・6食719円（税込）。初回特別価格は12食487円（税込）＝通常612円から初回¥1,500 OFF（612-125=487）で整合。公式の「最安492円/食」の広告コピーはプラン表と一致しないため不採用。nosh club継続割引あり（2回目¥1,000 OFF・3回目¥500 OFF）。送料は地域・食数により変動（shipping.json参照）。",
+        "display": {
+          "price_point_id": "regular-12meals",
+          "label": "通常価格",
+          "caption": "12食プラン・税込・送料別"
+        },
+        "price_points": [
+          {
+            "id": "regular-6meals",
+            "basis": "regular",
+            "price_per_meal_yen": 719,
+            "meal_count": 6,
+            "plan": "6食プラン",
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "nosh-package-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-8meals",
+            "basis": "regular",
+            "price_per_meal_yen": 644,
+            "meal_count": 8,
+            "plan": "8食プラン",
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "nosh-package-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-10meals",
+            "basis": "regular",
+            "price_per_meal_yen": 620,
+            "meal_count": 10,
+            "plan": "10食プラン",
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "nosh-package-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-12meals",
+            "basis": "regular",
+            "price_per_meal_yen": 612,
+            "meal_count": 12,
+            "plan": "12食プラン",
+            "conditions": "通常価格（税込・2回目以降も同額）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "nosh-package-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "initial-12meals",
+            "basis": "initial",
+            "price_per_meal_yen": 487,
+            "meal_count": 12,
+            "plan": "12食プラン",
+            "conditions": "初回¥1,500 OFF適用後（612-125=487）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "nosh-package-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     },
     {
       "id": "watami-takushoku",
@@ -159,7 +242,46 @@
         "source_url": "https://affisearch.com/campaigns/a8-s00000018527007"
       },
       "last_checked": "2026-08-26",
-      "official_url_note": "公式サイトはwatami-takushoku.co.jp（2026-08-27確認）。旧watami-takushoku.comは403でアクセス不可"
+      "official_url_note": "公式サイトはwatami-takushoku.co.jp（2026-08-27確認）。旧watami-takushoku.comは403でアクセス不可",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": true,
+        "price_notes": "通常価格はお届け先（郵便番号入力）により地域別で単一値化不可。2週間おためしセット（10食）はコースにより割引価格3,700円〜7,900円（税込・370〜790円/食）を公式確認。",
+        "display": {
+          "price_point_id": "trial-2weeks-10meals",
+          "label": "お試し（2週間おためし）",
+          "caption": "10食・コースにより変動"
+        },
+        "price_points": [
+          {
+            "id": "trial-2weeks-10meals",
+            "basis": "trial",
+            "min_per_meal_yen": 370,
+            "max_per_meal_yen": 790,
+            "meal_count": 10,
+            "plan": "2週間おためしセット",
+            "conditions": "コースにより割引価格3,700円〜7,900円（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "watami-official-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-regional",
+            "basis": "regular",
+            "meal_count": null,
+            "plan": "通常コース",
+            "conditions": "郵便番号入力により地域別価格。単一値化不可",
+            "shipping_included": false,
+            "regional": true,
+            "status": "pending",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     },
     {
       "id": "mitsuboshi-farm",
@@ -222,7 +344,77 @@
         ],
         "source_url": "https://media-analytics.jp/affisearch/promotions/mitsuboshi-farm"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "21食コース658円（税抜）/711円（税込）が通常最安。7食858円（税抜）/927円（税込）・14食758円（税抜）/819円（税込）。14食・21食コースは初回送料無料。定期初回は14食コース6,958円（税込・送料無料）＝1食497円（定価11,458円より40%OFF）。7食コースは初回から送料加算。",
+        "display": {
+          "price_point_id": "regular-21meals",
+          "label": "通常価格",
+          "caption": "21食コース・税込・送料別"
+        },
+        "price_points": [
+          {
+            "id": "regular-7meals",
+            "basis": "regular",
+            "price_per_meal_yen": 927,
+            "meal_count": 7,
+            "plan": "7食コース",
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "mitsuboshi-plan-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-14meals",
+            "basis": "regular",
+            "price_per_meal_yen": 819,
+            "meal_count": 14,
+            "plan": "14食コース",
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "mitsuboshi-plan-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-21meals",
+            "basis": "regular",
+            "price_per_meal_yen": 711,
+            "meal_count": 21,
+            "plan": "21食コース",
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "mitsuboshi-plan-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "initial-14meals",
+            "basis": "initial",
+            "price_per_meal_yen": 497,
+            "meal_count": 14,
+            "plan": "14食コース",
+            "total_yen": 6958,
+            "conditions": "定期初回40%OFF（定価11,458円より）。初回送料無料",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "mitsuboshi-lp-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     },
     {
       "id": "wellness-dining",
@@ -285,7 +477,65 @@
         ],
         "source_url": "https://affisearch.com/"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "気配り宅配食：7食5,508円（税込・787円/食）/14食10,854円（775円/食）/21食15,768円（751円/食）。定期注文はずっと送料無料（北海道・沖縄は追加送料あり）。お試し注文・お試し定期注文は送料無料。",
+        "display": {
+          "price_point_id": "regular-21meals",
+          "label": "通常価格",
+          "caption": "21食・税込・定期は送料無料"
+        },
+        "price_points": [
+          {
+            "id": "regular-7meals",
+            "basis": "regular",
+            "price_per_meal_yen": 787,
+            "meal_count": 7,
+            "plan": "気配り宅配食7食",
+            "total_yen": 5508,
+            "conditions": "通常価格（税込・定期は送料無料）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "wellness-product-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-14meals",
+            "basis": "regular",
+            "price_per_meal_yen": 775,
+            "meal_count": 14,
+            "plan": "気配り宅配食14食",
+            "total_yen": 10854,
+            "conditions": "通常価格（税込・定期は送料無料）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "wellness-product-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-21meals",
+            "basis": "regular",
+            "price_per_meal_yen": 751,
+            "meal_count": 21,
+            "plan": "気配り宅配食21食",
+            "total_yen": 15768,
+            "conditions": "通常価格（税込・定期は送料無料）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "wellness-product-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     },
     {
       "id": "shokutakubin",
@@ -347,7 +597,65 @@
         ],
         "source_url": "https://affisearch.com/"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "算出値（DERIVED）：週間人気商品「おまかせコース7食セット」4,830円÷7食=690円/食。同ページに「塩分&カロリーケア7食5,180円」「低糖質セレクト7食5,180円」（いずれも740円/食）も掲載。公式サイトの週間人気商品ページに掲載された一部プランの中での最安であり、全プラン中の最安値であることは確認できていない。送料は都度便1,330円/梱包・らくらく定期便940円/梱包。",
+        "display": {
+          "price_point_id": "regular-omakase-7meals",
+          "label": "通常価格（おまかせ7食）",
+          "caption": "7食・税込・算出値"
+        },
+        "price_points": [
+          {
+            "id": "regular-omakase-7meals",
+            "basis": "regular",
+            "price_per_meal_yen": 690,
+            "meal_count": 7,
+            "plan": "おまかせコース7食",
+            "total_yen": 4830,
+            "conditions": "週間人気商品ページ掲載プランの中での最安（全プラン中最安は未確定）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "derived",
+            "source_id": "shokutakubin-shop-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-salt-care-7meals",
+            "basis": "regular",
+            "price_per_meal_yen": 740,
+            "meal_count": 7,
+            "plan": "塩分&カロリーケア7食",
+            "total_yen": 5180,
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "derived",
+            "source_id": "shokutakubin-shop-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-lowcarb-7meals",
+            "basis": "regular",
+            "price_per_meal_yen": 740,
+            "meal_count": 7,
+            "plan": "低糖質セレクト7食",
+            "total_yen": 5180,
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "derived",
+            "source_id": "shokutakubin-shop-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     },
     {
       "id": "fit-food-home",
@@ -409,7 +717,35 @@
         ],
         "source_url": "https://affisearch.com/"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "公式store.tavenal.comはアラカルト方式で、商品により税込653円〜2,891円/個。数量割引：10個入り最大5%OFF・14個入り最大8%OFF・20個入り最大12%OFF。単一の「1食あたり最安」は商品選択に依存するため確定できない。",
+        "display": {
+          "price_point_id": "alacarte-single",
+          "label": "アラカルト",
+          "caption": "1個あたり・商品により変動"
+        },
+        "price_points": [
+          {
+            "id": "alacarte-single",
+            "basis": "alacarte",
+            "min_per_meal_yen": 653,
+            "max_per_meal_yen": 2891,
+            "meal_count": 1,
+            "plan": "アラカルト",
+            "conditions": "商品により税込653円〜2,891円/個。数量割引あり（10個5%OFF/14個8%OFF/20個12%OFF）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "tavenal-ffh-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     },
     {
       "id": "magokoro-care",
@@ -474,7 +810,65 @@
         "source_url": "https://affisearch.com/"
       },
       "last_checked": "2026-08-26",
-      "official_url_note": "公式サイトはmagokoro-care-shoku.com（2026-08-27確認）。magokoro-care.comは法人情報サイト"
+      "official_url_note": "公式サイトはmagokoro-care-shoku.com（2026-08-27確認）。magokoro-care.comは法人情報サイト",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "2回目以降は1食398円（健康バランス14食セット5,572円税込÷14）。21食お得便8,274円÷21=394円/食。初回限定まごころお得便：健康バランス食14食セット2,660円（税込）＝1食190円（66%OFF）。",
+        "display": {
+          "price_point_id": "regular-14meals",
+          "label": "2回目以降",
+          "caption": "健康バランス14食・税込・送料別"
+        },
+        "price_points": [
+          {
+            "id": "regular-14meals",
+            "basis": "regular",
+            "price_per_meal_yen": 398,
+            "meal_count": 14,
+            "plan": "健康バランス14食セット",
+            "total_yen": 5572,
+            "conditions": "2回目以降の価格",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "magokoro-shoku-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-21meals",
+            "basis": "regular",
+            "price_per_meal_yen": 394,
+            "meal_count": 21,
+            "plan": "21食お得便",
+            "total_yen": 8274,
+            "conditions": "21食お得便",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "magokoro-shoku-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "initial-14meals",
+            "basis": "initial",
+            "price_per_meal_yen": 190,
+            "meal_count": 14,
+            "plan": "初回限定まごころお得便（健康バランス14食）",
+            "total_yen": 2660,
+            "conditions": "初回限定66%OFF",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "magokoro-shoku-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     },
     {
       "id": "chef-muten-tukuritoki",
@@ -547,7 +941,80 @@
       },
       "last_checked": "2026-08-26",
       "article_link": "/articles/chef-muten-tukuritoki-kuchikomi.html",
-      "article_label": "口コミ・評判・料金の検証記事を見る"
+      "article_label": "口コミ・評判・料金の検証記事を見る",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "食卓サポートプラン：通常5,173円（税込）+送料990円（5品・1品あたり約1,035円）。食卓おまかせプラン：通常13,607円（税込）+送料990円（9品・1品あたり約1,512円）。初回は26%OFF・送料無料（食卓サポート3,799円／食卓おまかせ9,980円）。送料は1回あたり990円（初回は送料無料）。",
+        "display": {
+          "price_point_id": "regular-support-5items",
+          "label": "通常価格",
+          "caption": "食卓サポート5品・税込・送料別（+990円）"
+        },
+        "price_points": [
+          {
+            "id": "regular-support-5items",
+            "basis": "regular",
+            "price_per_meal_yen": 1035,
+            "meal_count": 5,
+            "plan": "食卓サポートプラン",
+            "total_yen": 5173,
+            "conditions": "通常価格（税込・送料990円別途）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "chef-muten-official",
+            "last_checked": "2026-08-26"
+          },
+          {
+            "id": "regular-omakase-9items",
+            "basis": "regular",
+            "price_per_meal_yen": 1512,
+            "meal_count": 9,
+            "plan": "食卓おまかせプラン",
+            "total_yen": 13607,
+            "conditions": "通常価格（税込・送料990円別途）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "chef-muten-official",
+            "last_checked": "2026-08-26"
+          },
+          {
+            "id": "initial-support-5items",
+            "basis": "initial",
+            "price_per_meal_yen": 760,
+            "meal_count": 5,
+            "plan": "食卓サポートプラン",
+            "total_yen": 3799,
+            "conditions": "初回限定26%OFF・送料無料",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "chef-muten-official",
+            "last_checked": "2026-08-26"
+          },
+          {
+            "id": "initial-omakase-9items",
+            "basis": "initial",
+            "price_per_meal_yen": 1109,
+            "meal_count": 9,
+            "plan": "食卓おまかせプラン",
+            "total_yen": 9980,
+            "conditions": "初回限定26%OFF・送料無料",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "chef-muten-official",
+            "last_checked": "2026-08-26"
+          }
+        ]
+      }
     },
     {
       "id": "syokurakuzen",
@@ -617,7 +1084,65 @@
         ],
         "source_url": "https://shokurakuzen-sompocarefoods.com/"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "レギュラー選べる21食セット7,380円（1食あたり約351円）/食楽膳プラス21食11,130円/定期28食15,512円 など。定期初回15%OFF、定期購入なら最大10%OFF。おかず中心で主食（ごはん）は別途必要。",
+        "display": {
+          "price_point_id": "regular-21meals-regular",
+          "label": "通常価格",
+          "caption": "レギュラー選べる21食・税込・おかず中心"
+        },
+        "price_points": [
+          {
+            "id": "regular-21meals-regular",
+            "basis": "regular",
+            "price_per_meal_yen": 351,
+            "meal_count": 21,
+            "plan": "レギュラー選べる21食セット",
+            "total_yen": 7380,
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "syokurakuzen-official",
+            "last_checked": "2026-08-26"
+          },
+          {
+            "id": "regular-21meals-plus",
+            "basis": "regular",
+            "price_per_meal_yen": 530,
+            "meal_count": 21,
+            "plan": "食楽膳プラス21食",
+            "total_yen": 11130,
+            "conditions": "通常価格（税込）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "syokurakuzen-official",
+            "last_checked": "2026-08-26"
+          },
+          {
+            "id": "regular-28meals-subscription",
+            "basis": "subscription",
+            "price_per_meal_yen": 554,
+            "meal_count": 28,
+            "plan": "定期28食",
+            "total_yen": 15512,
+            "conditions": "定期購入価格（税込・定期初回15%OFF適用前）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "syokurakuzen-official",
+            "last_checked": "2026-08-26"
+          }
+        ]
+      }
     },
     {
       "id": "yoshikei",
@@ -682,7 +1207,15 @@
         ],
         "source_url": "https://www.yoshikei.co.jp/"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": true,
+        "price_notes": "プランは地域により異なる。公式サイト・各エリアのヨシケイで要確認。配達料・入会金無料は公式サイトに明記。地域会社ごとにサイト・商品価格体系が異なるため、単一の価格は存在しない。",
+        "display": null,
+        "price_points": []
+      }
     },
     {
       "id": "kenko-chokkyokubin",
@@ -749,7 +1282,65 @@
         ],
         "source_url": "https://kenko-chokkyubin.com/"
       },
-      "last_checked": "2026-08-26"
+      "last_checked": "2026-08-26",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "カロリー・塩分調整食A/Bセット10食分5,780円÷10=578円/食が全商品中最安。全5商品（消化にやさしい食A6,780円・やわらか食A/B6,780円等）を確認し、5,780円未満の商品は存在しない。新規会員登録で3食無料キャンペーン。沖縄県以外は送料無料。",
+        "display": {
+          "price_point_id": "regular-calorie-salt-10meals",
+          "label": "通常価格",
+          "caption": "カロリー・塩分調整食A/B 10食・税込"
+        },
+        "price_points": [
+          {
+            "id": "regular-calorie-salt-10meals",
+            "basis": "regular",
+            "price_per_meal_yen": 578,
+            "meal_count": 10,
+            "plan": "カロリー・塩分調整食A/Bセット",
+            "total_yen": 5780,
+            "conditions": "全5商品中最安（公式サイト2026-08-27確認）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "kenko-chokkyokubin-price-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-digestive-10meals",
+            "basis": "regular",
+            "price_per_meal_yen": 678,
+            "meal_count": 10,
+            "plan": "消化にやさしい食Aセット",
+            "total_yen": 6780,
+            "conditions": "通常価格（税込）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "kenko-chokkyokubin-price-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-soft-10meals",
+            "basis": "regular",
+            "price_per_meal_yen": 678,
+            "meal_count": 10,
+            "plan": "やわらか食A/Bセット",
+            "total_yen": 6780,
+            "conditions": "通常価格（税込）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "kenko-chokkyokubin-price-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     }
   ]
 }

@@ -173,8 +173,12 @@ tr:last-child td { border-bottom:none; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
 .price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:999px; padding:1px 8px; white-space:nowrap; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
+.price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.price-points-table th, .price-points-table td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--color-border); font-size:13px; vertical-align:top; }
+.price-points-table th { font-size:12px; color:var(--color-text-muted); font-weight:600; white-space:nowrap; }
 
 /* ---------- Hero（7章） ---------- */
 .hero {
@@ -374,7 +378,17 @@ footer.site .container p { margin-bottom:6px; }
 
     <div class="card">
       <h2>料金</h2>
-      <div class="svc-card-price-row"><span class="price-figure">578</span><span class="price-unit">円/食</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></div><div class="svc-card-meta"> <a class="source-link" href="https://kenko-chokkyubin.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></div>
+      
+    <div class="pricing-detail">
+      <div class="svc-card-price-row"><span class="price-figure">578</span><span class="price-unit">円/食</span> <span class="price-basis">通常価格</span> <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></div><div class="svc-card-meta"> <a class="source-link" href="https://kenko-chokkyubin.com/" target="_blank" rel="noopener nofollow">出典を見る（確認日: 2026-08-27）</a></div>
+      <div class="table-scroll">
+        <table class="price-points-table">
+          <tr><th>基準</th><th>プラン</th><th>価格</th><th>送料</th><th>条件</th></tr>
+          <tr><td>通常 <span class="price-basis">★代表</span></td><td>カロリー・塩分調整食A/Bセット</td><td>578円/食（1回5,780円）</td><td>送料込み</td><td>全5商品中最安（公式サイト2026-08-27確認） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr><tr><td>通常</td><td>消化にやさしい食Aセット</td><td>678円/食（1回6,780円）</td><td>送料込み</td><td>通常価格（税込） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr><tr><td>通常</td><td>やわらか食A/Bセット</td><td>678円/食（1回6,780円）</td><td>送料込み</td><td>通常価格（税込） <span class="vstatus vstatus-confirmed"><span class="vstatus-symbol" aria-hidden="true">✓</span>確認済み</span></td></tr>
+        </table>
+      </div>
+      <p class="price-meta">※★代表は比較一覧に表示する価格です。カロリー・塩分調整食A/Bセット10食分5,780円÷10=578円/食が全商品中最安。全5商品（消化にやさしい食A6,780円・やわらか食A/B6,780円等）を確認し、5,780円未満の商品は存在しない。新規会員登録で3食無料キャンペーン。沖縄県以外は送料無料。</p>
+    </div>
       <div class="svc-card-footer" style="margin-top:12px;"><a class="btn-primary" href="https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DUX9PU+5E7E+5ZEMQ" rel="nofollow sponsored" target="_blank" rel="noopener">公式サイトで料金・キャンペーンを確認<span class="aff-note">（A8.net経由）</span></a></div>
     </div>
 

@@ -175,8 +175,12 @@ tr:last-child td { border-bottom:none; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
 .price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:999px; padding:1px 8px; white-space:nowrap; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
+.price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.price-points-table th, .price-points-table td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--color-border); font-size:13px; vertical-align:top; }
+.price-points-table th { font-size:12px; color:var(--color-text-muted); font-weight:600; white-space:nowrap; }
 
 /* ---------- Hero（7章） ---------- */
 .hero {
@@ -357,8 +361,9 @@ def yen(v):
 
 
 # ---------- フィールド単位の確認状態（verification status）----------
-# 新しいstatus専用キーは追加しない。既存フィールド（lowest_per_meal_yen / shipping_fee /
-# notes / requires_verification）だけから4状態を導出する（PHASE1_IMPLEMENTATION_PLAN.md 8章）。
+# 価格はpricing.price_points[]単位でstatusを保持し、_pricing_statusがdisplay価格の
+# statusを採用する（plan_notesの自由文トークン判定からは脱却済み）。
+# 送料・キャンペーンは従来通り shipping_fee/notes / requires_verification から導出する。
 
 _VSTATUS_LABEL = {
     "confirmed": "確認済み",
@@ -475,14 +480,270 @@ def vstatus_legend(link_to_dashboard=True):
 
 
 def _price_status(price_plan):
-    """価格の確認状態。plan_notes中の既存の記法（DERIVED/PENDING_VERIFICATION）を
-    機械可読な判定に使う（新規データキーの追加はしない）。"""
+    """旧price_plan（lowest_per_meal_yen）からの確認状態（フォールバック用）。
+    既存のconfirmed/derived/pending/uncollectedの意味は維持する。
+    新schema（pricing）ではこの関数は使わず、_pricing_status/_price_point_statusを使う。"""
     if not price_plan:
         return "uncollected"
     notes = price_plan.get("plan_notes") or ""
     if price_plan.get("lowest_per_meal_yen") is not None:
         return "derived" if "DERIVED" in notes else "confirmed"
     return "pending" if "PENDING_VERIFICATION" in notes else "uncollected"
+
+
+# ---------- pricing schema（価格ポイント構造）----------
+# 旧 price_plan 単一値（lowest_per_meal_yen）を廃止方向とし、pricing + price_points[] を
+# 優先する。旧price_planはPhase1のフォールバック用に一時的に保持する。
+# statusは価格ポイント単位で保持し、plan_notesの自由文トークン判定からは完全に脱却する。
+
+_BASIS_LABELS = {
+    "regular": "通常",
+    "initial": "初回",
+    "trial": "お試し",
+    "subscription": "定期割引",
+    "bulk": "数量割引",
+    "alacarte": "アラカルト",
+}
+
+_BASIS_VALID = set(_BASIS_LABELS)
+_STATUS_VALID = {"confirmed", "derived", "pending", "uncollected"}
+
+
+def _pricing_of(service):
+    """サービス1件からpricingブロックを返す。pricingが無ければ旧price_planを
+    pricing互換の形に変換してフォールバックする（Phase1の後方互換層）。"""
+    if isinstance(service, dict) and service.get("pricing"):
+        return service["pricing"]
+    price_plan = service.get("price_plan", {}) if isinstance(service, dict) else {}
+    return _legacy_pricing_from_price_plan(price_plan)
+
+
+def _legacy_pricing_from_price_plan(price_plan):
+    """旧price_planをpricing互換の形へ変換（フォールバック専用）。
+    既存のconfirmed/derived/pending/uncollected判定を維持する。"""
+    price_plan = price_plan or {}
+    if not price_plan:
+        return None
+    cheapest = price_plan.get("lowest_per_meal_yen")
+    notes = price_plan.get("plan_notes") or ""
+    if cheapest is not None:
+        stat = "derived" if "DERIVED" in notes else "confirmed"
+    else:
+        stat = "pending" if "PENDING_VERIFICATION" in notes else "uncollected"
+    points = []
+    if cheapest is not None:
+        points.append({
+            "id": "legacy-single",
+            "basis": "regular",
+            "price_per_meal_yen": cheapest,
+            "meal_count": None,
+            "plan": None,
+            "conditions": notes,
+            "shipping_included": False,
+            "regional": False,
+            "tax": "included",
+            "status": stat,
+            "source_id": price_plan.get("source_id"),
+            "last_checked": price_plan.get("last_checked"),
+        })
+    return {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": False,
+        "price_notes": notes,
+        "display": {
+            "price_point_id": "legacy-single" if cheapest is not None else None,
+            "label": "通常価格" if cheapest is not None else "公式確認中",
+            "caption": "",
+        },
+        "price_points": points,
+    }
+
+
+def _price_point_by_id(pricing, point_id):
+    """price_points[]から指定idの価格ポイントを返す。無ければNone。"""
+    if not pricing or not point_id:
+        return None
+    for p in pricing.get("price_points", []):
+        if p.get("id") == point_id:
+            return p
+    return None
+
+
+def _display_point(pricing):
+    """display.price_point_id が参照する価格ポイントを返す。"""
+    if not pricing:
+        return None
+    disp = pricing.get("display") or {}
+    return _price_point_by_id(pricing, disp.get("price_point_id"))
+
+
+def _price_point_status(point):
+    """価格ポイント単位の確認状態（confirmed/derived/pending/uncollected）。"""
+    if not point:
+        return "uncollected"
+    return point.get("status", "uncollected")
+
+
+def _pricing_status(pricing):
+    """pricingブロック（価格フィールド全体）の確認状態。
+    displayが参照する価格ポイントのstatusを採用する。displayが無い場合
+    （地域依存で数値なし等）は従来互換のpending/uncollected判定に留める。"""
+    if not pricing:
+        return "uncollected"
+    dp = _display_point(pricing)
+    if dp is not None:
+        return _price_point_status(dp)
+    notes = pricing.get("price_notes") or ""
+    return "pending" if "PENDING_VERIFICATION" in notes else "uncollected"
+
+
+def _display_label(pricing):
+    """表示ラベル。display.labelがあればそれを、無ければbasisから導出する。"""
+    if not pricing:
+        return ""
+    disp = pricing.get("display") or {}
+    label = disp.get("label")
+    if label:
+        return label
+    dp = _display_point(pricing)
+    if dp:
+        return _BASIS_LABELS.get(dp.get("basis"), "")
+    return ""
+
+
+def _price_point_value_text(point):
+    """価格ポイントの値テキスト（スカラー/レンジ/未確認）。"""
+    if not point:
+        return "公式確認中"
+    val = point.get("price_per_meal_yen")
+    lo = point.get("min_per_meal_yen")
+    hi = point.get("max_per_meal_yen")
+    if val is not None:
+        return f"{val:,}円/食"
+    if lo is not None and hi is not None:
+        return f"{lo:,}〜{hi:,}円/食"
+    if lo is not None:
+        return f"{lo:,}円〜/食"
+    return "公式確認中"
+
+
+def _display_figure_html(pricing, sources_by_id=None):
+    """display価格の図版部分（--price-figure）。スカラー値/レンジ/未確認を判別する。
+    戻り値: (表示HTML, display価格ポイント or None)。"""
+    pricing = pricing or {}
+    dp = _display_point(pricing)
+    if dp is None:
+        return ('<span class="price-unconfirmed">公式確認中</span>', None)
+    val = dp.get("price_per_meal_yen")
+    lo = dp.get("min_per_meal_yen")
+    if val is not None:
+        return (f'<span class="price-figure">{val:,}</span><span class="price-unit">円/食</span>', dp)
+    if lo is not None:
+        return (f'<span class="price-figure">{lo:,}</span><span class="price-unit">円〜/食</span>', dp)
+    return ('<span class="price-unconfirmed">公式確認中</span>', dp)
+
+
+def _price_source_meta(pricing, stat, sources_by_id=None):
+    """確認済み/算出値のときのみ確認日を、出典があれば出典リンクを組み立てる。
+    未確認（pending/uncollected）の値には確認日を出さない。"""
+    dp = _display_point(pricing)
+    src = source_link(sources_by_id, dp.get("source_id") if dp else None)
+    checked = dp.get("last_checked", "") if dp else ""
+    if src:
+        date_html = ""
+    elif stat in ("confirmed", "derived") and checked:
+        date_html = f"（{esc(checked)}時点）"
+    else:
+        date_html = ""
+    return f"{src}{date_html}"
+
+
+def price_cell_html(pricing, sources_by_id=None):
+    """価格の表示（display価格＋ラベル＋確認日/出典＋確認状態バッジ）を組み立てる。
+    未確認（pending/uncollected）の値には確認日を出さない。
+    検証状況ダッシュボードで使用する。"""
+    pricing = pricing or {}
+    stat = _pricing_status(pricing)
+    badge = vstatus_badge(stat)
+    fig, dp = _display_figure_html(pricing, sources_by_id)
+    if dp is None:
+        return f'{fig} {badge}'
+    label = _display_label(pricing)
+    label_html = f'<span class="price-basis">{esc(label)}</span>' if label else ""
+    meta = _price_source_meta(pricing, stat, sources_by_id)
+    return f"{fig} {label_html} {badge}{meta}"
+
+
+def price_figure_html(pricing, sources_by_id=None):
+    """Service Card・詳細ページの料金ブロック用の価格表示（REDESIGN_UI_SPEC.md 4章・9章）。
+    display価格を大きく表示し、ラベル・検証バッジ・出典/確認日は補助情報として下げる。
+    未確認（pending/uncollected）の値には確認日を出さない。"""
+    pricing = pricing or {}
+    stat = _pricing_status(pricing)
+    badge = vstatus_badge(stat)
+    fig, dp = _display_figure_html(pricing, sources_by_id)
+    meta_text = _price_source_meta(pricing, stat, sources_by_id)
+    meta = f'<div class="svc-card-meta">{meta_text}</div>' if meta_text else ""
+    if dp is None:
+        return f'<div class="svc-card-price-row">{fig} {badge}</div>{meta}'
+    label = _display_label(pricing)
+    label_html = f'<span class="price-basis">{esc(label)}</span>' if label else ""
+    return f'<div class="svc-card-price-row">{fig} {label_html} {badge}</div>{meta}'
+
+
+def _price_inline_html(pricing, sources_by_id=None):
+    """比較テーブル（ranking・comparison）のセル用の価格表示。
+    display価格＋ラベル＋バッジ。未確認の値は価格として強調せず控えめに表示する。"""
+    pricing = pricing or {}
+    stat = _pricing_status(pricing)
+    badge = vstatus_badge(stat)
+    fig, dp = _display_figure_html(pricing, sources_by_id)
+    if dp is None:
+        return f'{fig} {badge}'
+    label = _display_label(pricing)
+    label_html = f'<span class="price-basis">{esc(label)}</span>' if label else ""
+    return f'{fig} {label_html} {badge}'
+
+
+def pricing_detail_html(pricing, sources_by_id=None):
+    """サービス詳細ページの料金カード用。display価格を主表示し、
+    その他の価格ポイントを一覧表示する（初回/通常/お試し/食数/送料込み別/条件）。"""
+    pricing = pricing or {}
+    main_html = price_figure_html(pricing, sources_by_id)
+    points = pricing.get("price_points", [])
+    note = esc(pricing.get("price_notes", ""))
+    if not points:
+        return (f'<div class="pricing-detail">{main_html}'
+                f'<p class="price-meta">{note}</p></div>')
+    dp = _display_point(pricing)
+    rows = []
+    for p in points:
+        is_display = dp is not None and p.get("id") == dp.get("id")
+        basis_label = _BASIS_LABELS.get(p.get("basis"), p.get("basis", ""))
+        val_txt = _price_point_value_text(p)
+        total = p.get("total_yen")
+        if total is not None:
+            val_txt += f"（1回{total:,}円）"
+        ship_txt = "送料込み" if p.get("shipping_included") else "送料別"
+        cond = p.get("conditions") or ""
+        pstat = vstatus_badge(_price_point_status(p))
+        mark = ' <span class="price-basis">★代表</span>' if is_display else ""
+        rows.append(
+            f'<tr><td>{esc(basis_label)}{mark}</td><td>{esc(p.get("plan") or "—")}</td>'
+            f'<td>{esc(val_txt)}</td><td>{esc(ship_txt)}</td><td>{esc(cond)} {pstat}</td></tr>'
+        )
+    return f"""
+    <div class="pricing-detail">
+      {main_html}
+      <div class="table-scroll">
+        <table class="price-points-table">
+          <tr><th>基準</th><th>プラン</th><th>価格</th><th>送料</th><th>条件</th></tr>
+          {''.join(rows)}
+        </table>
+      </div>
+      <p class="price-meta">※★代表は比較一覧に表示する価格です。{note}</p>
+    </div>"""
 
 
 def _shipping_status(shipping_row):
@@ -516,64 +777,6 @@ def source_link(sources_by_id, source_id):
         return ""
     return (f' <a class="source-link" href="{esc(src.get("url", ""))}" target="_blank" rel="noopener nofollow">'
             f'出典を見る（確認日: {esc(src.get("confirmed_at", ""))}）</a>')
-
-
-def price_cell_html(price_plan, sources_by_id=None):
-    """最安料金の表示（価格＋確認日/出典＋確認状態バッジ）を組み立てる。
-    未確認（pending/uncollected）の値には確認日を出さない。出典リンクが既に確認日を
-    含む場合は重複させず、出典が無い確認済み/算出値のみ最終確認日を単独表示する。
-    build_service_pageと検証状況ダッシュボードで共有するロジック（新規データキーは追加しない）。
-    PHASE3_IMPLEMENTATION_PLAN.md 1.2〜1.4節・3.2節。"""
-    price_plan = price_plan or {}
-    cheapest = price_plan.get("lowest_per_meal_yen")
-    cheapest_html = (yen(cheapest) + "/食") if cheapest else "公式確認中"
-    stat = _price_status(price_plan)
-    src_link = source_link(sources_by_id, price_plan.get("source_id"))
-    checked = price_plan.get("last_checked", "")
-    if src_link:
-        date_html = ""
-    elif stat in ("confirmed", "derived") and checked:
-        date_html = f"（{esc(checked)}時点）"
-    else:
-        date_html = ""
-    return f"{cheapest_html}{date_html} {vstatus_badge(stat)}{src_link}"
-
-
-def price_figure_html(price_plan, sources_by_id=None):
-    """Service Card・詳細ページの料金ブロック用の価格表示（REDESIGN_UI_SPEC.md 4章・9章）。
-    数値部分（例:351）だけを--price-figureで大きくし、単位（円/食）・検証バッジ・
-    出典/確認日は補助情報として小さく下げる。未確認（pending/uncollected）の値には
-    確認日を出さない。既存の_price_status/source_linkロジックを再利用する。"""
-    price_plan = price_plan or {}
-    cheapest = price_plan.get("lowest_per_meal_yen")
-    stat = _price_status(price_plan)
-    badge = vstatus_badge(stat)
-    src = source_link(sources_by_id, price_plan.get("source_id"))
-    checked = price_plan.get("last_checked", "")
-    if src:
-        date_html = ""
-    elif stat in ("confirmed", "derived") and checked:
-        date_html = f"（{esc(checked)}時点）"
-    else:
-        date_html = ""
-    meta = "".join([f'<div class="svc-card-meta">{src}{date_html}</div>' if (src or date_html) else ""])
-    if cheapest is None:
-        return f'<div class="svc-card-price-row"><span class="price-unconfirmed">公式確認中</span> {badge}</div>{meta}'
-    price = f'<span class="price-figure">{cheapest:,}</span><span class="price-unit">円/食</span>'
-    return f'<div class="svc-card-price-row">{price} {badge}</div>{meta}'
-
-
-def _price_inline_html(price_plan, sources_by_id=None):
-    """比較テーブル（ranking・comparison）のセル用の価格表示（REDESIGN_UI_SPEC.md 9.4節・13章）。
-    数値部分だけを--price-figureで強調し、単位・検証バッジは補助情報として控えめに並べる。
-    未確認の値は価格として強調せず、淡いグレーの「公式確認中」+ バッジに留める。"""
-    price_plan = price_plan or {}
-    cheapest = price_plan.get("lowest_per_meal_yen")
-    stat = _price_status(price_plan)
-    badge = vstatus_badge(stat)
-    if cheapest is None:
-        return f'<span class="price-unconfirmed">公式確認中</span> {badge}'
-    return f'<span class="price-figure">{cheapest:,}</span><span class="price-unit">円/食</span> {badge}'
 
 
 def shipping_line(shipping_row, sources_by_id=None):
@@ -811,7 +1014,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     recommend_html = service_recommend_block(service)
     faq_html = service_faq_block(service, shipping_row)
     last_checked = service.get("last_checked", "")
-    price_plan = service.get("price_plan", {})
+    pricing = _pricing_of(service)
     first_camp = service.get("first_time_campaign", {})
 
     # 関連記事リンク（サービスDBに article_link があれば表示）
@@ -827,8 +1030,9 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     cons = "".join(f"<li>{esc(c)}</li>" for c in service.get("cons", []))
     tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service.get("tags", []))
 
-    # 価格は専用ブロックで大きく表示する（--price-figure、12章）。未確認の値は小さく控えめに。
-    price_block_html = price_figure_html(price_plan, sources_by_id)
+    # 価格はdisplay価格を主表示し、全価格ポイントを一覧表示する（--price-figure、12章）。
+    # 未確認の値は小さく控えめに。
+    price_block_html = pricing_detail_html(pricing, sources_by_id)
 
     title = f"{s_name}の特徴・料金・初回キャンペーンを解説"
     desc = f"{s_name}の特徴・料金・初回キャンペーン・お試し情報をまとめました。{SITE_NAME}が公式サイトで最終確認した情報（2026年8月）に基づく内容です。"
@@ -936,7 +1140,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     rows = []
     cards = []
     for svc in services:
-        price_plan = svc.get("price_plan", {})
+        pricing = _pricing_of(svc)
         camp_txt = confirmed_camp.get(svc["id"], "公式確認中")
         if svc["id"] in confirmed_camp:
             camp_status = "confirmed"
@@ -960,7 +1164,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         aff_cta_card = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-primary")
 
         # デスクトップ：テーブル行（9.4節。価格セルだけ--price-figureで強調）
-        price_cell = _price_inline_html(price_plan, sources_by_id)
+        price_cell = _price_inline_html(pricing, sources_by_id)
         rows.append(f"""
         <tr data-mealform="{mealform_attr}">
           <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}</td>
@@ -972,7 +1176,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         </tr>""")
 
         # モバイル：Service Card縦積み（9章・15.2節。価格→保存方法/向いている人→検証→CTAの順）
-        price_html = price_figure_html(price_plan, sources_by_id)
+        price_html = price_figure_html(pricing, sources_by_id)
         target_txt = "・".join(svc.get("target", [])) or "公式確認中"
         cards.append(f"""
         <div class="svc-card" data-mealform="{mealform_attr}">
@@ -1017,7 +1221,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     <div class="ranking-desktop">
       <div class="card">
         <table id="ranking-table">
-          <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
+          <tr><th>サービス</th><th>1食あたりの料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
           {''.join(rows)}
         </table>
       </div>
@@ -1093,14 +1297,29 @@ def build_campaigns_page(campaigns, services, aff_links):
 # ---------- 比較ページ ----------
 
 def _comparison_price_diff_html(service_a, service_b):
-    """両社とも価格がconfirmed/derivedの場合のみ、価格差を算出して結論として先出しする。
-    片方でも未確認なら何も出さない（存在しない精度を主張しない）。新規スコアリングではなく
-    既存price_plan.lowest_per_meal_yenの引き算のみ。FINAL_REDESIGN_SPEC.md 4章・9章。"""
-    pa, pb = service_a.get("price_plan", {}), service_b.get("price_plan", {})
-    sa, sb = _price_status(pa), _price_status(pb)
-    va, vb = pa.get("lowest_per_meal_yen"), pb.get("lowest_per_meal_yen")
-    if sa not in ("confirmed", "derived") or sb not in ("confirmed", "derived") or va is None or vb is None:
+    """両社のdisplay価格が『同一basis＋スカラー値＋confirmed/derived』の場合のみ
+    価格差を算出して結論として先出しする。
+    基準（basis）不一致・レンジ（min/max）・未確認は単純な「◯円安い」を出さない
+    （基準の違う値・レンジ値・条件不一致の値の引き算は誤誘導になるため）。
+    FINAL_REDESIGN_SPEC.md 4章・9章（基準一致の条件を追加）。"""
+    pa = _pricing_of(service_a)
+    pb = _pricing_of(service_b)
+    da = _display_point(pa)
+    db = _display_point(pb)
+    if da is None or db is None:
         return ""
+    sa, sb = _price_point_status(da), _price_point_status(db)
+    if sa not in ("confirmed", "derived") or sb not in ("confirmed", "derived"):
+        return ""
+    if da.get("basis") != db.get("basis"):
+        a_lab = _display_label(pa) or _BASIS_LABELS.get(da.get("basis"), "")
+        b_lab = _display_label(pb) or _BASIS_LABELS.get(db.get("basis"), "")
+        return (f"<p>{esc(service_a['name'])}の表示価格は「{esc(a_lab)}」、"
+                f"{esc(service_b['name'])}の表示価格は「{esc(b_lab)}」と基準が異なるため、"
+                f"単純な価格差は出していません（比較時は価格の基準を必ずご確認ください）。</p>")
+    va, vb = da.get("price_per_meal_yen"), db.get("price_per_meal_yen")
+    if va is None or vb is None:
+        return "<p>両社の表示価格はレンジ（〜）のため、単純な価格差は出していません。</p>"
     diff = abs(va - vb)
     if diff == 0:
         return f"<p>{esc(service_a['name'])}と{esc(service_b['name'])}の1食あたり価格はほぼ同じです（確認済み・算出値どうしの比較）。</p>"
@@ -1130,10 +1349,10 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     a_id, b_id = service_a["id"], service_b["id"]
     a_name, b_name = service_a["name"], service_b["name"]
 
-    # 価格セル：confirmed/derivedのみ--price-figureで強調し、未確認の値は控えめに沈める
+    # 価格セル：display価格＋ラベル。confirmed/derivedのみ--price-figureで強調し、未確認の値は控えめに沈める
     # （REDESIGN_UI_SPEC.md 13章「データの確実性とUIの強調度を一致させる」）。
-    a_price = _price_inline_html(service_a.get("price_plan", {}), sources_by_id)
-    b_price = _price_inline_html(service_b.get("price_plan", {}), sources_by_id)
+    a_price = _price_inline_html(_pricing_of(service_a), sources_by_id)
+    b_price = _price_inline_html(_pricing_of(service_b), sources_by_id)
 
     a_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_a.get("tags", []))
     b_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_b.get("tags", []))
@@ -1160,7 +1379,7 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
       <table class="compare-table">
         <tr><th></th><th>{esc(a_name)}</th><th>{esc(b_name)}</th></tr>
         <tr><td><strong>特徴</strong></td><td>{a_tags}</td><td>{b_tags}</td></tr>
-        <tr><td><strong>最安料金</strong></td><td class="price-cell">{a_price}</td><td class="price-cell">{b_price}</td></tr>
+        <tr><td><strong>1食あたりの料金</strong></td><td class="price-cell">{a_price}</td><td class="price-cell">{b_price}</td></tr>
         <tr><td><strong>向いている人</strong></td><td>{', '.join(service_a.get('target', []))}</td><td>{', '.join(service_b.get('target', []))}</td></tr>
         <tr><td><strong>料金・特徴を詳しく見る</strong></td><td><a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細ページ</a></td><td><a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細ページ</a></td></tr>
         <tr><td><strong>公式サイト</strong></td><td>{aff_link(aff_links, a_id, label='公式サイトを確認', cls='btn-secondary')}</td><td>{aff_link(aff_links, b_id, label='公式サイトを確認', cls='btn-secondary')}</td></tr>
@@ -1195,12 +1414,13 @@ def build_diagnosis_tool(services, aff_links):
     svc_data = []
     for svc in services:
         aff = aff_links.get(svc["id"], {})
+        _dp = _display_point(_pricing_of(svc))
         svc_data.append({
             "id": svc["id"],
             "name": svc["name"],
             "tags": svc.get("tags", []),
             "target": svc.get("target", []),
-            "price": svc.get("price_plan", {}).get("lowest_per_meal_yen"),
+            "price": _dp.get("price_per_meal_yen") if _dp else None,  # display価格（スカラーのみ）
             "meal_form_categories": svc.get("meal_form_categories", []),
             "url": svc.get("official_url", ""),
             "aff_url": aff.get("actual_url", ""),  # アフィリエイトリンク（あれば優先）
@@ -1577,7 +1797,7 @@ def build_article_chef_muten_kuchikomi(aff_links):
 
 def build_verification_dashboard(services, shipping_by_id, sources_by_id, coverage=None):
     """11社×価格・送料・キャンペーンの確認状況を1ページに集約するダッシュボード。
-    data/sources.jsonは直接参照・列挙しない。既存の確認状態判定関数（_price_status/
+    data/sources.jsonは直接参照・列挙しない。確認状態判定関数（_pricing_status/
     _shipping_status/_campaign_status）とprice_cell_html()/source_link()をそのまま
     再利用するだけで、ASP内部情報・報酬額・program_id等はいずれの関数からも出力されない
     （source_linkが返すのはurl/confirmed_atのみで、sources.jsonのnoteフィールドは
@@ -1586,7 +1806,7 @@ def build_verification_dashboard(services, shipping_by_id, sources_by_id, covera
     rows = []
     for svc in services:
         s_id = svc["id"]
-        price_html = price_cell_html(svc.get("price_plan", {}), sources_by_id)
+        price_html = price_cell_html(_pricing_of(svc), sources_by_id)
         shipping_row = (shipping_by_id or {}).get(s_id)
         ship_html = f"{vstatus_badge(_shipping_status(shipping_row))}{source_link(sources_by_id, (shipping_row or {}).get('source_id'))}"
         camp = svc.get("first_time_campaign", {})
