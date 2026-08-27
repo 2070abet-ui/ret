@@ -1589,12 +1589,18 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     svc_cards = ""
     for svc in services:
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
+        # 1食あたりの価格を発見段階で提示し、予算スクリーニングを短時間化する
+        # （UI_DESIGN_PRINCIPLES.md 3.1「TOP=発見」・6.2「比較は同軸」。ranking表と同じ
+        # _price_inline_html を使うため表記はページ間で統一）。検証状態バッジを価格と一体化し、
+        # 値単位の信頼（同4.2.1）を数値の根拠として見せる。未確認の値は控えめに「公式確認中」表示。
+        price_inline = _price_inline_html(_pricing_of(svc))
         svc_cards += f"""
         <div class="svc-card svc-card-simple">
           <div class="svc-card-header">
             <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
             <div class="svc-card-tags">{tags}</div>
           </div>
+          <div class="svc-card-price-row">{price_inline}</div>
           <div class="svc-card-footer">
             <a class="btn-primary" href="/services/{svc['id']}.html">詳しく見る</a>
             {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}
