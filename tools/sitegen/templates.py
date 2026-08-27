@@ -177,8 +177,13 @@ tr:last-child td { border-bottom:none; }
 .price-figure { font:var(--price-figure); color:var(--color-text); white-space:nowrap; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
-.price-unconfirmed { color:var(--color-text-muted); font-size:14px; }
-.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:999px; padding:1px 8px; white-space:nowrap; }
+/* 未確認価格（Kit Oisix等）も確認済み価格と同程度の行の高さ・視覚的重みになるよう、
+   フォントサイズ・行の高さを--price-figureに近づける（値そのものは捏造しない、色で区別は維持）。
+   UI_DESIGN_PRINCIPLES.md 4.2.1「確認済みは強調・未確認は控えめ」の色による区別は変更しない。 */
+.price-unconfirmed { color:var(--color-text-muted); font-size:1.1rem; font-weight:600; line-height:1.2; }
+/* 長い基準ラベル（例：ツクリオ「1人前あたり換算価格（当サイト算出）」）がモバイル幅で
+   横に突き抜けないよう、折り返しを許可し丸角を控えめにする（15章：横スクロール禁止方針）。 */
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:10px; padding:1px 8px; white-space:normal; max-width:100%; line-height:1.4; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
 .price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
@@ -262,7 +267,9 @@ tr:last-child td { border-bottom:none; }
 .svc-card-name a { color:var(--color-text); text-decoration:none; }
 .svc-card-name a:hover { color:var(--color-primary); }
 .svc-card-tags { display:flex; flex-wrap:wrap; gap:2px; }
-.svc-card-price-row { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
+/* 確認済み価格（price-figure）と未確認価格（price-unconfirmed）で行の高さが
+   ばらつかないよう最小高さを揃える（15社の価格表示リズム統一）。 */
+.svc-card-price-row { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; min-height:1.7rem; }
 .svc-card-meta { font:var(--text-meta); color:var(--color-text-faint); }
 /* ラベル+値のミニ項目（モバイルカードで文章の羅列を避け、拾い読みできるようにする） */
 .svc-card-specs { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2) var(--space-3); }
@@ -1651,8 +1658,8 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       </div>
     </section>
 
-    {purpose_html}
     {trust_html}
+    {purpose_html}
 
     <div class="card panel-accent">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
