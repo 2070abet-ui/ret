@@ -32,6 +32,8 @@ docs/ は「現行仕様」「実装記録」「監査記録」「過去資料�
 | `REPOSITORY_CONTEXT_TOKEN_AUDIT.md` | context/token使用量監査 |
 | `REPOSITORY_CONTEXT_PHASE2_PLAN.md` | context最適化Phase2設計書（実装済み） |
 | `REPOSITORY_CONTEXT_PHASE3_AUDIT.md` | context最適化Phase3追加監査 |
+| `URL_NORMALIZATION_AUDIT_2026_08_28.md` | 全32ページのURL正規化監査。canonical/sitemap（`.html`付き）が実サーバー（Cloudflare `html_handling=auto-trailing-slash`）では全ページ307リダイレクトすると判明、P1。推奨正規URLは拡張子なし、修正箇所を特定済み |
+| `URL_NORMALIZATION_IMPLEMENTATION_2026_08_28.md` | 上記監査に基づく実装記録。canonical/sitemap/内部リンク/detail_url/比較URL生成を拡張子なしに統一（`templates.py`・`generators.py`のみ変更、data/config差分ゼロ）。build/validate/Playwright実画面確認まで完了、**デプロイは未実施** |
 
 ## HISTORY（過去資料 / 原則読まない）
 - `AFFILIATE_MARKET_ENTRY_RESEARCH_2026_08.md` / `AFFILIATE_MARKET_ENTRY_SHORTLIST_2026_08.md` … 市場調査・ショートリスト

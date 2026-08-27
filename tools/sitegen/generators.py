@@ -92,7 +92,7 @@ def compute_comparison_links(comp_pairs, svc_by_id):
     for a_id, b_id in comp_pairs:
         if a_id not in svc_by_id or b_id not in svc_by_id:
             continue
-        url = f"/comparisons/{a_id}-vs-{b_id}.html"
+        url = f"/comparisons/{a_id}-vs-{b_id}"
         a_name, b_name = svc_by_id[a_id]["name"], svc_by_id[b_id]["name"]
         pairs_out.append((a_name, b_name, url))
         by_service.setdefault(a_id, []).append((b_name, url))

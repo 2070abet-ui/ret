@@ -555,7 +555,7 @@ def trust_panel(coverage, num_services, link_to_dashboard=True, compact=False):
               f'<span class="trust-legend-item">{vstatus_badge("derived")}{derived}件</span> '
               f'<span class="trust-legend-item">{vstatus_badge("pending")}{pending}件</span> '
               f'<span class="trust-legend-item">{vstatus_badge("uncollected")}{uncollected}件</span>')
-    link = ('<a class="trust-link" href="/verification.html">→ 確認状況を一覧で見る</a>'
+    link = ('<a class="trust-link" href="/verification">→ 確認状況を一覧で見る</a>'
             if link_to_dashboard else "")
     panel_class = "trust-panel trust-panel-compact" if compact else "trust-panel"
     return f"""
@@ -593,14 +593,14 @@ def purpose_chips_block(purpose_matches, extra_class="", with_anchor=False):
         if with_anchor:
             links = "".join(
                 f'<span class="purpose-service-link">'
-                f'<a href="/services/{esc(s["id"])}.html">{esc(s["name"])}</a>'
+                f'<a href="/services/{esc(s["id"])}">{esc(s["name"])}</a>'
                 f'<a href="#svc-{esc(s["id"])}" class="purpose-anchor" '
                 f'aria-label="{esc(s["name"])}を一覧で見る">↓</a></span>'
                 for s in matched
             )
         else:
             links = "".join(
-                f'<a href="/services/{esc(s["id"])}.html">{esc(s["name"])}</a>'
+                f'<a href="/services/{esc(s["id"])}">{esc(s["name"])}</a>'
                 for s in matched
             )
         groups += (f'<div class="purpose-group">'
@@ -621,7 +621,7 @@ def fully_verified_badge():
 
 
 def vstatus_legend(link_to_dashboard=True):
-    link = ' <a href="/verification.html">→ 全社の確認状況を一覧で見る</a>' if link_to_dashboard else ""
+    link = ' <a href="/verification">→ 全社の確認状況を一覧で見る</a>' if link_to_dashboard else ""
     return (
         '<p class="price-meta" style="margin-top:8px;">表示の見方：'
         f'{vstatus_badge("confirmed")}＝公式一次情報で確認／'
@@ -1025,8 +1025,15 @@ def _ga4_block():
 
 def page_header(title, description, canonical_path, main_class="container"):
     """main_class: <main>のクラス。既定は全ページ共通の"container"（1000px）。
-    TOPページのみ"container-top"（1200px）を渡す（他ページは呼び出し元を変更しないため無影響）。"""
-    canonical_url = f"{SITE_URL}/{canonical_path}"
+    TOPページのみ"container-top"（1200px）を渡す（他ページは呼び出し元を変更しないため無影響）。
+    canonical_pathは呼び出し元では従来通り".html"付きファイル名を渡す（呼び出し箇所は変更不要）。
+    ここで拡張子なし正規URLに正規化する（URL_NORMALIZATION_AUDIT_2026_08_28.md）。
+    Cloudflare Workers Static Assets（wrangler.toml html_handling=auto-trailing-slash）が
+    ".html"付きURLを拡張子なしURLへ307リダイレクトする実挙動に、canonical/sitemap側を合わせる。"""
+    if canonical_path == "index.html":
+        canonical_url = f"{SITE_URL}/"
+    else:
+        canonical_url = f"{SITE_URL}/{canonical_path.removesuffix('.html')}"
     meta_block = _meta_block(title, description, canonical_url)
     ga4_block = _ga4_block()
     return f"""<!DOCTYPE html>
@@ -1049,9 +1056,9 @@ def page_header(title, description, canonical_path, main_class="container"):
   <div class="container">
     <a href="/" class="site-logo">{SITE_NAME}</a>
     <nav class="main">
-      <a href="/ranking.html">比較一覧</a>
-      <a href="/campaigns.html">初回キャンペーン</a>
-      <a href="/tool/diagnosis.html">診断ツール</a>
+      <a href="/ranking">比較一覧</a>
+      <a href="/campaigns">初回キャンペーン</a>
+      <a href="/tool/diagnosis">診断ツール</a>
     </nav>
   </div>
 </header>
@@ -1069,10 +1076,10 @@ def page_footer(updated_date, show_vstatus_legend=False):
     <p>{SITE_NAME}は宅配食サービスの比較情報を提供するサイトです。各サービスの価格・キャンペーン情報は常に変動します。</p>
     <p>当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
     <nav class="footer-nav" style="margin-top:12px;font-size:13px;">
-      <a href="/privacy.html">プライバシーポリシー</a>｜
-      <a href="/disclaimer.html">免責事項</a>｜
-      <a href="/operator.html">運営者情報</a>｜
-      <a href="/contact.html">お問い合わせ</a>
+      <a href="/privacy">プライバシーポリシー</a>｜
+      <a href="/disclaimer">免責事項</a>｜
+      <a href="/operator">運営者情報</a>｜
+      <a href="/contact">お問い合わせ</a>
     </nav>
   </div>
 </footer>
@@ -1088,7 +1095,7 @@ def related_services_block(related):
     if not related:
         return ""
     items = "".join(
-        f'<a class="btn-secondary" href="/services/{esc(r["id"])}.html">{esc(r["name"])}</a> '
+        f'<a class="btn-secondary" href="/services/{esc(r["id"])}">{esc(r["name"])}</a> '
         for r in related
     )
     return f"""
@@ -1177,7 +1184,9 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     _art_link = service.get("article_link", "")
     if _art_link:
         _art_label = service.get("article_label", "関連記事を見る")
-        article_link_html = f'<a class="btn-secondary" href="{esc(_art_link)}">{esc(_art_label)}</a> '
+        # article_linkはdata/services.json由来（".html"付き）。データは変更せず、
+        # 表示URLのみ拡張子なし正規URLに正規化する（URL_NORMALIZATION_AUDIT_2026_08_28.md）。
+        article_link_html = f'<a class="btn-secondary" href="{esc(_art_link.removesuffix(".html"))}">{esc(_art_label)}</a> '
 
     # メニュー・栄養
     feature_list = "".join(f"<li>{esc(f)}</li>" for f in service.get("main_features", []))
@@ -1265,8 +1274,8 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     </div>
     <div class="svc-card-footer" style="margin-top:16px;">
       {article_link_html}
-      <a class="btn-secondary" href="/ranking.html">← 比較一覧に戻る</a>
-      <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
+      <a class="btn-secondary" href="/ranking">← 比較一覧に戻る</a>
+      <a class="btn-secondary" href="/campaigns">初回キャンペーン一覧を見る</a>
     </div>
     """
     html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=False)
@@ -1335,7 +1344,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         # 「評価」段階の主役は内部CTA（詳しく見る）。デスクトップ・モバイルで階層を統一する
         # （UI_DESIGN_PRINCIPLES.md 5.2「情報が不足している段階では外部CTAを主役にしない」）。
         # いずれも既存の遷移先（公式URL/ASP actual_url）は不変。
-        detail_link = f'<a class="btn-primary" href="/services/{svc["id"]}.html">詳しく見る</a>'
+        detail_link = f'<a class="btn-primary" href="/services/{svc["id"]}">詳しく見る</a>'
         aff_cta_table = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-secondary")
         aff_cta_card = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-secondary")
 
@@ -1343,7 +1352,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         price_cell = _price_inline_html(pricing, sources_by_id)
         rows.append(f"""
         <tr data-mealform="{mealform_attr}">
-          <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}{cons_line_table}</td>
+          <td><a href="/services/{svc['id']}"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}{cons_line_table}</td>
           <td>{price_cell}</td>
           <td>{esc(camp_txt)} {camp_badge}</td>
           <td>{mealform_txt}</td>
@@ -1361,7 +1370,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         cards.append(f"""
         <div class="svc-card" data-mealform="{mealform_attr}">
           <div class="svc-card-header">
-            <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
+            <h3 class="svc-card-name"><a href="/services/{svc['id']}">{esc(svc['name'])}</a></h3>
             {full_badge}
           </div>
           <div class="svc-card-tags">{tags}</div>
@@ -1421,7 +1430,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         <li>「糖質制限をしたい」→ nosh・三ツ星ファームなど低糖質に強いサービス</li>
         <li>「栄養バランス重視」→ 管理栄養士監修のサービス</li>
       </ul>
-      <p style="margin-top:12px;"><a class="btn-primary" href="/tool/diagnosis.html">自分に合うサービスを診断する →</a></p>
+      <p style="margin-top:12px;"><a class="btn-primary" href="/tool/diagnosis">自分に合うサービスを診断する →</a></p>
     </div>
     {comparison_pairs_block(comparison_pairs)}
     <p class="price-meta">※各サービスの詳細はサービス名リンクから。価格・キャンペーン情報は常に変動するため、最新情報は公式サイトをご確認ください。</p>
@@ -1460,7 +1469,7 @@ def build_campaigns_page(campaigns, services, aff_links):
             <tr><th>最終確認</th><td>{esc(c.get('last_checked', ''))}</td></tr>
           </table>
           <div style="margin-top:12px;">
-            <a class="btn-secondary" href="/services/{esc(svc_id)}.html">サービス詳細を見る</a>
+            <a class="btn-secondary" href="/services/{esc(svc_id)}">サービス詳細を見る</a>
             {aff_link(aff_links, c['service_id'], label='公式サイトでキャンペーンを確認', cls='btn-primary')}
           </div>
         </div>""")
@@ -1572,7 +1581,7 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
         <tr><td><strong>特徴</strong></td><td>{a_tags}</td><td>{b_tags}</td></tr>
         <tr><td><strong>1食あたりの料金</strong></td><td class="price-cell">{a_price}</td><td class="price-cell">{b_price}</td></tr>
         <tr><td><strong>向いている人</strong></td><td>{', '.join(service_a.get('target', []))}</td><td>{', '.join(service_b.get('target', []))}</td></tr>
-        <tr><td><strong>料金・特徴を詳しく見る</strong></td><td><a class="btn-secondary" href="/services/{esc(a_id)}.html">{esc(a_name)}の詳細ページ</a></td><td><a class="btn-secondary" href="/services/{esc(b_id)}.html">{esc(b_name)}の詳細ページ</a></td></tr>
+        <tr><td><strong>料金・特徴を詳しく見る</strong></td><td><a class="btn-secondary" href="/services/{esc(a_id)}">{esc(a_name)}の詳細ページ</a></td><td><a class="btn-secondary" href="/services/{esc(b_id)}">{esc(b_name)}の詳細ページ</a></td></tr>
       </table>
     </div>
 
@@ -1593,8 +1602,8 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     </div>
 
     <div class="svc-card-footer" style="margin-top:16px;">
-      <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
-      <a class="btn-secondary" href="/tool/diagnosis.html">診断ツールで選ぶ</a>
+      <a class="btn-secondary" href="/campaigns">初回キャンペーン一覧を見る</a>
+      <a class="btn-secondary" href="/tool/diagnosis">診断ツールで選ぶ</a>
     </div>
     """
     html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=False)
@@ -1624,7 +1633,7 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
             "meal_form_categories": svc.get("meal_form_categories", []),
             "url": svc.get("official_url", ""),
             "aff_url": aff.get("actual_url", ""),  # アフィリエイトリンク（あれば優先）
-            "detail_url": f"/services/{svc['id']}.html",  # 当サイト内サービス詳細ページ
+            "detail_url": f"/services/{svc['id']}",  # 当サイト内サービス詳細ページ
         })
     svc_json = json.dumps(svc_data, ensure_ascii=False)
 
@@ -1735,7 +1744,7 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
           </div>`;
         }}
         if (scored.length > TOP_N) {{
-          html += `<p class="diag-result-note">他にも${{scored.length - TOP_N}}件が条件に一致しています。<a class="text-link" href="/ranking.html">比較一覧で全件見る →</a></p>`;
+          html += `<p class="diag-result-note">他にも${{scored.length - TOP_N}}件が条件に一致しています。<a class="text-link" href="/ranking">比較一覧で全件見る →</a></p>`;
         }}
         html += '<p class="diag-result-note">※診断は簡易的なマッチングです。詳細は各サービスページをご確認ください。</p>';
       }}
@@ -1761,7 +1770,7 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     for c in confirmed_first[:3]:
         svc_name = svc_by_id.get(c["service_id"], {}).get("name", "要確認")
         value_text = c.get("discount_type") or c.get("title", "要確認")
-        camp_items += f'<li><a href="/campaigns.html">{esc(svc_name)}：{esc(value_text)}</a></li>'
+        camp_items += f'<li><a href="/campaigns">{esc(svc_name)}：{esc(value_text)}</a></li>'
 
     # TOP再設計：目的で探すを検証カバレッジより上位の「入口」として扱う（extra_classで色帯ゾーン化）。
     # 検証カバレッジはcompact=Trueでスリムな信頼帯にする。数値・バッジ・文言は無変更。
@@ -1806,12 +1815,12 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
         cls = f"svc-card svc-card-top {extra_class}".strip()
         return f"""
         <div class="{cls}" id="svc-{esc(svc['id'])}">
-          <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
+          <h3 class="svc-card-name"><a href="/services/{svc['id']}">{esc(svc['name'])}</a></h3>
           <div class="svc-card-price-row">{price_inline}</div>
           {target_html}
           <div class="svc-card-tags">{tags}</div>
           <div class="svc-card-footer">
-            <a class="btn-primary" href="/services/{svc['id']}.html">詳しく見る</a>
+            <a class="btn-primary" href="/services/{svc['id']}">詳しく見る</a>
             {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='text-link')}
           </div>
         </div>"""
@@ -1850,8 +1859,8 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       <h1>宅配食、どれを選べばいい？</h1>
       <p class="hero-lead">{hero_lead}</p>
       <div class="hero-actions">
-        <a class="btn-primary" href="/tool/diagnosis.html">自分に合う宅配食を探す →</a>
-        <a class="hero-sub-cta" href="/ranking.html">{num_services}社を比較する →</a>
+        <a class="btn-primary" href="/tool/diagnosis">自分に合う宅配食を探す →</a>
+        <a class="hero-sub-cta" href="/ranking">{num_services}社を比較する →</a>
       </div>
     </section>
 
@@ -1865,14 +1874,14 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       <!-- TOP_P2_IMPROVEMENT_PLAN_2026_08_28.md 3a：Hero内CTA（発見段階の主役、btn-primary）とは
            役割を分け、一覧を見た後の救済導線として控えめなtext-linkのみで提示する。
            遷移先は既存の/tool/diagnosis.html、診断ロジック・クエリパラメータ等は無変更。 -->
-      <p class="price-meta" style="margin-top:12px;">決めきれない場合は <a class="text-link" href="/tool/diagnosis.html">診断ツールで絞り込む →</a></p>
+      <p class="price-meta" style="margin-top:12px;">決めきれない場合は <a class="text-link" href="/tool/diagnosis">診断ツールで絞り込む →</a></p>
     </div>
     {svc_more_anchor_script}
 
     <div class="card panel-accent">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
       <ul class="feature-list">{camp_items or '<li>更新中</li>'}</ul>
-      <p style="margin-top:8px;"><a class="text-link" href="/campaigns.html">すべてのキャンペーンを見る →</a></p>
+      <p style="margin-top:8px;"><a class="text-link" href="/campaigns">すべてのキャンペーンを見る →</a></p>
     </div>
 
     <div class="card">
@@ -2047,9 +2056,9 @@ def build_article_chef_muten_kuchikomi(aff_links):
     </div>
 
     <div style="margin-top:16px;">
-      <a class="btn-secondary" href="/services/chef-muten-tukuritoki.html">シェフの無添つくりおきの詳細ページを見る</a>
-      <a class="btn-secondary" href="/ranking.html">宅配食の比較一覧を見る</a>
-      <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
+      <a class="btn-secondary" href="/services/chef-muten-tukuritoki">シェフの無添つくりおきの詳細ページを見る</a>
+      <a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>
+      <a class="btn-secondary" href="/campaigns">初回キャンペーン一覧を見る</a>
     </div>
     """
     html += page_footer(LAST_VERIFIED_DATE)
@@ -2076,7 +2085,7 @@ def build_verification_dashboard(services, shipping_by_id, sources_by_id, covera
         camp_html = f"{vstatus_badge(_campaign_status(camp))}{source_link(sources_by_id, camp.get('source_id'))}"
         rows.append(f"""
         <tr>
-          <td><a href="/services/{s_id}.html"><strong>{esc(svc['name'])}</strong></a></td>
+          <td><a href="/services/{s_id}"><strong>{esc(svc['name'])}</strong></a></td>
           <td>{price_html}</td>
           <td>{ship_html}</td>
           <td>{camp_html}</td>
@@ -2127,12 +2136,12 @@ a {{ color:#e8552d; }}
 <body>
 <h1>ページが見つかりません（404）</h1>
 <p>お探しのページは移動したか、存在しない可能性があります。</p>
-<p><a href="/">ホームに戻る</a> ｜ <a href="/ranking.html">宅配食の比較一覧を見る</a> ｜ <a href="/campaigns.html">初回キャンペーンを見る</a></p>
+<p><a href="/">ホームに戻る</a> ｜ <a href="/ranking">宅配食の比較一覧を見る</a> ｜ <a href="/campaigns">初回キャンペーンを見る</a></p>
 <p class="footer">
-<a href="/privacy.html" style="color:#999;margin:0 6px;">プライバシーポリシー</a>｜
-<a href="/disclaimer.html" style="color:#999;margin:0 6px;">免責事項</a>｜
-<a href="/operator.html" style="color:#999;margin:0 6px;">運営者情報</a>｜
-<a href="/contact.html" style="color:#999;margin:0 6px;">お問い合わせ</a>
+<a href="/privacy" style="color:#999;margin:0 6px;">プライバシーポリシー</a>｜
+<a href="/disclaimer" style="color:#999;margin:0 6px;">免責事項</a>｜
+<a href="/operator" style="color:#999;margin:0 6px;">運営者情報</a>｜
+<a href="/contact" style="color:#999;margin:0 6px;">お問い合わせ</a>
 </p>
 </body>
 </html>"""
@@ -2192,7 +2201,7 @@ def build_privacy_page():
 
     <div class="card">
       <h2>6. お問い合わせ</h2>
-      <p>個人情報の取り扱いに関するお問い合わせは、<a href="/contact.html">お問い合わせページ</a>よりご連絡ください。</p>
+      <p>個人情報の取り扱いに関するお問い合わせは、<a href="/contact">お問い合わせページ</a>よりご連絡ください。</p>
     </div>
 
     <div class="card">
@@ -2281,7 +2290,7 @@ def build_operator_page():
 
     <div class="card">
       <h2>免責</h2>
-      <p>当サイトの情報は、正確性・最新性に努めていますが、その完全性を保証するものではありません。詳細は<a href="/disclaimer.html">免責事項</a>をご確認ください。</p>
+      <p>当サイトの情報は、正確性・最新性に努めていますが、その完全性を保証するものではありません。詳細は<a href="/disclaimer">免責事項</a>をご確認ください。</p>
     </div>
     """
     html += page_footer(LAST_VERIFIED_DATE)
@@ -2327,9 +2336,13 @@ def build_contact_page():
 # ---------- sitemap / robots ----------
 
 def build_sitemap(pages):
+    """pagesは実ファイル書き込みパス（".html"付き）のリスト（generators.py）。
+    <loc>は拡張子なし正規URLに正規化する（page_header()のcanonical正規化とロジックを揃える。
+    URL_NORMALIZATION_AUDIT_2026_08_28.md）。"""
     urls = []
     for p in pages:
-        urls.append(f"  <url>\n    <loc>{SITE_URL}/{p}</loc>\n    <lastmod>{LAST_VERIFIED_DATE}</lastmod>\n  </url>")
+        loc_path = "" if p == "index.html" else p.removesuffix(".html")
+        urls.append(f"  <url>\n    <loc>{SITE_URL}/{loc_path}</loc>\n    <lastmod>{LAST_VERIFIED_DATE}</lastmod>\n  </url>")
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {chr(10).join(urls)}
