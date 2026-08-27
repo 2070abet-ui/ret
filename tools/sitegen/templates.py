@@ -1164,11 +1164,12 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         mealform_attr = esc(" ".join(mealform_cats))
         # 「全項目確認済み」の事実バッジ（CONFIRMEDのみ、序列化には使わない。FINAL_REDESIGN_SPEC.md 5章）。
         full_badge = fully_verified_badge() if svc["id"] in (fully_verified_ids or set()) else ""
-        detail_link = f'<a class="btn-secondary" href="/services/{svc["id"]}.html">詳しく見る</a>'
-        # デスクトップテーブル用（補助CTA）とモバイルカード用（主CTA、9章のカードフッター指定）を分ける。
+        # 「評価」段階の主役は内部CTA（詳しく見る）。デスクトップ・モバイルで階層を統一する
+        # （UI_DESIGN_PRINCIPLES.md 5.2「情報が不足している段階では外部CTAを主役にしない」）。
         # いずれも既存の遷移先（公式URL/ASP actual_url）は不変。
+        detail_link = f'<a class="btn-primary" href="/services/{svc["id"]}.html">詳しく見る</a>'
         aff_cta_table = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-secondary")
-        aff_cta_card = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-primary")
+        aff_cta_card = aff_link(aff_links, svc["id"], label="公式サイトを確認", cls="btn-secondary")
 
         # デスクトップ：テーブル行（9.4節。価格セルだけ--price-figureで強調）
         price_cell = _price_inline_html(pricing, sources_by_id)
@@ -1379,6 +1380,10 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
       <h2>結論</h2>
       {price_diff_html}
       {target_diff_html}
+      <div class="svc-card-footer" style="margin-top:12px;">
+        {aff_link(aff_links, a_id, label=f'{a_name}の公式サイトを見る', cls='btn-primary')}
+        {aff_link(aff_links, b_id, label=f'{b_name}の公式サイトを見る', cls='btn-primary')}
+      </div>
     </div>
 
     {mobile_scroll_hint()}
@@ -1524,11 +1529,11 @@ def build_diagnosis_tool(services, aff_links):
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
       }} else {{
         for (const s of topScored) {{
-          const detail = `<a class="btn-secondary" href="${{s.detail_url}}">詳しく見る</a>`;
+          const detail = `<a class="btn-primary" href="${{s.detail_url}}">詳しく見る</a>`;
           const url = s.aff_url || s.url || '';
           const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
           const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
-          const link = url ? `<a class="btn-primary" href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span class="btn-disabled">公式確認中</span>';
+          const link = url ? `<a class="btn-secondary" href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span class="btn-disabled">公式確認中</span>';
           const reason = s.matchedGoals && s.matchedGoals.length > 0 ? s.matchedGoals.join('・') : '保存方法の条件に一致';
           const tags = (s.tags || []).slice(0, 3).map(t => `<span class="tag">${{t}}</span>`).join('');
           html += `<div class="svc-card">
