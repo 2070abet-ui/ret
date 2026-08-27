@@ -4,3 +4,10 @@ data/snapshots/
 *.log
 .DS_Store
 Thumbs.db
+
+# 生成物: tools/build.py の出力（data/*.json + config/*.json + tools/sitegen/*.py から再生成可能）
+site/*.html
+site/*/*.html
+site/robots.txt
+site/sitemap.xml
+site/google*.html
