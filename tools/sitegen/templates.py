@@ -1572,7 +1572,20 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     purpose_html = purpose_chips_block(purpose_matches)
     trust_html = trust_panel(coverage, num_services) if coverage else ""
 
-    # 主要サービス一覧（9章のService Card簡易版。既存のCTA遷移先・CTA密度は変更しない）
+    # ヒーローのリード文：ファーストビューで差別化資産（検証カバレッジ）を具体的に伝える。
+    # coverage未渡し時は従来の汎用文言へフォールバック（FINAL_REDESIGN_SPEC.md 6章「検証カバレッジの一言」）。
+    if coverage:
+        _total = coverage.get("total", 0)
+        _confirmed = coverage.get("confirmed", 0)
+        hero_lead = (f"{num_services}社・{_total}項目中{_confirmed}件を公式一次情報で確認。"
+                     "価格・送料・キャンペーンを1項目ずつ検証しています。")
+    else:
+        hero_lead = f"{num_services}社を公式情報ベースで比較。価格・送料・キャンペーンを1項目ずつ確認しています。"
+
+    # 主要サービス一覧（9章のService Card簡易版）。
+    # 各カードの主CTAを内部「詳しく見る」（詳細ページで価格・対象・FAQを確認→納得→信頼）にし、
+    # 公式サイトCTA（アフィリエイト）は補助に保つ。遷移先は不変（FINAL_REDESIGN_SPEC.md 6章の
+    # 「比較→納得→信頼→公式クリックを最短化」に沿う。11社個別CTA自体は維持）。
     svc_cards = ""
     for svc in services:
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
@@ -1582,7 +1595,10 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
             <h3 class="svc-card-name"><a href="/services/{svc['id']}.html">{esc(svc['name'])}</a></h3>
             <div class="svc-card-tags">{tags}</div>
           </div>
-          <div class="svc-card-footer">{aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}</div>
+          <div class="svc-card-footer">
+            <a class="btn-primary" href="/services/{svc['id']}.html">詳しく見る</a>
+            {aff_link(aff_links, svc['id'], label='公式サイトを確認', cls='btn-secondary')}
+          </div>
         </div>"""
 
     title = f"{SITE_NAME}｜宅配食の比較・初回キャンペーン情報"
@@ -1592,7 +1608,7 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     html += f"""
     <section class="hero">
       <h1>宅配食、どれを選べばいい？</h1>
-      <p class="hero-lead">{num_services}社を公式情報ベースで比較。価格・送料・キャンペーンを1項目ずつ確認しています。</p>
+      <p class="hero-lead">{hero_lead}</p>
       <div class="hero-actions">
         <a class="btn-primary" href="/tool/diagnosis.html">自分に合う宅配食を探す →</a>
         <a class="hero-sub-cta" href="/ranking.html">{num_services}社を比較する →</a>
