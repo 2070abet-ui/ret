@@ -158,10 +158,13 @@ tr:last-child td { border-bottom:none; }
   font:var(--text-micro); letter-spacing:.02em; font-weight:700;
   white-space:nowrap; vertical-align:middle;
 }
-.vstatus-confirmed { background:var(--status-confirmed-bg); color:var(--status-confirmed-fg); }
-.vstatus-derived { background:var(--status-derived-bg); color:var(--status-derived-fg); }
-.vstatus-pending { background:var(--status-pending-bg); color:var(--status-pending-fg); }
-.vstatus-uncollected { background:var(--status-uncollected-bg); color:var(--status-uncollected-fg); }
+/* 確認済みのみ確認済み枠を足して強調し、未確認系はfont-weightを一段落として控えめに沈める
+   （UI_DESIGN_PRINCIPLES.md 4.2.1「確認済みの値は強調・未確認の値は控えめに沈める」の徹底。
+   色・記号・文言＝検証状態の意味は変更しない）。*/
+.vstatus-confirmed { background:var(--status-confirmed-bg); color:var(--status-confirmed-fg); border:1px solid var(--status-confirmed-fg); }
+.vstatus-derived { background:var(--status-derived-bg); color:var(--status-derived-fg); font-weight:600; }
+.vstatus-pending { background:var(--status-pending-bg); color:var(--status-pending-fg); font-weight:600; }
+.vstatus-uncollected { background:var(--status-uncollected-bg); color:var(--status-uncollected-fg); font-weight:600; }
 .vfull-badge {
   display:inline-block; padding:2px 8px;
   border:1px solid var(--badge-full-border); color:var(--badge-full-fg);
@@ -261,8 +264,12 @@ tr:last-child td { border-bottom:none; }
 .svc-card-tags { display:flex; flex-wrap:wrap; gap:2px; }
 .svc-card-price-row { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; }
 .svc-card-meta { font:var(--text-meta); color:var(--color-text-faint); }
-.svc-card-campaign { font-size:14px; font-weight:600; }
-.svc-card-storage, .svc-card-target { font:var(--text-body-sm); color:var(--color-text-muted); }
+/* ラベル+値のミニ項目（モバイルカードで文章の羅列を避け、拾い読みできるようにする） */
+.svc-card-specs { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2) var(--space-3); }
+.svc-spec { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.svc-spec-wide { grid-column:1 / -1; }
+.svc-spec-label { font:var(--text-meta); color:var(--color-text-faint); }
+.svc-spec-value { font:var(--text-body-sm); font-weight:600; color:var(--color-text); }
 .svc-card-footer { display:flex; gap:var(--space-2); flex-wrap:wrap; margin-top:var(--space-2); }
 .service-list-section { margin:var(--space-4) 0; }
 .service-list-section h2 { margin-top:0; }
@@ -1058,6 +1065,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       {price_block_html}
       <div class="svc-card-footer" style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで料金・キャンペーンを確認")}</div>
     </div>
+    {vstatus_legend(link_to_dashboard=True)}
 
     <div class="card">
       <h2>基本情報</h2>
@@ -1107,7 +1115,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
     </div>
     """
-    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=True)
+    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=False)
     return html
 
 
@@ -1194,9 +1202,11 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
           </div>
           <div class="svc-card-tags">{tags}</div>
           {price_html}
-          <div class="svc-card-campaign">初回：{esc(camp_txt)} {camp_badge}</div>
-          <div class="svc-card-storage">保存方法：{mealform_txt}</div>
-          <div class="svc-card-target">向いている人：{target_txt}</div>
+          <div class="svc-card-specs">
+            <div class="svc-spec"><span class="svc-spec-label">初回キャンペーン</span><span class="svc-spec-value">{esc(camp_txt)} {camp_badge}</span></div>
+            <div class="svc-spec"><span class="svc-spec-label">保存方法</span><span class="svc-spec-value">{mealform_txt}</span></div>
+            <div class="svc-spec svc-spec-wide"><span class="svc-spec-label">向いている人</span><span class="svc-spec-value">{target_txt}</span></div>
+          </div>
           <div class="svc-card-footer">{detail_link} {aff_cta_card}</div>
         </div>""")
 
@@ -1226,6 +1236,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         <label><input type="checkbox" value="日配" onchange="filterRankingByMealform()"> 日配</label>
       </div>
     </div>
+    {vstatus_legend(link_to_dashboard=True)}
     <div class="ranking-desktop">
       <div class="card">
         <table id="ranking-table">
@@ -1260,7 +1271,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     }}
     </script>
     """
-    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=True)
+    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=False)
     return html
 
 
@@ -1386,6 +1397,7 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
       </div>
     </div>
 
+    {vstatus_legend(link_to_dashboard=True)}
     {mobile_scroll_hint()}
     <div class="card">
       <table class="compare-table">
@@ -1415,7 +1427,7 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
       <a class="btn-secondary" href="/tool/diagnosis.html">診断ツールで選ぶ</a>
     </div>
     """
-    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=True)
+    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=False)
     return html
 
 
