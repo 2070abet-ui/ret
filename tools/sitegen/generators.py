@@ -25,6 +25,24 @@ def meal_form_categories(meal_form_text):
     return cats
 
 
+def compute_comparison_links(comp_pairs, svc_by_id):
+    """比較ページ（config/comparisons.json駆動）のURLを、サービス詳細ページ・ranking.html
+    への内部リンクとして使える形に整理する。新規の比較ロジック・新規ページは作らず、
+    既存3ペアをそのまま参照するだけ。PHASE3_IMPLEMENTATION_PLAN.md 1.4節（比較ページの内部リンク孤立の解消）。
+    戻り値: (サービスIDごとの[(相手サービス名, 比較ページURL), ...], 全ペアの[(a名, b名, URL), ...])"""
+    by_service = {}
+    pairs_out = []
+    for a_id, b_id in comp_pairs:
+        if a_id not in svc_by_id or b_id not in svc_by_id:
+            continue
+        url = f"/comparisons/{a_id}-vs-{b_id}.html"
+        a_name, b_name = svc_by_id[a_id]["name"], svc_by_id[b_id]["name"]
+        pairs_out.append((a_name, b_name, url))
+        by_service.setdefault(a_id, []).append((b_name, url))
+        by_service.setdefault(b_id, []).append((a_name, url))
+    return by_service, pairs_out
+
+
 def compute_related(services, aff_links, min_score=2, max_items=3):
     """関連サービス（tags+targetの単純な集合演算のみ。汎用matching engineではない）。
     一致数 >= min_score のみ候補にし、スコア降順・A8提携承認済み優先・services.json記載順
@@ -53,8 +71,13 @@ def main():
     shipping_by_id = {s["service_id"]: s for s in shipping}
     sources_by_id = {s["id"]: s for s in sources}
     related_by_id = compute_related(services, aff_links)
-    # 診断ツール用：meal_formを正規化した3カテゴリを追加した複製リスト（元のservicesは変更しない）
-    diagnosis_services = [dict(s, meal_form_categories=meal_form_categories(s.get("meal_form"))) for s in services]
+    svc_by_id = {s["id"]: s for s in services}
+    comp_pairs = data.load_comparison_pairs()
+    comparison_links_by_id, comparison_pairs_flat = compute_comparison_links(comp_pairs, svc_by_id)
+    # meal_formを正規化した3カテゴリ（冷凍/冷蔵/日配）を追加した複製リスト（元のservicesは変更しない）。
+    # 診断ツールとranking.htmlの保存方法フィルタで同じ正規化ロジックを共有する
+    # （PHASE3_IMPLEMENTATION_PLAN.md 2章：新しいmatching engineは作らず既存ロジックを再利用）。
+    services_with_mealform = [dict(s, meal_form_categories=meal_form_categories(s.get("meal_form"))) for s in services]
     out_dir = data.OUT_DIR
 
     # 出力先クリーン
@@ -81,7 +104,9 @@ def main():
     pages.append("index.html")
 
     # ランキング
-    (out_dir / "ranking.html").write_text(templates.build_ranking_page(services, campaigns, aff_links), encoding="utf-8")
+    (out_dir / "ranking.html").write_text(
+        templates.build_ranking_page(services_with_mealform, campaigns, aff_links, comparison_pairs_flat),
+        encoding="utf-8")
     pages.append("ranking.html")
 
     # キャンペーン
@@ -89,7 +114,7 @@ def main():
     pages.append("campaigns.html")
 
     # 診断ツール
-    (out_dir / "tool" / "diagnosis.html").write_text(templates.build_diagnosis_tool(diagnosis_services, aff_links), encoding="utf-8")
+    (out_dir / "tool" / "diagnosis.html").write_text(templates.build_diagnosis_tool(services_with_mealform, aff_links), encoding="utf-8")
     pages.append("tool/diagnosis.html")
 
     # 記事ページ（シェフの無添つくりおき 口コミ・評判）
@@ -112,13 +137,21 @@ def main():
     # サービス個別ページ
     for svc in services:
         (out_dir / "services" / f"{svc['id']}.html").write_text(
-            templates.build_service_page(svc, aff_links, shipping_by_id, related_by_id.get(svc["id"], []), sources_by_id),
+            templates.build_service_page(
+                svc, aff_links, shipping_by_id, related_by_id.get(svc["id"], []), sources_by_id,
+                comparison_links_by_id.get(svc["id"], [])),
             encoding="utf-8")
         pages.append(f"services/{svc['id']}.html")
 
+    # 検証状況ダッシュボード（11社×価格・送料・キャンペーンの確認状況を1ページに集約。
+    # sources.jsonは直接参照せず、既存のvstatus/source_linkロジックのみを再利用する。
+    # PHASE3_IMPLEMENTATION_PLAN.md 3.2節）
+    (out_dir / "verification.html").write_text(
+        templates.build_verification_dashboard(services, shipping_by_id, sources_by_id),
+        encoding="utf-8")
+    pages.append("verification.html")
+
     # 比較ページ（config/comparisons.json 駆動。中身のペアは従来のハードコードと同一）
-    comp_pairs = data.load_comparison_pairs()
-    svc_by_id = {s["id"]: s for s in services}
     for a_id, b_id in comp_pairs:
         if a_id in svc_by_id and b_id in svc_by_id:
             (out_dir / "comparisons" / f"{a_id}-vs-{b_id}.html").write_text(

@@ -7,7 +7,7 @@ Batch1では既存ページの本文・タイトル・canonical・価格・キ�
 import base64
 import json
 
-from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR
+from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR, LAST_VERIFIED_DATE
 
 
 def esc(s):
@@ -39,13 +39,14 @@ def vstatus_badge(status):
     return f'<span class="vstatus vstatus-{status}">{esc(label)}</span>'
 
 
-def vstatus_legend():
+def vstatus_legend(link_to_dashboard=True):
+    link = ' <a href="/verification.html">→ 全社の確認状況を一覧で見る</a>' if link_to_dashboard else ""
     return (
         '<p style="font-size:12px;color:#666;margin-top:8px;">表示の見方：'
         f'{vstatus_badge("confirmed")}＝公式一次情報で確認／'
         f'{vstatus_badge("derived")}＝公式情報から計算／'
         f'{vstatus_badge("pending")}＝情報はあるが裏付け不十分／'
-        f'{vstatus_badge("uncollected")}＝公式情報にまだ到達できていません</p>'
+        f'{vstatus_badge("uncollected")}＝公式情報にまだ到達できていません{link}</p>'
     )
 
 
@@ -90,6 +91,27 @@ def source_link(sources_by_id, source_id):
         return ""
     return (f' <a href="{esc(src.get("url", ""))}" target="_blank" rel="noopener nofollow" '
             f'style="font-size:12px;">出典を見る（確認日: {esc(src.get("confirmed_at", ""))}）</a>')
+
+
+def price_cell_html(price_plan, sources_by_id=None):
+    """最安料金の表示（価格＋確認日/出典＋確認状態バッジ）を組み立てる。
+    未確認（pending/uncollected）の値には確認日を出さない。出典リンクが既に確認日を
+    含む場合は重複させず、出典が無い確認済み/算出値のみ最終確認日を単独表示する。
+    build_service_pageと検証状況ダッシュボードで共有するロジック（新規データキーは追加しない）。
+    PHASE3_IMPLEMENTATION_PLAN.md 1.2〜1.4節・3.2節。"""
+    price_plan = price_plan or {}
+    cheapest = price_plan.get("lowest_per_meal_yen")
+    cheapest_html = (yen(cheapest) + "/食") if cheapest else "公式確認中"
+    stat = _price_status(price_plan)
+    src_link = source_link(sources_by_id, price_plan.get("source_id"))
+    checked = price_plan.get("last_checked", "")
+    if src_link:
+        date_html = ""
+    elif stat in ("confirmed", "derived") and checked:
+        date_html = f"（{esc(checked)}時点）"
+    else:
+        date_html = ""
+    return f"{cheapest_html}{date_html} {vstatus_badge(stat)}{src_link}"
 
 
 def shipping_line(shipping_row, sources_by_id=None):
@@ -272,11 +294,29 @@ def related_services_block(related):
     </div>"""
 
 
-def build_service_page(service, aff_links, shipping_by_id=None, related=None, sources_by_id=None):
+def comparison_links_block(comparison_links):
+    """比較ページへのリンク。config/comparisons.jsonの既存ペアをそのまま表示するだけで、
+    新規の比較ロジック・新規ページは作らない。該当が無ければ何も出力しない。
+    PHASE3_IMPLEMENTATION_PLAN.md 1.4節（比較ページの内部リンク孤立の解消）。"""
+    if not comparison_links:
+        return ""
+    items = "".join(
+        f'<a class="btn-secondary" href="{esc(url)}" style="margin-right:8px;">{esc(partner_name)}と比較する →</a>'
+        for partner_name, url in comparison_links
+    )
+    return f"""
+    <div class="card">
+      <h2>比較ページ</h2>
+      <div style="margin-top:8px;">{items}</div>
+    </div>"""
+
+
+def build_service_page(service, aff_links, shipping_by_id=None, related=None, sources_by_id=None, comparison_links=None):
     s_id = service["id"]
     s_name = service["name"]
     shipping_html = shipping_line((shipping_by_id or {}).get(s_id), sources_by_id)
     related_html = related_services_block(related)
+    comparison_html = comparison_links_block(comparison_links)
 
     # 関連記事リンク（サービスDBに article_link があれば表示）
     article_link_html = ""
@@ -291,8 +331,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     cons = "".join(f"<li>{esc(c)}</li>" for c in service.get("cons", []))
     tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service.get("tags", []))
 
-    cheapest = service.get("price_plan", {}).get("lowest_per_meal_yen")
-    cheapest_html = (yen(cheapest) + "/食") if cheapest else "公式確認中"
+    price_html = price_cell_html(service.get("price_plan", {}), sources_by_id)
 
     title = f"{s_name}の特徴・料金・初回キャンペーンを解説"
     desc = f"{s_name}の特徴・料金・初回キャンペーン・お試し情報をまとめました。{SITE_NAME}が公式サイトで最終確認した情報（2026年8月）に基づく内容です。"
@@ -307,7 +346,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       <table>
         <tr><th>運営会社</th><td>{esc(service.get("operator", "公式確認中"))}</td></tr>
         <tr><th>形態</th><td>{esc(service.get("meal_type", ""))}（{esc(service.get("meal_form", ""))}）</td></tr>
-        <tr><th>最安料金</th><td>{cheapest_html}（2026-08-26時点） {vstatus_badge(_price_status(service.get("price_plan", {})))}{source_link(sources_by_id, service.get("price_plan", {}).get("source_id"))}</td></tr>
+        <tr><th>最安料金</th><td>{price_html}</td></tr>
         <tr><th>対象</th><td>{", ".join(service.get("target", []))}</td></tr>
       </table>
       <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで料金・キャンペーンを確認")}</div>
@@ -339,19 +378,38 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
     </div>
     {related_html}
+    {comparison_html}
     <div style="margin-top:16px;">
       {article_link_html}
       <a class="btn-secondary" href="/ranking.html">← おすすめ比較一覧に戻る</a>
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
     </div>
     """
-    html += page_footer("2026-08-26", show_vstatus_legend=True)
+    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=True)
     return html
 
 
 # ---------- ランキングページ ----------
 
-def build_ranking_page(services, campaigns, aff_links):
+def comparison_pairs_block(comparison_pairs):
+    """比較ページへのリンク一覧。config/comparisons.jsonの既存ペアをそのまま表示するだけで、
+    新規の比較ロジック・新規ページは作らない。両社提携済みでないペアも参考情報として
+    控えめなテキストリンクで載せる（CTAとしては扱わない）。
+    PHASE3_IMPLEMENTATION_PLAN.md 1.4節（比較ページの内部リンク孤立の解消）。"""
+    if not comparison_pairs:
+        return ""
+    items = "".join(
+        f'<li><a href="{esc(url)}">{esc(a_name)} と {esc(b_name)} を比較する</a></li>'
+        for a_name, b_name, url in comparison_pairs
+    )
+    return f"""
+    <div class="card">
+      <h2>個別の比較ページ</h2>
+      <ul class="feature-list">{items}</ul>
+    </div>"""
+
+
+def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None):
     # サービスID → 確認済みの初回キャンペーン特典（requires_verification=false のみ表示）
     # camp_txt/camp_badge は同じcampaigns.json（data/campaigns.json）を情報源として揃える
     # （services.json側のfirst_time_campaignは別データで鮮度がずれている場合があるため使わない）。
@@ -376,11 +434,17 @@ def build_ranking_page(services, campaigns, aff_links):
             camp_status = "uncollected"
         camp_badge = vstatus_badge(camp_status)
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
+        # 保存方法（冷凍/冷蔵/日配）。診断ツールと同じmeal_form_categories()の正規化結果を再利用する
+        # （PHASE3_IMPLEMENTATION_PLAN.md 2章：新しいmatching engineやデータモデルは作らない）。
+        mealform_cats = svc.get("meal_form_categories") or []
+        mealform_txt = "・".join(mealform_cats) if mealform_cats else esc(svc.get("meal_form", "")) or "公式確認中"
+        mealform_attr = esc(" ".join(mealform_cats))
         rows.append(f"""
-        <tr>
+        <tr data-mealform="{mealform_attr}">
           <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a><br>{tags}</td>
           <td>{cheapest_txt} {price_badge}</td>
           <td>{esc(camp_txt)} {camp_badge}</td>
+          <td>{mealform_txt}</td>
           <td>{', '.join(svc.get('target', []))}</td>
           <td>
             <a class="btn-secondary" href="/services/{svc['id']}.html">詳しく見る</a>
@@ -394,10 +458,18 @@ def build_ranking_page(services, campaigns, aff_links):
     html = page_header(title, desc, "ranking.html")
     html += f"""
     <h1>宅配食おすすめ比較ランキング【2026年8月最新】</h1>
-    <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（2026-08-26時点）。</p>
+    <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（{LAST_VERIFIED_DATE}時点）。</p>
     <div class="card">
-      <table>
-        <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>向いている人</th><th></th></tr>
+      <h3 style="margin-top:0;">保存方法で絞り込む（任意）</h3>
+      <div id="mealform-filter" class="checks">
+        <label><input type="checkbox" value="冷凍" onchange="filterRankingByMealform()"> 冷凍</label>
+        <label><input type="checkbox" value="冷蔵" onchange="filterRankingByMealform()"> 冷蔵</label>
+        <label><input type="checkbox" value="日配" onchange="filterRankingByMealform()"> 日配</label>
+      </div>
+    </div>
+    <div class="card">
+      <table id="ranking-table">
+        <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
         {''.join(rows)}
       </table>
     </div>
@@ -410,9 +482,20 @@ def build_ranking_page(services, campaigns, aff_links):
       </ul>
       <p style="margin-top:12px;"><a class="btn-primary" href="/tool/diagnosis.html">自分に合うサービスを診断する →</a></p>
     </div>
+    {comparison_pairs_block(comparison_pairs)}
     <p style="font-size:13px;color:#666;">※各サービスの詳細はサービス名リンクから。価格・キャンペーン情報は常に変動するため、最新情報は公式サイトをご確認ください。</p>
+    <script>
+    function filterRankingByMealform() {{
+      const checked = [...document.querySelectorAll('#mealform-filter input:checked')].map(x => x.value);
+      document.querySelectorAll('#ranking-table tr[data-mealform]').forEach(tr => {{
+        const forms = (tr.dataset.mealform || '').split(' ').filter(Boolean);
+        const show = checked.length === 0 || forms.some(f => checked.includes(f));
+        tr.style.display = show ? '' : 'none';
+      }});
+    }}
+    </script>
     """
-    html += page_footer("2026-08-26", show_vstatus_legend=True)
+    html += page_footer(LAST_VERIFIED_DATE, show_vstatus_legend=True)
     return html
 
 
@@ -450,7 +533,7 @@ def build_campaigns_page(campaigns, services, aff_links):
     <p>各サービスの初回キャンペーン・お試し情報を毎週更新しています。最新の割引条件は必ず公式サイトでご確認ください。</p>
     {''.join(cards)}
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -511,7 +594,7 @@ def build_comparison_page(service_a, service_b, aff_links):
       <a class="btn-secondary" href="/tool/diagnosis.html">診断ツールで選ぶ</a>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -610,7 +693,7 @@ def build_diagnosis_tool(services, aff_links):
     }}
     </script>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -670,7 +753,7 @@ def build_index_page(services, campaigns, aff_links):
       </ul>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -838,7 +921,53 @@ def build_article_chef_muten_kuchikomi(aff_links):
       <a class="btn-secondary" href="/campaigns.html">初回キャンペーン一覧を見る</a>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
+    return html
+
+
+# ---------- 検証状況ダッシュボード ----------
+
+def build_verification_dashboard(services, shipping_by_id, sources_by_id):
+    """11社×価格・送料・キャンペーンの確認状況を1ページに集約するダッシュボード。
+    data/sources.jsonは直接参照・列挙しない。既存の確認状態判定関数（_price_status/
+    _shipping_status/_campaign_status）とprice_cell_html()/source_link()をそのまま
+    再利用するだけで、ASP内部情報・報酬額・program_id等はいずれの関数からも出力されない
+    （source_linkが返すのはurl/confirmed_atのみで、sources.jsonのnoteフィールドは
+    一切参照しない）。新しいスコアリング・ランキング付けは行わない。
+    PHASE3_IMPLEMENTATION_PLAN.md 3.2節。"""
+    rows = []
+    for svc in services:
+        s_id = svc["id"]
+        price_html = price_cell_html(svc.get("price_plan", {}), sources_by_id)
+        shipping_row = (shipping_by_id or {}).get(s_id)
+        ship_html = f"{vstatus_badge(_shipping_status(shipping_row))}{source_link(sources_by_id, (shipping_row or {}).get('source_id'))}"
+        camp = svc.get("first_time_campaign", {})
+        camp_html = f"{vstatus_badge(_campaign_status(camp))}{source_link(sources_by_id, camp.get('source_id'))}"
+        rows.append(f"""
+        <tr>
+          <td><a href="/services/{s_id}.html"><strong>{esc(svc['name'])}</strong></a></td>
+          <td>{price_html}</td>
+          <td>{ship_html}</td>
+          <td>{camp_html}</td>
+        </tr>""")
+
+    title = "全11社の価格・送料・キャンペーン確認状況一覧"
+    desc = f"{SITE_NAME}が11社それぞれの価格・送料・初回キャンペーンをどこまで公式一次情報で確認できているかを一覧で開示します。確認済みの項目には出典と確認日を明記しています。"
+
+    html = page_header(title, desc, "verification.html")
+    html += f"""
+    <h1>全11社の価格・送料・キャンペーン確認状況</h1>
+    <p>各サービスの価格・送料・初回キャンペーンについて、公式一次情報でどこまで確認できているかを一覧にしています。確認済み・算出値の項目には出典リンクと確認日を付けています。未確認の項目には出典・確認日を表示していません（存在しない裏付けを示さないため）。</p>
+    {vstatus_legend(link_to_dashboard=False)}
+    <div class="card">
+      <table>
+        <tr><th>サービス</th><th>価格</th><th>送料</th><th>初回キャンペーン</th></tr>
+        {''.join(rows)}
+      </table>
+    </div>
+    <p style="font-size:13px;color:#666;">※このページはスコアやランキングを付けるものではなく、当サイトが確認できている範囲をそのまま開示するものです。最新情報は必ず公式サイトでご確認ください。</p>
+    """
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -938,7 +1067,7 @@ def build_privacy_page():
       <p>最終更新日: 2026-08-26</p>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -982,7 +1111,7 @@ def build_disclaimer_page():
       <p>最終更新日: 2026-08-26</p>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -1021,7 +1150,7 @@ def build_operator_page():
       <p>当サイトの情報は、正確性・最新性に努めていますが、その完全性を保証するものではありません。詳細は<a href="/disclaimer.html">免責事項</a>をご確認ください。</p>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -1057,7 +1186,7 @@ def build_contact_page():
       <p>当サイトは各宅配食サービスの運営会社ではありません。サービス自体の注文・解約・配送に関するお問い合わせは、各サービスの公式窓口にお願いいたします。</p>
     </div>
     """
-    html += page_footer("2026-08-26")
+    html += page_footer(LAST_VERIFIED_DATE)
     return html
 
 
@@ -1066,7 +1195,7 @@ def build_contact_page():
 def build_sitemap(pages):
     urls = []
     for p in pages:
-        urls.append(f"  <url>\n    <loc>{SITE_URL}/{p}</loc>\n    <lastmod>2026-08-26</lastmod>\n  </url>")
+        urls.append(f"  <url>\n    <loc>{SITE_URL}/{p}</loc>\n    <lastmod>{LAST_VERIFIED_DATE}</lastmod>\n  </url>")
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {chr(10).join(urls)}

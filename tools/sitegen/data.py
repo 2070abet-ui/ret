@@ -36,6 +36,26 @@ def load_json(path):
         return json.load(f)
 
 
+def _compute_last_verified_date():
+    """ページ単位の「最終更新」表示・sitemapのlastmodに使う日付。
+    services/campaigns/shipping/sources各ファイルのupdated_at（YYYY-MM-DD文字列、
+    辞書式比較がそのまま日付順になる）のうち最大値を返す。新規データフィールドの追加はしない。
+    PHASE3_IMPLEMENTATION_PLAN.md 1.4節。"""
+    dates = []
+    for fname in ("services.json", "campaigns.json", "shipping.json", "sources.json"):
+        try:
+            d = load_json(DATA_DIR / fname)
+        except (json.JSONDecodeError, OSError):
+            continue
+        ua = d.get("updated_at")
+        if ua:
+            dates.append(ua)
+    return max(dates) if dates else ""
+
+
+LAST_VERIFIED_DATE = _compute_last_verified_date()
+
+
 def load_data():
     services = load_json(DATA_DIR / "services.json")["services"]
     campaigns = load_json(DATA_DIR / "campaigns.json")["campaigns"]
