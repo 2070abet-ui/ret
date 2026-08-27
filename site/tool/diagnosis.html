@@ -79,27 +79,41 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
         <label><input type="checkbox" value="高タンパク"> 高タンパク</label>
         <label><input type="checkbox" value="高齢者"> 親・高齢者の食事</label>
       </div>
+      <h3 style="margin-top:16px;">保存方法で絞り込む（任意）</h3>
+      <div id="mealforms" class="checks">
+        <label><input type="checkbox" value="冷凍"> 冷凍</label>
+        <label><input type="checkbox" value="冷蔵"> 冷蔵</label>
+        <label><input type="checkbox" value="日配"> 日配</label>
+      </div>
       <p style="margin-top:12px;"><button class="btn-primary" onclick="runDiag()">診断する</button></p>
     </div>
 
     <div id="result" class="card" style="display:none;"></div>
 
     <script>
-    const SERVICES = [{"id": "nosh", "name": "nosh（ナッシュ）", "tags": ["低糖質", "低塩分", "冷凍", "管理栄養士監修", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "時短"], "price": null, "url": "https://nosh.jp/", "aff_url": "", "detail_url": "/services/nosh.html"}, {"id": "watami-takushoku", "name": "ワタミの宅食ダイレクト", "tags": ["冷凍", "管理栄養士監修", "低糖質対応あり", "セットプラン"], "target": ["一人暮らし", "共働き", "健康志向", "時短"], "price": null, "url": "https://watami-takushoku.com/", "aff_url": "", "detail_url": "/services/watami-takushoku.html"}, {"id": "mitsuboshi-farm", "name": "三ツ星ファーム", "tags": ["低糖質", "シェフ監修", "冷凍", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "おいしさ重視"], "price": null, "url": "https://mitsuboshifarm.jp/", "aff_url": "", "detail_url": "/services/mitsuboshi-farm.html"}, {"id": "wellness-dining", "name": "ウェルネスダイニング", "tags": ["糖質制限", "カロリー制限", "管理栄養士監修", "制限食"], "target": ["糖質制限", "カロリー制限", "健康志向", "制限食"], "price": null, "url": "https://www.wellness-dining.com/", "aff_url": "", "detail_url": "/services/wellness-dining.html"}, {"id": "shokutakubin", "name": "食宅便（日清医療食品）", "tags": ["健康", "医療食品", "冷凍", "冷蔵"], "target": ["健康志向", "高齢者", "制限食", "時短"], "price": 690, "url": "https://www.shokutakubin.com/", "aff_url": "", "detail_url": "/services/shokutakubin.html"}, {"id": "fit-food-home", "name": "FIT FOOD HOME", "tags": ["ダイエット", "カロリー制限", "高タンパク", "冷凍"], "target": ["ダイエット", "ボディメイク", "カロリー制限", "高タンパク"], "price": null, "url": "", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXK+3LSINM+57YO+BX3J6", "detail_url": "/services/fit-food-home.html"}, {"id": "magokoro-care", "name": "まごころケア食", "tags": ["高齢者", "やわらか食", "健康", "冷凍"], "target": ["高齢者", "健康志向", "やわらかい食事", "制限食"], "price": null, "url": "https://www.magokoro-care.com/", "aff_url": "", "detail_url": "/services/magokoro-care.html"}, {"id": "chef-muten-tukuritoki", "name": "シェフの無添つくりおき", "tags": ["無添加", "冷蔵", "惣菜", "週替わり", "シェフ監修", "時短"], "target": ["健康志向", "時短", "無添加", "家族"], "price": 1035, "url": "https://store.tavenal.com/tsukurioki/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DZOQK2+57YO+5YJRM", "detail_url": "/services/chef-muten-tukuritoki.html"}, {"id": "syokurakuzen", "name": "食楽膳", "tags": ["冷凍", "惣菜", "個食", "塩分控えめ", "SOMPOグループ"], "target": ["高齢者", "塩分制限", "健康志向"], "price": 351, "url": "https://shokurakuzen-sompocarefoods.com/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+EC6U9E+5VTA+5YRHE", "detail_url": "/services/syokurakuzen.html"}, {"id": "yoshikei", "name": "ヨシケイ", "tags": ["食材宅配", "日配", "献立", "保冷", "時短"], "target": ["時短", "家族"], "price": null, "url": "https://www.yoshikei.co.jp/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+E80T0Y+1QM6+HZAGY", "detail_url": "/services/yoshikei.html"}, {"id": "kenko-chokkyokubin", "name": "健康直球便", "tags": ["減塩", "冷凍", "弁当", "やわらか食", "消化にやさしい"], "target": ["高齢者", "塩分制限", "健康志向"], "price": 578, "url": "https://kenko-chokkyubin.com/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DUX9PU+5E7E+5ZEMQ", "detail_url": "/services/kenko-chokkyokubin.html"}];
+    const SERVICES = [{"id": "nosh", "name": "nosh（ナッシュ）", "tags": ["低糖質", "低塩分", "冷凍", "管理栄養士監修", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "時短"], "price": null, "meal_form_categories": ["冷凍"], "url": "https://nosh.jp/", "aff_url": "", "detail_url": "/services/nosh.html"}, {"id": "watami-takushoku", "name": "ワタミの宅食ダイレクト", "tags": ["冷凍", "管理栄養士監修", "低糖質対応あり", "セットプラン"], "target": ["一人暮らし", "共働き", "健康志向", "時短"], "price": null, "meal_form_categories": ["冷凍"], "url": "https://watami-takushoku.com/", "aff_url": "", "detail_url": "/services/watami-takushoku.html"}, {"id": "mitsuboshi-farm", "name": "三ツ星ファーム", "tags": ["低糖質", "シェフ監修", "冷凍", "一人暮らし"], "target": ["一人暮らし", "ダイエット", "糖質制限", "おいしさ重視"], "price": null, "meal_form_categories": ["冷凍"], "url": "https://mitsuboshifarm.jp/", "aff_url": "", "detail_url": "/services/mitsuboshi-farm.html"}, {"id": "wellness-dining", "name": "ウェルネスダイニング", "tags": ["糖質制限", "カロリー制限", "管理栄養士監修", "制限食"], "target": ["糖質制限", "カロリー制限", "健康志向", "制限食"], "price": null, "meal_form_categories": ["冷凍"], "url": "https://www.wellness-dining.com/", "aff_url": "", "detail_url": "/services/wellness-dining.html"}, {"id": "shokutakubin", "name": "食宅便（日清医療食品）", "tags": ["健康", "医療食品", "冷凍", "冷蔵"], "target": ["健康志向", "高齢者", "制限食", "時短"], "price": 690, "meal_form_categories": ["冷凍", "冷蔵"], "url": "https://www.shokutakubin.com/", "aff_url": "", "detail_url": "/services/shokutakubin.html"}, {"id": "fit-food-home", "name": "FIT FOOD HOME", "tags": ["ダイエット", "カロリー制限", "高タンパク", "冷凍"], "target": ["ダイエット", "ボディメイク", "カロリー制限", "高タンパク"], "price": null, "meal_form_categories": ["冷凍"], "url": "", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXK+3LSINM+57YO+BX3J6", "detail_url": "/services/fit-food-home.html"}, {"id": "magokoro-care", "name": "まごころケア食", "tags": ["高齢者", "やわらか食", "健康", "冷凍"], "target": ["高齢者", "健康志向", "やわらかい食事", "制限食"], "price": null, "meal_form_categories": ["冷凍"], "url": "https://www.magokoro-care.com/", "aff_url": "", "detail_url": "/services/magokoro-care.html"}, {"id": "chef-muten-tukuritoki", "name": "シェフの無添つくりおき", "tags": ["無添加", "冷蔵", "惣菜", "週替わり", "シェフ監修", "時短"], "target": ["健康志向", "時短", "無添加", "家族"], "price": 1035, "meal_form_categories": ["冷蔵"], "url": "https://store.tavenal.com/tsukurioki/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DZOQK2+57YO+5YJRM", "detail_url": "/services/chef-muten-tukuritoki.html"}, {"id": "syokurakuzen", "name": "食楽膳", "tags": ["冷凍", "惣菜", "個食", "塩分控えめ", "SOMPOグループ"], "target": ["高齢者", "塩分制限", "健康志向"], "price": 351, "meal_form_categories": ["冷凍"], "url": "https://shokurakuzen-sompocarefoods.com/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+EC6U9E+5VTA+5YRHE", "detail_url": "/services/syokurakuzen.html"}, {"id": "yoshikei", "name": "ヨシケイ", "tags": ["食材宅配", "日配", "献立", "保冷", "時短"], "target": ["時短", "家族"], "price": null, "meal_form_categories": ["日配"], "url": "https://www.yoshikei.co.jp/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+E80T0Y+1QM6+HZAGY", "detail_url": "/services/yoshikei.html"}, {"id": "kenko-chokkyokubin", "name": "健康直球便", "tags": ["減塩", "冷凍", "弁当", "やわらか食", "消化にやさしい"], "target": ["高齢者", "塩分制限", "健康志向"], "price": 578, "meal_form_categories": ["冷凍"], "url": "https://kenko-chokkyubin.com/", "aff_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DUX9PU+5E7E+5ZEMQ", "detail_url": "/services/kenko-chokkyokubin.html"}];
     function runDiag() {
       const goals = [...document.querySelectorAll('#goals input:checked')].map(x => x.value);
-      if (goals.length === 0) {
+      const mealForms = [...document.querySelectorAll('#mealforms input:checked')].map(x => x.value);
+      if (goals.length === 0 && mealForms.length === 0) {
         document.getElementById('result').style.display = 'block';
-        document.getElementById('result').innerHTML = '<p>目的を1つ以上選んでください。</p>';
+        document.getElementById('result').innerHTML = '<p>目的または保存方法を1つ以上選んでください。</p>';
         return;
       }
-      // タグ or ターゲットとの一致数でスコアリング
-      const scored = SERVICES.map(s => {
-        const pool = [...(s.tags||[]), ...(s.target||[])];
-        let score = 0;
-        for (const g of goals) { if (pool.includes(g)) score++; }
-        return { ...s, score };
-      }).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
+      // 保存方法（冷凍/冷蔵/日配）はAND条件の絞り込み。未選択なら全件を対象にする
+      let candidates = SERVICES;
+      if (mealForms.length > 0) {
+        candidates = candidates.filter(s => (s.meal_form_categories||[]).some(c => mealForms.includes(c)));
+      }
+      // タグ or ターゲットとの一致数でスコアリング（目的が未選択なら絞り込みのみ行う）
+      const scored = goals.length === 0
+        ? candidates.map(s => ({ ...s, score: 0 }))
+        : candidates.map(s => {
+            const pool = [...(s.tags||[]), ...(s.target||[])];
+            let score = 0;
+            for (const g of goals) { if (pool.includes(g)) score++; }
+            return { ...s, score };
+          }).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
       let html = '<h2>あなたにおすすめのサービス</h2>';
       if (scored.length === 0) {
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';

@@ -10,6 +10,21 @@ def _tag_set(svc):
     return set(svc.get("tags", [])) | set(svc.get("target", []))
 
 
+def meal_form_categories(meal_form_text):
+    """自由文のmeal_form（例:「冷凍（レンジで温めるだけ）」「冷凍 / 冷蔵」「日配（保冷ボックス）」）を
+    診断ツールで絞り込める3カテゴリ（冷凍/冷蔵/日配）に正規化する。新規データ収集は不要
+    （既存のmeal_formフィールドの文字列判定のみ）。PHASE2_IMPLEMENTATION_PLAN.md 8.1章。"""
+    text = meal_form_text or ""
+    cats = []
+    if "冷凍" in text:
+        cats.append("冷凍")
+    if "冷蔵" in text:
+        cats.append("冷蔵")
+    if "日配" in text:
+        cats.append("日配")
+    return cats
+
+
 def compute_related(services, aff_links, min_score=2, max_items=3):
     """関連サービス（tags+targetの単純な集合演算のみ。汎用matching engineではない）。
     一致数 >= min_score のみ候補にし、スコア降順・A8提携承認済み優先・services.json記載順
@@ -36,7 +51,10 @@ def compute_related(services, aff_links, min_score=2, max_items=3):
 def main():
     services, campaigns, shipping, sources, aff_links = data.load_data()
     shipping_by_id = {s["service_id"]: s for s in shipping}
+    sources_by_id = {s["id"]: s for s in sources}
     related_by_id = compute_related(services, aff_links)
+    # 診断ツール用：meal_formを正規化した3カテゴリを追加した複製リスト（元のservicesは変更しない）
+    diagnosis_services = [dict(s, meal_form_categories=meal_form_categories(s.get("meal_form"))) for s in services]
     out_dir = data.OUT_DIR
 
     # 出力先クリーン
@@ -71,7 +89,7 @@ def main():
     pages.append("campaigns.html")
 
     # 診断ツール
-    (out_dir / "tool" / "diagnosis.html").write_text(templates.build_diagnosis_tool(services, aff_links), encoding="utf-8")
+    (out_dir / "tool" / "diagnosis.html").write_text(templates.build_diagnosis_tool(diagnosis_services, aff_links), encoding="utf-8")
     pages.append("tool/diagnosis.html")
 
     # 記事ページ（シェフの無添つくりおき 口コミ・評判）
@@ -94,7 +112,7 @@ def main():
     # サービス個別ページ
     for svc in services:
         (out_dir / "services" / f"{svc['id']}.html").write_text(
-            templates.build_service_page(svc, aff_links, shipping_by_id, related_by_id.get(svc["id"], [])),
+            templates.build_service_page(svc, aff_links, shipping_by_id, related_by_id.get(svc["id"], []), sources_by_id),
             encoding="utf-8")
         pages.append(f"services/{svc['id']}.html")
 

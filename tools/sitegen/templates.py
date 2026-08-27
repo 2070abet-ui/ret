@@ -79,12 +79,26 @@ def _campaign_status(first_time_campaign):
     return "uncollected" if first_time_campaign.get("requires_verification", True) else "confirmed"
 
 
-def shipping_line(shipping_row):
+def source_link(sources_by_id, source_id):
+    """source_idに対応するsources.jsonエントリがあれば出典リンクを返す。
+    source_idが無い、またはsources.json側にエントリが見つからない場合は空文字
+    （リンクできない出典を示さない。PHASE2_IMPLEMENTATION_PLAN.md 7章）。"""
+    if not source_id or not sources_by_id:
+        return ""
+    src = sources_by_id.get(source_id)
+    if not src:
+        return ""
+    return (f' <a href="{esc(src.get("url", ""))}" target="_blank" rel="noopener nofollow" '
+            f'style="font-size:12px;">出典を見る（確認日: {esc(src.get("confirmed_at", ""))}）</a>')
+
+
+def shipping_line(shipping_row, sources_by_id=None):
     """data/shipping.jsonの1行から送料の表示行を組み立てる。
     地域・食数・プランで変動し単一値にできないサービスは notes の事実記述をそのまま表示する
     （単一値への圧縮による誤誘導を避けるため）。
     notesに"UNCOLLECTED"を含む行（内部ブロッカーの理由等）は、その理由文自体は
-    ユーザー向けに表示しないが、「未収集」であること自体は確認状態バッジで正直に示す。"""
+    ユーザー向けに表示しないが、「未収集」であること自体は確認状態バッジで正直に示す。
+    確認済み（変動ありを含む）の場合のみ、source_idがあれば出典リンクを付す。"""
     status = _shipping_status(shipping_row)
     badge = vstatus_badge(status)
     if status == "uncollected":
@@ -96,7 +110,8 @@ def shipping_line(shipping_row):
         text = f"{fee_text}（{notes}）" if notes else fee_text
     else:
         text = notes
-    return f'<p><strong>送料：</strong>{esc(text)} {badge}</p>'
+    src = source_link(sources_by_id, shipping_row.get("source_id"))
+    return f'<p><strong>送料：</strong>{esc(text)} {badge}{src}</p>'
 
 
 # ---------- リンク生成 ----------
@@ -257,10 +272,10 @@ def related_services_block(related):
     </div>"""
 
 
-def build_service_page(service, aff_links, shipping_by_id=None, related=None):
+def build_service_page(service, aff_links, shipping_by_id=None, related=None, sources_by_id=None):
     s_id = service["id"]
     s_name = service["name"]
-    shipping_html = shipping_line((shipping_by_id or {}).get(s_id))
+    shipping_html = shipping_line((shipping_by_id or {}).get(s_id), sources_by_id)
     related_html = related_services_block(related)
 
     # 関連記事リンク（サービスDBに article_link があれば表示）
@@ -292,7 +307,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None):
       <table>
         <tr><th>運営会社</th><td>{esc(service.get("operator", "公式確認中"))}</td></tr>
         <tr><th>形態</th><td>{esc(service.get("meal_type", ""))}（{esc(service.get("meal_form", ""))}）</td></tr>
-        <tr><th>最安料金</th><td>{cheapest_html}（2026-08-26時点） {vstatus_badge(_price_status(service.get("price_plan", {})))}</td></tr>
+        <tr><th>最安料金</th><td>{cheapest_html}（2026-08-26時点） {vstatus_badge(_price_status(service.get("price_plan", {})))}{source_link(sources_by_id, service.get("price_plan", {}).get("source_id"))}</td></tr>
         <tr><th>対象</th><td>{", ".join(service.get("target", []))}</td></tr>
       </table>
       <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトで料金・キャンペーンを確認")}</div>
@@ -313,7 +328,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None):
 
     <div class="card">
       <h2>初回キャンペーン・お試し</h2>
-      <p>{esc(service.get("first_time_campaign", {}).get("summary", "公式確認中"))} {vstatus_badge(_campaign_status(service.get("first_time_campaign", {})))}</p>
+      <p>{esc(service.get("first_time_campaign", {}).get("summary", "公式確認中"))} {vstatus_badge(_campaign_status(service.get("first_time_campaign", {})))}{source_link(sources_by_id, service.get("first_time_campaign", {}).get("source_id"))}</p>
       <p style="font-size:13px;color:#666;">{esc(service.get("first_time_campaign", {}).get("detail", ""))}</p>
       <div style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトでキャンペーンを確認", cls="btn-secondary")}</div>
     </div>
@@ -513,6 +528,7 @@ def build_diagnosis_tool(services, aff_links):
             "tags": svc.get("tags", []),
             "target": svc.get("target", []),
             "price": svc.get("price_plan", {}).get("lowest_per_meal_yen"),
+            "meal_form_categories": svc.get("meal_form_categories", []),
             "url": svc.get("official_url", ""),
             "aff_url": aff.get("actual_url", ""),  # アフィリエイトリンク（あれば優先）
             "detail_url": f"/services/{svc['id']}.html",  # 当サイト内サービス詳細ページ
@@ -538,6 +554,12 @@ def build_diagnosis_tool(services, aff_links):
         <label><input type="checkbox" value="高タンパク"> 高タンパク</label>
         <label><input type="checkbox" value="高齢者"> 親・高齢者の食事</label>
       </div>
+      <h3 style="margin-top:16px;">保存方法で絞り込む（任意）</h3>
+      <div id="mealforms" class="checks">
+        <label><input type="checkbox" value="冷凍"> 冷凍</label>
+        <label><input type="checkbox" value="冷蔵"> 冷蔵</label>
+        <label><input type="checkbox" value="日配"> 日配</label>
+      </div>
       <p style="margin-top:12px;"><button class="btn-primary" onclick="runDiag()">診断する</button></p>
     </div>
 
@@ -547,18 +569,26 @@ def build_diagnosis_tool(services, aff_links):
     const SERVICES = {svc_json};
     function runDiag() {{
       const goals = [...document.querySelectorAll('#goals input:checked')].map(x => x.value);
-      if (goals.length === 0) {{
+      const mealForms = [...document.querySelectorAll('#mealforms input:checked')].map(x => x.value);
+      if (goals.length === 0 && mealForms.length === 0) {{
         document.getElementById('result').style.display = 'block';
-        document.getElementById('result').innerHTML = '<p>目的を1つ以上選んでください。</p>';
+        document.getElementById('result').innerHTML = '<p>目的または保存方法を1つ以上選んでください。</p>';
         return;
       }}
-      // タグ or ターゲットとの一致数でスコアリング
-      const scored = SERVICES.map(s => {{
-        const pool = [...(s.tags||[]), ...(s.target||[])];
-        let score = 0;
-        for (const g of goals) {{ if (pool.includes(g)) score++; }}
-        return {{ ...s, score }};
-      }}).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
+      // 保存方法（冷凍/冷蔵/日配）はAND条件の絞り込み。未選択なら全件を対象にする
+      let candidates = SERVICES;
+      if (mealForms.length > 0) {{
+        candidates = candidates.filter(s => (s.meal_form_categories||[]).some(c => mealForms.includes(c)));
+      }}
+      // タグ or ターゲットとの一致数でスコアリング（目的が未選択なら絞り込みのみ行う）
+      const scored = goals.length === 0
+        ? candidates.map(s => ({{ ...s, score: 0 }}))
+        : candidates.map(s => {{
+            const pool = [...(s.tags||[]), ...(s.target||[])];
+            let score = 0;
+            for (const g of goals) {{ if (pool.includes(g)) score++; }}
+            return {{ ...s, score }};
+          }}).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
       let html = '<h2>あなたにおすすめのサービス</h2>';
       if (scored.length === 0) {{
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
