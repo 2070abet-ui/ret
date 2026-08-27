@@ -139,7 +139,7 @@ tr:last-child td { border-bottom:none; }
 .btn-primary:active { background:var(--color-primary-active); transform:none; }
 .btn-primary:focus-visible { outline:none; box-shadow:var(--shadow-focus); }
 .btn-secondary {
-  display:inline-flex; align-items:center; justify-content:center;
+  display:inline-flex; align-items:center; justify-content:center; flex-wrap:wrap;
   background:var(--color-surface); color:var(--color-text);
   border:1px solid var(--color-border-strong);
   padding:10px 20px; border-radius:var(--radius-sm);
@@ -184,16 +184,18 @@ tr:last-child td { border-bottom:none; }
   border-radius:999px; font:var(--text-micro); letter-spacing:.02em; font-weight:700;
   white-space:nowrap; margin-left:4px; vertical-align:middle;
 }
-.aff-note { font-size:11px; opacity:.8; font-weight:400; }
+.aff-note { flex-basis:100%; text-align:center; font-size:11px; opacity:.8; font-weight:400; margin-top:2px; }
 
 /* ---------- 価格表示（4章・9章） ---------- */
 .price-figure { font:var(--price-figure); color:var(--color-text); white-space:nowrap; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
-/* 未確認価格（Kit Oisix等）も確認済み価格と同程度の行の高さ・視覚的重みになるよう、
-   フォントサイズ・行の高さを--price-figureに近づける（値そのものは捏造しない、色で区別は維持）。
-   UI_DESIGN_PRINCIPLES.md 4.2.1「確認済みは強調・未確認は控えめ」の色による区別は変更しない。 */
-.price-unconfirmed { color:var(--color-text-muted); font-size:1.1rem; font-weight:600; line-height:1.2; }
+/* 行の高さの統一は.svc-card-price-row{min-height}側で担保済み（285行目付近）のため、
+   ここでは--price-figureに近づける必要はない。むしろ実画面監査（REAL_BROWSER_UI_AUDIT_2026_08_28.md）で
+   価格数字と同じ視覚重量だと「取得エラー」に誤読されることが判明したため、
+   UI_DESIGN_PRINCIPLES.md 4.2.1「未確認の値は控えめに沈める」により忠実に、
+   フォントサイズ・太さを価格より明確に下げる（色による区別・値そのものの非捏造は維持）。 */
+.price-unconfirmed { color:var(--color-text-muted); font-size:0.95rem; font-weight:400; line-height:1.2; }
 /* 長い基準ラベル（例：ツクリオ「1人前あたり換算価格（当サイト算出）」）がモバイル幅で
    横に突き抜けないよう、折り返しを許可し丸角を控えめにする（15章：横スクロール禁止方針）。 */
 .price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:10px; padding:1px 8px; white-space:normal; max-width:100%; line-height:1.4; }
@@ -262,6 +264,7 @@ tr:last-child td { border-bottom:none; }
 .trust-bar-pending { background:var(--status-pending-fg); }
 .trust-bar-uncollected { background:var(--status-uncollected-fg); }
 .trust-legend { display:flex; gap:var(--space-3); flex-wrap:wrap; align-items:center; font:var(--text-meta); color:var(--color-text-muted); }
+.trust-legend-item { white-space:nowrap; }
 .trust-link { display:inline-block; margin-top:var(--space-3); font-weight:700; }
 .trust-note { font:var(--text-meta); color:var(--color-text-faint); margin-top:var(--space-3); }
 
@@ -348,7 +351,7 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
 .updated { color:var(--color-text-muted); font-size:12px; margin-top:var(--space-5); border-top:1px solid var(--color-border); padding-top:var(--space-3); }
 footer.site { text-align:center; padding:var(--space-5) var(--space-4); color:var(--color-text-muted); font-size:12px; margin-top:var(--space-6); }
 footer.site .container p { margin-bottom:6px; }
-.footer-nav a { color:var(--color-text-faint); margin:0 8px; text-decoration:none; }
+.footer-nav a { color:var(--color-text-faint); margin:0 8px; text-decoration:none; white-space:nowrap; }
 .footer-nav a:hover { color:var(--color-text-muted); text-decoration:underline; }
 
 /* ---------- モバイル（640px以下、15章・16章） ---------- */
@@ -448,10 +451,10 @@ def trust_panel(coverage, num_services, link_to_dashboard=True):
            f'<span class="trust-bar-derived" style="width:{_pct(derived)}%"></span>'
            f'<span class="trust-bar-pending" style="width:{_pct(pending)}%"></span>'
            f'<span class="trust-bar-uncollected" style="width:{_pct(uncollected)}%"></span>')
-    legend = (f'{vstatus_badge("confirmed")}{confirmed}件 '
-              f'{vstatus_badge("derived")}{derived}件 '
-              f'{vstatus_badge("pending")}{pending}件 '
-              f'{vstatus_badge("uncollected")}{uncollected}件')
+    legend = (f'<span class="trust-legend-item">{vstatus_badge("confirmed")}{confirmed}件</span> '
+              f'<span class="trust-legend-item">{vstatus_badge("derived")}{derived}件</span> '
+              f'<span class="trust-legend-item">{vstatus_badge("pending")}{pending}件</span> '
+              f'<span class="trust-legend-item">{vstatus_badge("uncollected")}{uncollected}件</span>')
     link = ('<a class="trust-link" href="/verification.html">→ 確認状況を一覧で見る</a>'
             if link_to_dashboard else "")
     return f"""
@@ -768,6 +771,7 @@ def pricing_detail_html(pricing, sources_by_id=None):
     return f"""
     <div class="pricing-detail">
       {main_html}
+      {mobile_scroll_hint()}
       <div class="table-scroll">
         <table class="price-points-table">
           <tr><th>基準</th><th>プラン</th><th>価格</th><th>送料</th><th>条件</th></tr>
