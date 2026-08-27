@@ -78,6 +78,34 @@
       "actual_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DUX9PU+5E7E+5ZEMQ",
       "fallback_url": "https://kenko-chokkyubin.com/",
       "note": "新規購入1,000円/2,000円（プログラムID: s00000025169001）。A8リンク取得後にactual_urlへ設定"
+    },
+    "muscle-deli": {
+      "asp": "A8.net / Felmat / afb / i-mobile",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://muscledeli.jp/",
+      "note": "複数ASPでプログラム存在を確認（2026-08-27）。報酬額は非公開のため提携申請後に確認"
+    },
+    "green-spoon": {
+      "asp": "A8.net / アクセストレード / バリューコマース",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://green-spoon.jp/",
+      "note": "複数ASPでプログラム存在を確認（2026-08-27）。報酬額は非公開"
+    },
+    "kit-oisix": {
+      "asp": "afb / アクセストレード",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://www.oisix.com/",
+      "note": "複数ASPでプログラム存在を確認（2026-08-27）。報酬額は非公開"
+    },
+    "tsuklio": {
+      "asp": "A8.net",
+      "status": "未提携（ASP承認待ち）",
+      "actual_url": "",
+      "fallback_url": "https://www.tsuklio.com/",
+      "note": "A8.netでセルフバック案件の存在を確認（2026-08-27）。報酬額は非公開"
     }
   }
 }

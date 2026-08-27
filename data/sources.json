@@ -218,6 +218,41 @@
       "url": "https://nosh.jp/package",
       "confirmed_at": "2026-08-27",
       "note": "12食プランが通常価格最安。通常価格(税抜表記とみられる)8食719円/10食644円/12食620円/6食612円・初回特別価格(税込)470/457/471/487円等"
+    },
+    {
+      "id": "muscledeli-official-202608",
+      "label": "マッスルデリ公式サイト（FAQ・プラン情報）",
+      "url": "https://muscledeli.jp/shop/pages/faq",
+      "confirmed_at": "2026-08-27",
+      "note": "送料・解約・配送エリア・支払い方法を直接確認"
+    },
+    {
+      "id": "greenspoon-official-202608",
+      "label": "GREEN SPOON公式サイト",
+      "url": "https://green-spoon.jp/",
+      "confirmed_at": "2026-08-27",
+      "note": "送料・解約条件・初回方針を直接確認"
+    },
+    {
+      "id": "greenspoon-secondary-202608",
+      "label": "GREEN SPOON料金比較記事（二次情報、公式価格ページは403エラーのため）",
+      "url": "https://takushoku.soraclock.net/greenspoon_price/",
+      "confirmed_at": "2026-08-27",
+      "note": "カテゴリ別単価は複数の独立した二次情報が一致するが一次情報未直接確認"
+    },
+    {
+      "id": "oisix-secondary-202608",
+      "label": "Kit Oisix料金比較記事（二次情報、公式ページは接続エラーのため）",
+      "url": "https://agri.mynavi.jp/2024_06_25_269921/",
+      "confirmed_at": "2026-08-27",
+      "note": "価格帯・入会金無料等は複数の独立した二次情報が一致するが一次情報未直接確認"
+    },
+    {
+      "id": "tsuklio-official-202608",
+      "label": "ツクリオ（Tsuklio）公式サイト",
+      "url": "https://www.tsuklio.com/",
+      "confirmed_at": "2026-08-27",
+      "note": "料金プラン・送料・解約条件を直接確認"
     }
   ]
 }

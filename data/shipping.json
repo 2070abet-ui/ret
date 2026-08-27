@@ -100,6 +100,42 @@
       "notes": "沖縄県のみ商品1つにつき1,000円の負担（公式サイト2026-08-27確認）",
       "last_checked": "2026-08-27",
       "source_id": "kenko-chokkyokubin-delivery-202608"
+    },
+    {
+      "service_id": "muscle-deli",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "お届け予定日の5日前までに連絡が必要。すでに確定済または発送済の注文はスキップ不可（公式FAQ2026-08-27確認）。",
+      "notes": "食数により変動（5食1,100円・10食/15食1,320円、税込）。北海道・沖縄は1,430円〜（公式FAQ 2026-08-27確認）。",
+      "last_checked": "2026-08-27",
+      "source_id": "muscledeli-official-202608"
+    },
+    {
+      "service_id": "green-spoon",
+      "shipping_fee": 990,
+      "min_order": null,
+      "cancellation_condition": "初回購入分は解約・キャンセル不可。2回目以降はマイページから解約可能、違約金なし（公式サイト2026-08-27確認）。",
+      "notes": "定期購入時の送料（全国一律、税込990円、北海道・沖縄除く）。単品購入時の送料は公式サイトで確認できなかった（要確認）。",
+      "last_checked": "2026-08-27",
+      "source_id": "greenspoon-official-202608"
+    },
+    {
+      "service_id": "kit-oisix",
+      "shipping_fee": null,
+      "min_order": null,
+      "cancellation_condition": "UNCOLLECTED: 公式ページへの接続エラー・タイムアウトのため一次情報で確認できなかった。",
+      "notes": "UNCOLLECTED: 公式価格ページ（oisix.com）に接続エラー・タイムアウトで直接アクセスできず、送料変動の条件（無料になる金額のしきい値等）を一次情報で確認できなかった。二次情報間でも記載が一致しない。",
+      "last_checked": "2026-08-27",
+      "source_id": "oisix-secondary-202608"
+    },
+    {
+      "service_id": "tsuklio",
+      "shipping_fee": 0,
+      "min_order": null,
+      "cancellation_condition": "プラン変更・お休み・解約はいつでも可能。お休み登録は週ごとに無料（公式サイト2026-08-27確認）。解約手数料の記載は確認できなかった。",
+      "notes": "全プラン税込・送料込み表記（公式サイト2026-08-27確認）。東京23区は専用配送、それ以外はヤマト運輸の冷蔵便。",
+      "last_checked": "2026-08-27",
+      "source_id": "tsuklio-official-202608"
     }
   ]
 }

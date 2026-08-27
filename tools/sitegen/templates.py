@@ -1165,6 +1165,12 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
             camp_status = "uncollected"
         camp_badge = vstatus_badge(camp_status)
         tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
+        # 気になる点（1例）。スクリーニング段階で「合わない理由」を判断できるようにする
+        # （UI_DESIGN_PRINCIPLES.md 1章。既存consフィールドの先頭1件のみを事実表示として使う。
+        # 「唯一の欠点」と誤読されないよう「（1例）」を明示し、新規データ・評価は追加しない）。
+        cons_list = svc.get("cons") or []
+        cons_first = cons_list[0] if cons_list else ""
+        cons_line_table = f'<br><span class="price-meta">気になる点（1例）：{esc(cons_first)}</span>' if cons_first else ""
         # 保存方法（冷凍/冷蔵/日配）。診断ツールと同じmeal_form_categories()の正規化結果を再利用する
         # （PHASE3_IMPLEMENTATION_PLAN.md 2章：新しいmatching engineやデータモデルは作らない）。
         mealform_cats = svc.get("meal_form_categories") or []
@@ -1183,7 +1189,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         price_cell = _price_inline_html(pricing, sources_by_id)
         rows.append(f"""
         <tr data-mealform="{mealform_attr}">
-          <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}</td>
+          <td><a href="/services/{svc['id']}.html"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}{cons_line_table}</td>
           <td>{price_cell}</td>
           <td>{esc(camp_txt)} {camp_badge}</td>
           <td>{mealform_txt}</td>
@@ -1206,6 +1212,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
             <div class="svc-spec"><span class="svc-spec-label">初回キャンペーン</span><span class="svc-spec-value">{esc(camp_txt)} {camp_badge}</span></div>
             <div class="svc-spec"><span class="svc-spec-label">保存方法</span><span class="svc-spec-value">{mealform_txt}</span></div>
             <div class="svc-spec svc-spec-wide"><span class="svc-spec-label">向いている人</span><span class="svc-spec-value">{target_txt}</span></div>
+            {f'<div class="svc-spec svc-spec-wide"><span class="svc-spec-label">気になる点（1例）</span><span class="svc-spec-value">{esc(cons_first)}</span></div>' if cons_first else ''}
           </div>
           <div class="svc-card-footer">{detail_link} {aff_cta_card}</div>
         </div>""")
@@ -1411,13 +1418,19 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     </div>
 
     <div class="card">
-      <h2>{esc(a_name)}のポイント</h2>
-      <ul class="feature-list">{''.join(f'<li>{esc(p)}</li>' for p in service_a.get('pros', []))}</ul>
+      <h2>{esc(a_name)}の良い点・気になる点</h2>
+      <div class="pros-cons">
+        <div><strong>良い点</strong><ul class="feature-list">{''.join(f'<li>{esc(p)}</li>' for p in service_a.get('pros', []))}</ul></div>
+        <div><strong>気になる点</strong><ul class="feature-list">{''.join(f'<li>{esc(c)}</li>' for c in service_a.get('cons', []))}</ul></div>
+      </div>
     </div>
 
     <div class="card">
-      <h2>{esc(b_name)}のポイント</h2>
-      <ul class="feature-list">{''.join(f'<li>{esc(p)}</li>' for p in service_b.get('pros', []))}</ul>
+      <h2>{esc(b_name)}の良い点・気になる点</h2>
+      <div class="pros-cons">
+        <div><strong>良い点</strong><ul class="feature-list">{''.join(f'<li>{esc(p)}</li>' for p in service_b.get('pros', []))}</ul></div>
+        <div><strong>気になる点</strong><ul class="feature-list">{''.join(f'<li>{esc(c)}</li>' for c in service_b.get('cons', []))}</ul></div>
+      </div>
     </div>
 
     <div class="svc-card-footer" style="margin-top:16px;">

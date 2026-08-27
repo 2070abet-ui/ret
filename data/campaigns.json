@@ -212,6 +212,82 @@
       },
       "requires_verification": false,
       "last_checked": "2026-08-27"
+    },
+    {
+      "campaign_id": "muscledeli-first-202608",
+      "service_id": "muscle-deli",
+      "title": "マッスルデリ 初回・継続割引",
+      "summary": "公式確認中",
+      "detail": "「1回目のお届けは回数に関わらず25%OFF」「6回プラン2回目以降13%OFF」「12回プラン2回目以降15%OFF」の継続割引プランの記載は確認できたが（公式サイト2026-08-27確認）、初回単体の割引額（円換算）は確認できなかった。",
+      "discount_type": "公式確認中",
+      "conditions": "公式確認中",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://muscledeli.jp/shop/information/discount_plan",
+      "affiliate": {
+        "asp": "A8.net / Felmat / afb / i-mobile",
+        "reward_yen": null,
+        "note": "複数ASPでプログラム存在を確認（2026-08-27）。報酬額は非公開のため提携申請後に確認"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-27"
+    },
+    {
+      "campaign_id": "greenspoon-first-202608",
+      "service_id": "green-spoon",
+      "title": "GREEN SPOON 初回お試し",
+      "summary": "公式確認中",
+      "detail": "「1回だけのお試しOK！注文回数縛りなし」という一般方針は公式サイトで確認できた（2026-08-27）が、具体的な初回割引額は確認できなかった。",
+      "discount_type": "公式確認中",
+      "conditions": "公式確認中",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://green-spoon.jp/",
+      "affiliate": {
+        "asp": "A8.net / アクセストレード / バリューコマース",
+        "reward_yen": null,
+        "note": "複数ASPでプログラム存在を確認（2026-08-27）。報酬額は非公開"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-27"
+    },
+    {
+      "campaign_id": "kitoisix-first-202608",
+      "service_id": "kit-oisix",
+      "title": "Kit Oisix おためしセット",
+      "summary": "公式確認中",
+      "detail": "おためしセット1,980円（税込）・送料無料、8,000円相当の商品15品という情報が複数の二次情報で一致したが、公式ページを直接確認できていないため未確定として扱う。",
+      "discount_type": "公式確認中",
+      "conditions": "公式確認中",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://www.oisix.com/",
+      "affiliate": {
+        "asp": "afb / アクセストレード",
+        "reward_yen": null,
+        "note": "複数ASPでプログラム存在を確認（2026-08-27）。報酬額は非公開"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-27"
+    },
+    {
+      "campaign_id": "tsuklio-first-202608",
+      "service_id": "tsuklio",
+      "title": "ツクリオ 初回クーポン",
+      "summary": "公式確認中",
+      "detail": "4人前プランに初回限定クーポンがあるとの言及があったが、具体的な割引額は公式サイトのトップページでは確認できなかった。",
+      "discount_type": "公式確認中",
+      "conditions": "公式確認中",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://www.tsuklio.com/",
+      "affiliate": {
+        "asp": "A8.net",
+        "reward_yen": null,
+        "note": "A8.netでセルフバック案件の存在を確認（2026-08-27）。報酬額は非公開"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-27"
     }
   ]
 }

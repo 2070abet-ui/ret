@@ -1341,6 +1341,363 @@
           }
         ]
       }
+    },
+    {
+      "id": "muscle-deli",
+      "name": "マッスルデリ",
+      "name_short": "マッスルデリ",
+      "operator": "株式会社YOUR MEAL",
+      "official_url": "https://muscledeli.jp/",
+      "meal_type": "冷凍宅配弁当（ボディメイク向け）",
+      "meal_form": "冷凍（レンジで温めるだけ、プロテインパンは自然解凍）",
+      "main_features": [
+        "LEAN/MAINTAIN/GAIN/LOW CARBの4プランからPFC(タンパク質/脂質/糖質)を目的別に設計",
+        "MAINTAIN例：カロリー450〜550kcal・タンパク質35g以上・脂質20g以下・糖質55g以下（公式サイト2026-08-27確認）",
+        "調理済みを冷凍でお届け、電子レンジで加熱するだけ"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "公式サイトでは5食・10食・15食プランの食数別の税込価格が明確な一覧表になっておらず確認できなかった。単品購入は1食あたり4,900円（税込・送料別、MAINTAIN）＝1,058円という表記が確認できた（公式サイト2026-08-27確認）が、これは単品価格であり定期プランの価格ではない。定期プランの正確な1食あたり価格は公式サイト上の表記に矛盾（初回6,000円/税込6,600円、2回目以降5,800円/税込6,600円という数値が税率計算上整合しないページ表記があった）があり、断定を避け要確認とした。",
+        "last_checked": "2026-08-27",
+        "source_id": "muscledeli-official-202608"
+      },
+      "first_time_campaign": {
+        "campaign_id": "muscledeli-first",
+        "summary": "公式確認中",
+        "detail": "「1回目のお届けは回数に関わらず25%OFF」「6回プラン2回目以降13%OFF」「12回プラン2回目以降15%OFF」という継続割引プランの記載は確認できたが（公式サイト2026-08-27確認）、初回単体の割引額（円換算）は確認できなかった。",
+        "requires_verification": true,
+        "last_checked": "2026-08-27",
+        "source_id": "muscledeli-official-202608"
+      },
+      "target": [
+        "ボディメイク",
+        "ダイエット",
+        "筋トレ",
+        "高タンパク志向"
+      ],
+      "tags": [
+        "ボディメイク",
+        "高タンパク",
+        "低糖質",
+        "冷凍"
+      ],
+      "pros": [
+        "PFC（タンパク質/脂質/糖質）を数値で管理した4プラン設計",
+        "LEAN/MAINTAIN/GAIN/LOW CARBと目的別に選べる",
+        "単品購入も可能で低コミットで始められる"
+      ],
+      "cons": [
+        "定期プランの食数別の1食あたり価格が公式サイトで明確に確認できず、実質価格は要確認",
+        "送料が食数により変動し（5食1,100円/10・15食1,320円、北海道・沖縄1,430円〜）、価格に別途加算される",
+        "解約はお届け予定日の5日前までの連絡が必要で、確定・発送済の注文はスキップ不可"
+      ],
+      "cancellation_note": "お届け予定日の5日前までに連絡が必要。すでに確定済または発送済の注文はスキップ不可（公式FAQ 2026-08-27確認）。継続回数の縛り（違約金等）の記載は確認できなかった。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": null,
+            "status": "プログラム存在を確認（報酬額非公開・要提携申請）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-27"
+          }
+        ],
+        "source_url": "https://affiliate-cross-search.com/massuru_deri/"
+      },
+      "last_checked": "2026-08-27",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "単品購入(MAINTAIN)の1食あたり価格1,058円（税込・送料別）のみ公式サイトで直接確認できた（2026-08-27）。定期プラン(5/10/15食)の食数別価格は公式サイト上の表記が食数別に分離されておらず、かつ初回/2回目以降の数値に税率計算上の不整合が見られたため、確定的な数値としては採用しなかった。単品価格は定期プランより割高な可能性が高く、比較の代表値として単純に扱うと不利に見える可能性がある点に留意。",
+        "display": {
+          "price_point_id": "alacarte-1meal",
+          "label": "単品購入価格（参考）",
+          "caption": "MAINTAIN単品購入・税込・送料別。定期プランはこれより安い可能性があるが未確認"
+        },
+        "price_points": [
+          {
+            "id": "alacarte-1meal",
+            "basis": "alacarte",
+            "price_per_meal_yen": 1058,
+            "meal_count": 1,
+            "plan": "MAINTAIN単品購入",
+            "conditions": "単品購入時の価格（税込・送料別）。定期プランの方が安価な可能性があるが公式サイトで食数別価格が確認できず未反映",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "muscledeli-official-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
+    },
+    {
+      "id": "green-spoon",
+      "name": "GREEN SPOON（グリーンスプーン）",
+      "name_short": "GREEN SPOON",
+      "operator": "Greenspoon株式会社",
+      "official_url": "https://green-spoon.jp/",
+      "meal_type": "冷凍ミールキット・パーソナル栄養食",
+      "meal_form": "冷凍（レンジで温めるだけ）",
+      "main_features": [
+        "管理栄養士監修のオリジナルレシピ（公式サイト2026-08-27確認）",
+        "デリ弁当・メインディッシュ・ライス&パスタ・スープ・サラダ・スムージーをカテゴリ別に単品/定期で選べるアラカルト形式",
+        "初回1回のみの購入も可能で回数縛りなし（公式サイト2026-08-27確認）"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "カテゴリ別単価（デリ弁当・メインディッシュ・スープ等）について、公式の価格ページ（FAQ）は403エラーで直接確認できなかった。複数の独立した実食レビューサイトが975円等の数値を報告しているが、いずれも当サイトが直接確認した一次情報ではないため、具体的な価格を公開値として掲載することは見送る。公式サイトのトップページで確認できた事実（管理栄養士監修、定期送料990円、初回購入分は解約不可等）のみを確定情報として扱う。",
+        "last_checked": "2026-08-27",
+        "source_id": "greenspoon-official-202608"
+      },
+      "first_time_campaign": {
+        "campaign_id": "greenspoon-first",
+        "summary": "公式確認中",
+        "detail": "「1回だけのお試しOK！注文回数縛りなし」という一般方針は公式サイトで確認できた（2026-08-27）が、具体的な初回割引額は確認できなかった。",
+        "requires_verification": true,
+        "last_checked": "2026-08-27",
+        "source_id": "greenspoon-official-202608"
+      },
+      "target": [
+        "健康志向",
+        "ダイエット",
+        "野菜不足が気になる人"
+      ],
+      "tags": [
+        "ミールキット",
+        "健康志向",
+        "冷凍",
+        "アラカルト"
+      ],
+      "pros": [
+        "管理栄養士監修でカテゴリごとに栄養バランスを設計",
+        "デリ弁当からスムージーまで自分で組み合わせを選べる",
+        "初回のみの購入も可能で回数縛りがない"
+      ],
+      "cons": [
+        "カテゴリごとに単価が異なり、組み合わせ次第で1食あたりの総額が変動する",
+        "初回購入分は解約・キャンセルができない（公式サイト2026-08-27確認）",
+        "定期購入時は送料990円（税込）が別途必要"
+      ],
+      "cancellation_note": "初回ご購入分は解約・キャンセル不可。2回目以降はマイページから商品変更・配送日時変更・スキップ・停止・再開・解約が可能で、回数の約束や違約金はない（公式サイト2026-08-27確認）。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": null,
+            "status": "プログラム存在を確認（報酬額非公開・要提携申請）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-27"
+          }
+        ],
+        "source_url": "https://media-analytics.jp/affisearch/promotions/green-spoon"
+      },
+      "last_checked": "2026-08-27",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "カテゴリ別単価（デリ弁当1,025円・メインディッシュ975円・スープ940円等）は複数の独立した実食レビューサイトで報告されているが、公式の価格ページ（FAQ）は403エラーで直接確認できなかった。一次情報で確認できていない数値を『算出値』として掲載すると、当サイトの『公式一次情報ベース』という方針と矛盾するため、価格は確定させず『公式確認中』として扱う（2026-08-27時点）。二次情報の数値は参考情報としてこの備考にのみ残す。",
+        "display": null,
+        "price_points": []
+      }
+    },
+    {
+      "id": "kit-oisix",
+      "name": "Kit Oisix（オイシックス）",
+      "name_short": "Kit Oisix",
+      "operator": "オイシックス・ラ・大地株式会社",
+      "official_url": "https://www.oisix.com/",
+      "meal_type": "ミールキット（食材宅配・要調理）",
+      "meal_form": "冷蔵（食材キット、要調理・要冷蔵保存）",
+      "main_features": [
+        "主菜+副菜がそろう献立キットを最短10〜20分で調理（複数情報源で一致、一次ページは接続エラーのため直接確認できず）",
+        "毎週20種類以上のメニューが入れ替わる",
+        "2人前・3人前の「人前」単位で選ぶ形式で、他社の「1食」単位とは価格体系が異なる"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": null,
+        "plan_notes": "2人前994円〜2,483円、3人前2,722円〜3,521円（税込）という価格帯情報は複数の独立した情報源で一致したが、公式価格ページ（oisix.com）への直接アクセスがタイムアウト・接続エラーで確認できなかった。また『994円』が2人前セット全体の価格か1人あたりの価格かという換算の前提自体を一次情報で確認できていないため、1食あたりのdisplay価格として断定的な数値は採用しなかった。",
+        "last_checked": "2026-08-27",
+        "source_id": "oisix-secondary-202608"
+      },
+      "first_time_campaign": {
+        "campaign_id": "kit-oisix-first",
+        "summary": "公式確認中",
+        "detail": "おためしセット1,980円（税込）・送料無料、8,000円相当の商品15品という情報が複数の情報源で一致したが、公式ページを直接確認できていないため未確定として扱う。",
+        "requires_verification": true,
+        "last_checked": "2026-08-27",
+        "source_id": "oisix-secondary-202608"
+      },
+      "target": [
+        "時短",
+        "家族",
+        "料理はしたいが手間を省きたい人"
+      ],
+      "tags": [
+        "ミールキット",
+        "大手ブランド",
+        "時短"
+      ],
+      "pros": [
+        "累計出荷数2.5億食超（2026年時点）の実績を持つミールキット最大手",
+        "毎週20種類以上のメニューが入れ替わり飽きにくい",
+        "入会金・年会費は無料（複数情報源で一致）"
+      ],
+      "cons": [
+        "「1食」ではなく「人前」単位の価格体系で、他社の1食あたり表示と単純比較ができない",
+        "定期会員（おいしっくすくらぶ）登録が前提で、送料が注文金額により変動する",
+        "価格・送料のしきい値が情報源により表記が分かれており、当サイトで一次情報を直接確認できていない"
+      ],
+      "cancellation_note": "入会金・年会費は無料で、解約に伴う違約金の記載は確認できなかった（複数情報源で一致）。ただし公式ページを直接確認できていないため、解約・休止の具体的な手続き条件は公式確認中として扱う。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "afb",
+            "reward_yen": null,
+            "status": "プログラム存在を確認（報酬額非公開・要提携申請）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-27"
+          },
+          {
+            "asp": "アクセストレード",
+            "reward_yen": null,
+            "status": "プログラム存在を確認（報酬額非公開・要提携申請）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-27"
+          }
+        ],
+        "source_url": "https://media-analytics.jp/affisearch/promotions/oisix"
+      },
+      "last_checked": "2026-08-27",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": true,
+        "price_notes": "公式価格ページ（oisix.com）に複数回アクセスを試みたが、タイムアウト・接続エラーのため一次情報を直接確認できなかった。2人前994円〜／3人前2,722円〜という数値は複数の独立した二次情報で一致するが、これが1セットあたりの価格か1人前あたりの価格かという前提を一次情報で確認できていないため、捏造を避けるためdisplay価格・price_pointsとも数値を確定しない（regional_dependency=trueとし、1食あたりの確定値は次回一次情報確認まで保留）。",
+        "display": null,
+        "price_points": []
+      }
+    },
+    {
+      "id": "tsuklio",
+      "name": "ツクリオ（Tsuklio）",
+      "name_short": "ツクリオ",
+      "operator": "Antway（正式な法人格表記は公式サイトで確認できず、要再確認）",
+      "official_url": "https://www.tsuklio.com/",
+      "meal_type": "冷蔵惣菜・手作りお惣菜宅配",
+      "meal_form": "冷蔵（そのまま/温めて提供、要冷蔵保存）",
+      "main_features": [
+        "手作りお惣菜を週1回宅配（公式サイト2026-08-27確認）",
+        "2人前×週3食／4人前×週3食／4人前×週5食のプランから選択",
+        "東京23区は専用配送、それ以外はヤマト運輸の冷蔵便（公式サイト2026-08-27確認）"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": 1332,
+        "plan_notes": "公式サイトで確認できた税込・送料込み価格：2人前×週3食プラン7,990円/週、4人前×週3食プラン9,990円/週、4人前×週5食プラン15,960円/週（2026-08-27確認）。ツクリオは『人数×週食数』のパッケージ料金のため、既存11社の『1人前=1食』モデルに合わせるにあたり、当サイトの編集判断として2人前×週3食プラン(7,990円)を人数×食数(2×3=6)で割った1,332円/食を1人前1食あたりの換算値として採用した。この換算はツクリオ公式が示す単価ではなく、当サイトによる計算である旨を明記する。",
+        "last_checked": "2026-08-27",
+        "source_id": "tsuklio-official-202608"
+      },
+      "first_time_campaign": {
+        "campaign_id": "tsuklio-first",
+        "summary": "公式確認中",
+        "detail": "4人前プランに初回限定クーポンがあるとの言及があったが、具体的な割引額は公式サイトのトップページでは確認できなかった。",
+        "requires_verification": true,
+        "last_checked": "2026-08-27",
+        "source_id": "tsuklio-official-202608"
+      },
+      "target": [
+        "共働き",
+        "家族",
+        "時短"
+      ],
+      "tags": [
+        "冷蔵惣菜",
+        "共働き",
+        "時短",
+        "家族"
+      ],
+      "pros": [
+        "プラン価格が税込・送料込みで明快（公式サイト2026-08-27確認）",
+        "週ごとにお休み登録が無料でできる（公式サイト2026-08-27確認）",
+        "競合の宅配食比較サイト（マイベスト・GYRO HOLDINGS）双方に掲載される認知度"
+      ],
+      "cons": [
+        "『人数×週食数』のパッケージ料金のため、1人前あたりの単価は当サイトによる換算値である",
+        "chef-muten-tukuritoki（冷蔵惣菜）と近いカテゴリで、両社の違いは詳細ページでの確認が必要",
+        "初回キャンペーンの具体的な割引額が公式トップページでは確認できなかった"
+      ],
+      "cancellation_note": "プラン変更・お休み・解約はいつでも可能。お休み登録は週ごとに無料で設定できる（公式サイト2026-08-27確認）。解約手数料の記載は確認できなかった。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": null,
+            "status": "プログラム存在を確認（セルフバック案件あり・報酬額非公開）",
+            "cv_condition": "要確認",
+            "last_verified": "2026-08-27"
+          }
+        ],
+        "source_url": "https://media-analytics.jp/affisearch/promotions/tsukurioki-jp"
+      },
+      "last_checked": "2026-08-27",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "2人前×週3食7,990円／4人前×週3食9,990円／4人前×週5食15,960円（いずれも税込・送料込み）は公式サイト（tsuklio.com）2026-08-27確認。1人前1食あたりの価格はツクリオ公式が示す数値ではなく、当サイトが「人数×食数」で割って算出した換算値（例：2人前×週3食＝7,990÷6＝1,332円/食）である旨をここに明記する。",
+        "display": {
+          "price_point_id": "regular-2p3meals-derived",
+          "label": "1人前あたり換算価格（当サイト算出）",
+          "caption": "2人前×週3食プラン(7,990円/週・税込送料込)を人数×食数で除した当サイトによる換算値"
+        },
+        "price_points": [
+          {
+            "id": "regular-2p3meals-derived",
+            "basis": "regular",
+            "price_per_meal_yen": 1332,
+            "meal_count": 6,
+            "plan": "2人前×週3食プラン（1人前換算）",
+            "conditions": "7,990円/週（税込・送料込）を2人前×3食=6で除した当サイトによる換算値（公式の1食単位表示ではない）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "derived",
+            "source_id": "tsuklio-official-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-4p3meals-derived",
+            "basis": "regular",
+            "price_per_meal_yen": 833,
+            "meal_count": 12,
+            "plan": "4人前×週3食プラン（1人前換算）",
+            "conditions": "9,990円/週（税込・送料込）を4人前×3食=12で除した当サイトによる換算値（公式の1食単位表示ではない）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "derived",
+            "source_id": "tsuklio-official-202608",
+            "last_checked": "2026-08-27"
+          },
+          {
+            "id": "regular-4p5meals-derived",
+            "basis": "regular",
+            "price_per_meal_yen": 798,
+            "meal_count": 20,
+            "plan": "4人前×週5食プラン（1人前換算）",
+            "conditions": "15,960円/週（税込・送料込）を4人前×5食=20で除した当サイトによる換算値（公式の1食単位表示ではない）",
+            "shipping_included": true,
+            "regional": false,
+            "tax": "included",
+            "status": "derived",
+            "source_id": "tsuklio-official-202608",
+            "last_checked": "2026-08-27"
+          }
+        ]
+      }
     }
   ]
 }
