@@ -294,7 +294,8 @@
       "price_plan": {
         "lowest_per_meal_yen": 690,
         "plan_notes": "算出値（DERIVED）：週間人気商品「おまかせコース7食セット」4,830円÷7食=690円/食（公式サイト2026-08-27確認）。同ページには「塩分&カロリーケア7食5,180円」「低糖質セレクト7食5,180円」（いずれも740円/食）も掲載。これは公式サイトの週間人気商品ページに掲載された一部プランの中での最安であり、全プラン中の最安値であることは確認できていない。",
-        "last_checked": "2026-08-27"
+        "last_checked": "2026-08-27",
+        "source_id": "shokutakubin-shop-202608"
       },
       "first_time_campaign": {
         "campaign_id": "shokutakubin-first",

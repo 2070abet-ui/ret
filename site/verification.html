@@ -16,6 +16,7 @@
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "宅食図鑑", "url": "https://ret4853.2070abe.workers.dev", "description": "宅配食・宅配弁当サービスの料金・初回キャンペーン情報を公式確認データで比較。最新のキャンペーン情報を毎週更新。"}</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}</script>
 <style>
 :root { --primary:#e8552d; --text:#222; --bg:#faf7f5; --card:#fff; --muted:#666; }
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -47,8 +48,10 @@ th { background:#f5ede8; font-weight:bold; }
 .pros li, .cons li { margin-left:20px; font-size:14px; }
 footer.site { text-align:center; padding:24px 16px; color:var(--muted); font-size:12px; margin-top:32px; }
 ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
+.mobile-scroll-hint { display:none; }
 @media (max-width:640px) {
   table { min-width:480px; }
+  .mobile-scroll-hint { display:block; font-size:12px; color:var(--muted); margin:4px 0; }
 }
 </style>
 </head>
@@ -68,6 +71,7 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
     <h1>全11社の価格・送料・キャンペーン確認状況</h1>
     <p>各サービスの価格・送料・初回キャンペーンについて、公式一次情報でどこまで確認できているかを一覧にしています。確認済み・算出値の項目には出典リンクと確認日を付けています。未確認の項目には出典・確認日を表示していません（存在しない裏付けを示さないため）。</p>
     <p style="font-size:12px;color:#666;margin-top:8px;">表示の見方：<span class="vstatus vstatus-confirmed">確認済み</span>＝公式一次情報で確認／<span class="vstatus vstatus-derived">算出値</span>＝公式情報から計算／<span class="vstatus vstatus-pending">確認中</span>＝情報はあるが裏付け不十分／<span class="vstatus vstatus-uncollected">未収集</span>＝公式情報にまだ到達できていません</p>
+    <p class="mobile-scroll-hint">◀ 表がはみ出す場合は横にスクロールしてご覧ください ▶</p>
     <div class="card">
       <table>
         <tr><th>サービス</th><th>価格</th><th>送料</th><th>初回キャンペーン</th></tr>
@@ -75,7 +79,7 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
         <tr>
           <td><a href="/services/nosh.html"><strong>nosh（ナッシュ）</strong></a></td>
           <td>公式確認中 <span class="vstatus vstatus-pending">確認中</span></td>
-          <td><span class="vstatus vstatus-confirmed">確認済み</span></td>
+          <td><span class="vstatus vstatus-confirmed">確認済み</span> <a href="https://nosh.jp/shipping" target="_blank" rel="noopener nofollow" style="font-size:12px;">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-uncollected">未収集</span></td>
         </tr>
         <tr>
@@ -98,8 +102,8 @@ ul.feature-list li, ol.feature-list li { margin-left:20px; font-size:14px; }
         </tr>
         <tr>
           <td><a href="/services/shokutakubin.html"><strong>食宅便（日清医療食品）</strong></a></td>
-          <td>690円/食（2026-08-27時点） <span class="vstatus vstatus-derived">算出値</span></td>
-          <td><span class="vstatus vstatus-confirmed">確認済み</span></td>
+          <td>690円/食 <span class="vstatus vstatus-derived">算出値</span> <a href="http://shokutakubin.com/shop/default.aspx" target="_blank" rel="noopener nofollow" style="font-size:12px;">出典を見る（確認日: 2026-08-27）</a></td>
+          <td><span class="vstatus vstatus-confirmed">確認済み</span> <a href="http://shokutakubin.com/shop/default.aspx" target="_blank" rel="noopener nofollow" style="font-size:12px;">出典を見る（確認日: 2026-08-27）</a></td>
           <td><span class="vstatus vstatus-uncollected">未収集</span></td>
         </tr>
         <tr>

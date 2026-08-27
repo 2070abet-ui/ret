@@ -19,6 +19,7 @@ _DEFAULT_URL = "https://takushokuzukan.pages.dev"
 _site_config_path = CONFIG_DIR / "site.json"
 SITE_URL = os.environ.get("SITE_URL", _DEFAULT_URL)
 GSC_META = ""  # Google Search Console 所有権確認メタタグ
+GA4_MEASUREMENT_ID = ""  # GA4測定ID（config/site.jsonで未設定の間はGA4タグ自体を出力しない）
 OPERATOR = {"name": "", "email": "", "note": "個人運営"}
 if _site_config_path.exists():
     try:
@@ -26,6 +27,7 @@ if _site_config_path.exists():
         SITE_URL = _site_config.get("url", SITE_URL)
         SITE_NAME = _site_config.get("name", SITE_NAME)
         GSC_META = _site_config.get("search_console_meta", "")
+        GA4_MEASUREMENT_ID = _site_config.get("ga4_measurement_id", "")
         OPERATOR = _site_config.get("operator", OPERATOR)
     except (json.JSONDecodeError, OSError):
         pass

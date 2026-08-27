@@ -7,7 +7,7 @@ Batch1では既存ページの本文・タイトル・canonical・価格・キ�
 import base64
 import json
 
-from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR, LAST_VERIFIED_DATE
+from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR, LAST_VERIFIED_DATE, GA4_MEASUREMENT_ID
 
 
 def esc(s):
@@ -37,6 +37,13 @@ _VSTATUS_LABEL = {
 def vstatus_badge(status):
     label = _VSTATUS_LABEL.get(status, "確認中")
     return f'<span class="vstatus vstatus-{status}">{esc(label)}</span>'
+
+
+def mobile_scroll_hint():
+    """横幅の広い比較テーブルの直前に置く、モバイルでの横スクロール案内。
+    .mobile-scroll-hintはCSS側で640px以下でのみ表示される（デスクトップでは非表示）。
+    PHASE4_FINAL_DECISION.md 3章・PHASE4_COMPETITIVE_REAUDIT.md 1章（silver-choice.jp実測）。"""
+    return '<p class="mobile-scroll-hint">◀ 表がはみ出す場合は横にスクロールしてご覧ください ▶</p>'
 
 
 def vstatus_legend(link_to_dashboard=True):
@@ -190,9 +197,25 @@ def _meta_block(title, description, canonical_url):
 
 # ---------- 共通テンプレート ----------
 
+def _ga4_block():
+    """GA4計測タグ。測定ID（config/site.jsonのga4_measurement_id）が未設定の間は
+    外部スクリプトを読み込まず、dataLayerへのpushのみ行う安全なgtag()スタブだけを出力する。
+    これによりdiagnosis_start/diagnosis_completeの呼び出しが、GA4未設定の状態でも
+    gtag未定義エラーで壊れることなく（かつ二重計測にもならず）常に安全に動作する。
+    測定IDが設定されて初めて実際にGoogleへ送信が始まる。PHASE4_FINAL_DECISION.md 1章。"""
+    if not GA4_MEASUREMENT_ID:
+        return ("<script>window.dataLayer=window.dataLayer||[];"
+                "function gtag(){dataLayer.push(arguments);}</script>")
+    gid = esc(GA4_MEASUREMENT_ID)
+    return (f'<script async src="https://www.googletagmanager.com/gtag/js?id={gid}"></script>'
+            f"<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}"
+            f"gtag('js', new Date());gtag('config', '{gid}');</script>")
+
+
 def page_header(title, description, canonical_path):
     canonical_url = f"{SITE_URL}/{canonical_path}"
     meta_block = _meta_block(title, description, canonical_url)
+    ga4_block = _ga4_block()
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -203,6 +226,7 @@ def page_header(title, description, canonical_path):
 {GSC_META}
 <link rel="canonical" href="{canonical_url}">
 {meta_block}
+{ga4_block}
 <style>
 :root {{ --primary:#e8552d; --text:#222; --bg:#faf7f5; --card:#fff; --muted:#666; }}
 * {{ box-sizing:border-box; margin:0; padding:0; }}
@@ -234,8 +258,10 @@ th {{ background:#f5ede8; font-weight:bold; }}
 .pros li, .cons li {{ margin-left:20px; font-size:14px; }}
 footer.site {{ text-align:center; padding:24px 16px; color:var(--muted); font-size:12px; margin-top:32px; }}
 ul.feature-list li, ol.feature-list li {{ margin-left:20px; font-size:14px; }}
+.mobile-scroll-hint {{ display:none; }}
 @media (max-width:640px) {{
   table {{ min-width:480px; }}
+  .mobile-scroll-hint {{ display:block; font-size:12px; color:var(--muted); margin:4px 0; }}
 }}
 </style>
 </head>
@@ -467,6 +493,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None):
         <label><input type="checkbox" value="日配" onchange="filterRankingByMealform()"> 日配</label>
       </div>
     </div>
+    {mobile_scroll_hint()}
     <div class="card">
       <table id="ranking-table">
         <tr><th>サービス</th><th>最安料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
@@ -559,6 +586,7 @@ def build_comparison_page(service_a, service_b, aff_links):
     <h1>{esc(a_name)}と{esc(b_name)}を徹底比較</h1>
     <p>どちらにするか迷っている人向けに、料金・特徴・初回キャンペーンを比較します。（2026年8月時点の情報）</p>
 
+    {mobile_scroll_hint()}
     <div class="card">
       <table>
         <tr><th></th><th>{esc(a_name)}</th><th>{esc(b_name)}</th></tr>
@@ -650,6 +678,14 @@ def build_diagnosis_tool(services, aff_links):
 
     <script>
     const SERVICES = {svc_json};
+    // GA4計測（診断ツール専用。ページ遷移が無いGA4拡張計測ではカバーできないためこの2つのみ独自実装する。
+    // PHASE4_FINAL_DECISION.md 1章）。診断開始は初回のチェック操作でのみ1回発火（多重発火防止）。
+    let _diagStarted = false;
+    document.querySelectorAll('#goals input, #mealforms input').forEach(el => {{
+      el.addEventListener('change', () => {{
+        if (!_diagStarted) {{ _diagStarted = true; gtag('event', 'diagnosis_start'); }}
+      }});
+    }});
     function runDiag() {{
       const goals = [...document.querySelectorAll('#goals input:checked')].map(x => x.value);
       const mealForms = [...document.querySelectorAll('#mealforms input:checked')].map(x => x.value);
@@ -672,6 +708,8 @@ def build_diagnosis_tool(services, aff_links):
             for (const g of goals) {{ if (pool.includes(g)) score++; }}
             return {{ ...s, score }};
           }}).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
+      // 診断完了（「please select」の早期returnケースでは発火しない＝実際に診断を実行した回数のみ計測）
+      gtag('event', 'diagnosis_complete', {{ goal_count: goals.length, mealform_count: mealForms.length, result_count: scored.length }});
       let html = '<h2>あなたにおすすめのサービス</h2>';
       if (scored.length === 0) {{
         html += '<p>条件に合うサービスがまだ登録されていません。近日中に追加予定です。</p>';
@@ -959,6 +997,7 @@ def build_verification_dashboard(services, shipping_by_id, sources_by_id):
     <h1>全11社の価格・送料・キャンペーン確認状況</h1>
     <p>各サービスの価格・送料・初回キャンペーンについて、公式一次情報でどこまで確認できているかを一覧にしています。確認済み・算出値の項目には出典リンクと確認日を付けています。未確認の項目には出典・確認日を表示していません（存在しない裏付けを示さないため）。</p>
     {vstatus_legend(link_to_dashboard=False)}
+    {mobile_scroll_hint()}
     <div class="card">
       <table>
         <tr><th>サービス</th><th>価格</th><th>送料</th><th>初回キャンペーン</th></tr>
