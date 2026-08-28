@@ -34,6 +34,8 @@ docs/ は「現行仕様」「実装記録」「監査記録」「過去資料�
 | `REPOSITORY_CONTEXT_PHASE3_AUDIT.md` | context最適化Phase3追加監査 |
 | `URL_NORMALIZATION_AUDIT_2026_08_28.md` | 全32ページのURL正規化監査。canonical/sitemap（`.html`付き）が実サーバー（Cloudflare `html_handling=auto-trailing-slash`）では全ページ307リダイレクトすると判明、P1。推奨正規URLは拡張子なし、修正箇所を特定済み |
 | `URL_NORMALIZATION_IMPLEMENTATION_2026_08_28.md` | 上記監査に基づく実装記録。canonical/sitemap/内部リンク/detail_url/比較URL生成を拡張子なしに統一（`templates.py`・`generators.py`のみ変更、data/config差分ゼロ）。build/validate/Playwright実画面確認まで完了、**デプロイは未実施** |
+| `COMPETITOR_UX_FUNNEL_AUDIT_2026_08_28.md` | 宅食グルメ・マイベスト等4競合との実ブラウザ比較による購買意思決定ファネル監査。最重要所見は比較一覧の初回/通常価格が同一視覚重みで混在し誤読を招く問題（新規）。A/B/C分類・Top10問題・改善優先順位を提示。data/model・ランキング化は変更提案なし、未実装 |
+| `PRICE_FAIRNESS_UI_FIX_FINAL_AUDIT_2026_08_28.md` | 上記監査に基づき`templates.py`のみで実装した価格公平性UI修正（初回/お試し価格の強調表示＋「表示価格が安い順」並び替え）のREAD ONLY最終監査。総合判定CONDITIONAL（実用上問題なし、軽微な残存リスクのみ）。凍結可と判定 |
 
 ## HISTORY（過去資料 / 原則読まない）
 - `AFFILIATE_MARKET_ENTRY_RESEARCH_2026_08.md` / `AFFILIATE_MARKET_ENTRY_SHORTLIST_2026_08.md` … 市場調査・ショートリスト

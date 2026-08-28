@@ -202,6 +202,12 @@ tr:last-child td { border-bottom:none; }
 /* 長い基準ラベル（例：ツクリオ「1人前あたり換算価格（当サイト算出）」）がモバイル幅で
    横に突き抜けないよう、折り返しを許可し丸角を控えめにする（15章：横スクロール禁止方針）。 */
 .price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:10px; padding:1px 8px; white-space:normal; max-width:100%; line-height:1.4; }
+/* 初回/お試し価格は「継続利用時の実質価格ではない」ため、通常の.price-basisより
+   高コントラストな塗りつぶしで区別する（COMPETITOR_UX_FUNNEL_AUDIT_2026_08_28.md：
+   通常価格と初回/お試し価格が同一の視覚重量で並び、ユーザーが誤読する問題への対処）。
+   --color-primaryの塗り潰しは.checks label:has(input:checked)と同じトーンを再利用し、
+   新規の色トークンは追加しない。--status-*系（確認状態バッジ）とは別軸のため使わない。 */
+.price-basis-onetime { background:var(--color-primary); color:#fff; border-color:var(--color-primary); font-weight:700; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
 .source-link:hover { color:var(--color-primary); }
 .price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
@@ -660,6 +666,11 @@ _BASIS_LABELS = {
 _BASIS_VALID = set(_BASIS_LABELS)
 _STATUS_VALID = {"confirmed", "derived", "pending", "uncollected"}
 
+# 初回/お試しは「継続利用時の実質価格ではない」ため、比較一覧等で通常価格と同じ
+# 視覚的重みで並ぶと誤読を招く（COMPETITOR_UX_FUNNEL_AUDIT_2026_08_28.md）。
+# alacarte（継続的な単価）・bulk（継続利用の数量割引）は対象外。
+_ONE_TIME_BASES = {"initial", "trial"}
+
 
 def _pricing_of(service):
     """サービス1件からpricingブロックを返す。pricingが無ければ旧price_planを
@@ -764,6 +775,23 @@ def _display_label(pricing):
     return ""
 
 
+def _display_basis(pricing):
+    """display価格ポイントのbasis（regular/initial/trial等）。無ければNone。"""
+    dp = _display_point(pricing)
+    return dp.get("basis") if dp else None
+
+
+def _price_label_html(pricing):
+    """価格の基準ラベル（初回/通常等）をspanで返す。initial/trial（初回限定の
+    価格）は通常より高コントラストな装飾（price-basis-onetime）を付け、
+    価格の数字と見た目の重みを合わせて誤読を防ぐ（COMPETITOR_UX_FUNNEL_AUDIT_2026_08_28.md）。"""
+    label = _display_label(pricing)
+    if not label:
+        return ""
+    cls = "price-basis price-basis-onetime" if _display_basis(pricing) in _ONE_TIME_BASES else "price-basis"
+    return f'<span class="{cls}">{esc(label)}</span>'
+
+
 def _price_point_value_text(point):
     """価格ポイントの値テキスト（スカラー/レンジ/未確認）。"""
     if not point:
@@ -821,9 +849,10 @@ def price_cell_html(pricing, sources_by_id=None):
     fig, dp = _display_figure_html(pricing, sources_by_id)
     if dp is None:
         return f'{fig} {badge}'
-    label = _display_label(pricing)
-    label_html = f'<span class="price-basis">{esc(label)}</span>' if label else ""
+    label_html = _price_label_html(pricing)
     meta = _price_source_meta(pricing, stat, sources_by_id)
+    if _display_basis(pricing) in _ONE_TIME_BASES:
+        return f"{label_html} {fig} {badge}{meta}"
     return f"{fig} {label_html} {badge}{meta}"
 
 
@@ -839,8 +868,9 @@ def price_figure_html(pricing, sources_by_id=None):
     meta = f'<div class="svc-card-meta">{meta_text}</div>' if meta_text else ""
     if dp is None:
         return f'<div class="svc-card-price-row">{fig} {badge}</div>{meta}'
-    label = _display_label(pricing)
-    label_html = f'<span class="price-basis">{esc(label)}</span>' if label else ""
+    label_html = _price_label_html(pricing)
+    if _display_basis(pricing) in _ONE_TIME_BASES:
+        return f'<div class="svc-card-price-row">{label_html} {fig} {badge}</div>{meta}'
     return f'<div class="svc-card-price-row">{fig} {label_html} {badge}</div>{meta}'
 
 
@@ -853,8 +883,9 @@ def _price_inline_html(pricing, sources_by_id=None):
     fig, dp = _display_figure_html(pricing, sources_by_id)
     if dp is None:
         return f'{fig} {badge}'
-    label = _display_label(pricing)
-    label_html = f'<span class="price-basis">{esc(label)}</span>' if label else ""
+    label_html = _price_label_html(pricing)
+    if _display_basis(pricing) in _ONE_TIME_BASES:
+        return f'{label_html} {fig} {badge}'
     return f'{fig} {label_html} {badge}'
 
 
@@ -1319,6 +1350,14 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     cards = []
     for svc in services:
         pricing = _pricing_of(svc)
+        # 「表示価格が安い順」並び替え用のソートキー（Fix2）。表示中の数字（_display_figure_html
+        # と同じ値）をそのまま使い、新たな正規化・算出は行わない。未確認（dpなし/val・lo共に無し）
+        # は属性を出さず、並び替え時は常に末尾（元の相対順序を保ったまま）に置かれる。
+        _dp = _display_point(pricing)
+        _price_val = _dp.get("price_per_meal_yen") if _dp else None
+        _price_lo = _dp.get("min_per_meal_yen") if _dp else None
+        sort_price = _price_val if _price_val is not None else _price_lo
+        price_attr = f' data-price="{sort_price}"' if sort_price is not None else ""
         camp_txt = confirmed_camp.get(svc["id"], "公式確認中")
         if svc["id"] in confirmed_camp:
             camp_status = "confirmed"
@@ -1351,7 +1390,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         # デスクトップ：テーブル行（9.4節。価格セルだけ--price-figureで強調）
         price_cell = _price_inline_html(pricing, sources_by_id)
         rows.append(f"""
-        <tr data-mealform="{mealform_attr}">
+        <tr data-mealform="{mealform_attr}"{price_attr}>
           <td><a href="/services/{svc['id']}"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}{cons_line_table}</td>
           <td>{price_cell}</td>
           <td>{esc(camp_txt)} {camp_badge}</td>
@@ -1368,7 +1407,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         meal_note = _meal_form_note(svc.get("meal_form"))
         mealform_card_txt = f"{mealform_txt}・{esc(meal_note)}" if meal_note else mealform_txt
         cards.append(f"""
-        <div class="svc-card" data-mealform="{mealform_attr}">
+        <div class="svc-card" data-mealform="{mealform_attr}"{price_attr}>
           <div class="svc-card-header">
             <h3 class="svc-card-name"><a href="/services/{svc['id']}">{esc(svc['name'])}</a></h3>
             {full_badge}
@@ -1410,6 +1449,13 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         <label><input type="checkbox" value="日配" onchange="filterRankingByMealform()"> 日配</label>
       </div>
     </div>
+    <div class="card">
+      <h3 style="margin-top:0;">表示価格が安い順に並べ替える（任意）</h3>
+      <div class="checks">
+        <label><input type="checkbox" id="sort-by-price" onchange="sortRankingByPrice()"> 表示価格が安い順</label>
+      </div>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行のラベルでご確認ください）。送料等を含めた正規化はしていません。</p>
+    </div>
     {vstatus_legend(link_to_dashboard=True)}
     <div class="ranking-desktop">
       <div class="card">
@@ -1442,6 +1488,31 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         const show = checked.length === 0 || forms.some(f => checked.includes(f));
         el.style.display = show ? '' : 'none';
       }});
+    }}
+    // 「表示価格が安い順」並び替え（Fix2）。当サイトは点数・順位付けを行わないため、
+    // これはユーザー起点・既定オフの並び替えであり、評価やランキングではない。
+    // 元の並び順（表示中の全要素）をページ読み込み時に1回だけ記録し、解除時に復元する。
+    const originalRows = [...document.querySelectorAll('#ranking-table tr[data-mealform]')];
+    const originalCards = [...document.querySelectorAll('.ranking-mobile .svc-card[data-mealform]')];
+    function reorderTo(elements) {{
+      // table直下の裸<tr>はブラウザが暗黙のtbodyを生成するため、table自体にでは
+      // なく各要素のparentNodeにappendChildする（実際の親がどちらでも正しく動く）。
+      elements.forEach(el => el.parentNode.appendChild(el));
+    }}
+    function sortRankingByPrice() {{
+      const asc = document.getElementById('sort-by-price').checked;
+      if (!asc) {{
+        reorderTo(originalRows);
+        reorderTo(originalCards);
+        return;
+      }}
+      const byPrice = (a, b) => {{
+        const pa = a.dataset.price === undefined ? Infinity : parseFloat(a.dataset.price);
+        const pb = b.dataset.price === undefined ? Infinity : parseFloat(b.dataset.price);
+        return pa - pb;
+      }};
+      reorderTo([...originalRows].sort(byPrice));
+      reorderTo([...originalCards].sort(byPrice));
     }}
     </script>
     """
