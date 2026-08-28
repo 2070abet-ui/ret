@@ -36,6 +36,8 @@ docs/ は「現行仕様」「実装記録」「監査記録」「過去資料�
 | `URL_NORMALIZATION_IMPLEMENTATION_2026_08_28.md` | 上記監査に基づく実装記録。canonical/sitemap/内部リンク/detail_url/比較URL生成を拡張子なしに統一（`templates.py`・`generators.py`のみ変更、data/config差分ゼロ）。build/validate/Playwright実画面確認まで完了、**デプロイは未実施** |
 | `COMPETITOR_UX_FUNNEL_AUDIT_2026_08_28.md` | 宅食グルメ・マイベスト等4競合との実ブラウザ比較による購買意思決定ファネル監査。最重要所見は比較一覧の初回/通常価格が同一視覚重みで混在し誤読を招く問題（新規）。A/B/C分類・Top10問題・改善優先順位を提示。data/model・ランキング化は変更提案なし、未実装 |
 | `PRICE_FAIRNESS_UI_FIX_FINAL_AUDIT_2026_08_28.md` | 上記監査に基づき`templates.py`のみで実装した価格公平性UI修正（初回/お試し価格の強調表示＋「表示価格が安い順」並び替え）のREAD ONLY最終監査。総合判定CONDITIONAL（実用上問題なし、軽微な残存リスクのみ）。凍結可と判定 |
+| `VISUAL_DESIGN_SYSTEM_AUDIT_2026_08_28.md` | UIビジュアルデザイン（色・余白・タイポグラフィ・カード・情報密度）のREAD ONLY監査。kakaku.com/mybest.com/linear.app/oisix.comを実機調査し、写真が使えない制約下での代替案（大きな数字・線アイコン・色帯ゾーン）と、比較表の数字揃え・sticky thead・比較ページ結論の箇条書き化などをP1〜P3で提案。新色・写真・★評価は提案せず、デザインシステム標準を明文化 |
+| `VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md` | 上記監査の8項目（P1〜P3）を実装計画に落とし込んだドキュメント。監査原文の誤り2件（`meal_form_categories()`の循環import制約、`.pros-highlight`誤用）を実ファイル確認で訂正。各項目に現状箇所・変更内容・変更しないもの・UI仕様・PC/モバイル影響・実装順序・検証方法・リスクを明記し、Phase完了時の確認事項を定義。**全8項目実装済み**（`tools/sitegen/templates.py`・`generators.py`、data/config差分ゼロ、PC/モバイルPlaywright確認済み） |
 
 ## HISTORY（過去資料 / 原則読まない）
 - `AFFILIATE_MARKET_ENTRY_RESEARCH_2026_08.md` / `AFFILIATE_MARKET_ENTRY_SHORTLIST_2026_08.md` … 市場調査・ショートリスト

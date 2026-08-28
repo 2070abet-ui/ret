@@ -29,6 +29,33 @@ def _meal_form_note(meal_form):
     return note or None
 
 
+def meal_form_categories(meal_form_text):
+    """自由文のmeal_form（例:「冷凍（レンジで温めるだけ）」「冷凍 / 冷蔵」「日配（保冷ボックス）」）を
+    診断ツールで絞り込める3カテゴリ（冷凍/冷蔵/日配）に正規化する。新規データ収集は不要
+    （既存のmeal_formフィールドの文字列判定のみ）。PHASE2_IMPLEMENTATION_PLAN.md 8.1章。
+    generators.pyから移設（VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目5）。
+    generators.pyがtemplatesをimportする構造のため、templates側から個別のtag文字列を
+    同じ基準で判定する用途にも流用する（tags配列の要素をmeal_form_textの代わりに渡すだけで
+    「保存方法を表す文字列か」を同一ロジックで判定できる）。"""
+    text = meal_form_text or ""
+    cats = []
+    if "冷凍" in text:
+        cats.append("冷凍")
+    if "冷蔵" in text:
+        cats.append("冷蔵")
+    if "日配" in text:
+        cats.append("日配")
+    return cats
+
+
+def _tag_html(t):
+    """タグを「保存方法（冷凍/冷蔵/日配）」とそれ以外の特徴タグとで視覚的に区別する
+    （VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目5）。tags配列の文字列自体を
+    meal_form_categories()の判定にかけるだけで、新規データ・新規スキーマは不要。"""
+    cls = "tag tag-storage" if meal_form_categories(t) else "tag"
+    return f'<span class="{cls}">{esc(t)}</span>'
+
+
 # ---------- デザインシステム（REDESIGN_UI_SPEC.md 2章〜16章）----------
 # 既存データ・生成ロジックには一切触れず、UI層（CSS）のみをトークン体系へ再構築する。
 # 値の数値・検証状態の意味は変更しない（confirmed/derived/pending/uncollected は
@@ -123,11 +150,24 @@ nav.main a:hover { color:#fff; border-bottom-color:rgba(255,255,255,.85); }
   box-shadow:var(--shadow-sm);
   overflow-x:auto;
 }
+/* 詳細ページの脇役カード（基本情報・初回キャンペーン）のみに付与し、主役カード
+  （こんな方におすすめ＝.panel-accent）を相対的に際立たせる（VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目6）。
+   .card自体は変更せず、新規トークンも追加しない。 */
+.card-quiet { box-shadow:none; background:transparent; border-color:var(--color-border); }
 .panel-accent { background:var(--color-surface-alt); border:var(--border-default); }
 table { width:100%; border-collapse:collapse; background:var(--color-surface); border-radius:var(--radius-md); overflow:hidden; font-size:14px; }
 th, td { padding:var(--space-3) var(--space-3); text-align:left; border-bottom:1px solid var(--color-border); vertical-align:top; }
 th { background:var(--color-surface-alt); font-weight:700; font-size:13px; white-space:nowrap; }
 tr:last-child td { border-bottom:none; }
+/* 比較一覧デスクトップ表のみ：価格セルの数字を右寄せにし縦の比較を容易にする
+   （VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目1）。ranking専用スコープで、
+   比較ページ等の他の価格セルには影響しない。 */
+#ranking-table td.td-price { text-align:right; }
+/* sticky thead（VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目2）は実装・実機検証済み。
+   .cardのoverflow-x:autoによりoverflow-yも暗黙にautoとなり、position:stickyの基準が
+   ビューポートではなく.card自身になるため実際には効かないことをPlaywrightで確認し、
+   計画書の想定どおりCSSを撤回した。<thead>/<tbody>構造自体はマークアップの整理として維持する
+   （build_ranking_pageのJSソートはparentNode.appendChildに依存しており明示的tbodyでも壊れない）。 */
 
 /* ---------- ボタン（10章） ---------- */
 .btn-primary {
@@ -168,6 +208,10 @@ tr:last-child td { border-bottom:none; }
   padding:2px var(--space-3); border-radius:999px;
   font:var(--text-micro); letter-spacing:.02em; margin:2px 2px 2px 0;
 }
+/* 保存方法（冷凍/冷蔵/日配）タグをその他の特徴タグと視覚的に区別する
+   （VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目5）。新色は追加せず
+   既存の--color-border-strong/--color-text-mutedのoutlineトーンのみ使用する。 */
+.tag-storage { background:transparent; border:1px solid var(--color-border-strong); color:var(--color-text-muted); }
 .vstatus {
   display:inline-flex; align-items:center; gap:3px;
   padding:2px 8px; border-radius:999px;
@@ -190,7 +234,7 @@ tr:last-child td { border-bottom:none; }
 .aff-note { flex-basis:100%; text-align:center; font-size:11px; opacity:.8; font-weight:400; margin-top:2px; }
 
 /* ---------- 価格表示（4章・9章） ---------- */
-.price-figure { font:var(--price-figure); color:var(--color-text); white-space:nowrap; }
+.price-figure { font:var(--price-figure); color:var(--color-text); white-space:nowrap; font-variant-numeric:tabular-nums; }
 .price-unit { font-size:13px; font-weight:400; color:var(--color-text-muted); margin-left:2px; }
 .price-meta { font:var(--text-meta); color:var(--color-text-faint); }
 /* 行の高さの統一は.svc-card-price-row{min-height}側で担保済み（285行目付近）のため、
@@ -1233,7 +1277,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     # 良い点[0]を「体験の一言」として視覚的に区別し、確信形成段階での具体イメージを後押しする
     # （食欲喚起UI監査§11.4 提案3）。文言はそのまま、後段のpros一覧とは罫線のみで区別する。空なら非表示。
     pros_highlight_html = f'<p class="pros-highlight">{esc(pros_list[0])}</p>' if pros_list else ""
-    tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service.get("tags", []))
+    tags = "".join(_tag_html(t) for t in service.get("tags", []))
 
     # 価格はdisplay価格を主表示し、全価格ポイントを一覧表示する（--price-figure、12章）。
     # 未確認の値は小さく控えめに。
@@ -1259,7 +1303,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     </div>
     {vstatus_legend(link_to_dashboard=True)}
 
-    <div class="card">
+    <div class="card card-quiet">
       <h2>基本情報</h2>
       <!-- 「対象」（向いている人）は上部の「こんな方におすすめ」カードとFAQで既に提示済みのため
            ここでは重複させない（購買意思決定ファネル横断監査 提案3）。このテーブルは
@@ -1271,7 +1315,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       </table>
     </div>
 
-    <div class="card">
+    <div class="card card-quiet">
       <h2>初回キャンペーン・お試し</h2>
       <p>{esc(first_camp.get("summary", "公式確認中"))} {vstatus_badge(_campaign_status(first_camp))}{source_link(sources_by_id, first_camp.get("source_id"))}</p>
       <p class="price-meta">{esc(first_camp.get("detail", ""))}</p>
@@ -1366,7 +1410,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         else:
             camp_status = "uncollected"
         camp_badge = vstatus_badge(camp_status)
-        tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
+        tags = "".join(_tag_html(t) for t in svc.get("tags", [])[:3])
         # 気になる点（1例）。スクリーニング段階で「合わない理由」を判断できるようにする
         # （UI_DESIGN_PRINCIPLES.md 1章。既存consフィールドの先頭1件のみを事実表示として使う。
         # 「唯一の欠点」と誤読されないよう「（1例）」を明示し、新規データ・評価は追加しない）。
@@ -1392,7 +1436,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         rows.append(f"""
         <tr data-mealform="{mealform_attr}"{price_attr}>
           <td><a href="/services/{svc['id']}"><strong>{esc(svc['name'])}</strong></a>{full_badge}<br>{tags}{cons_line_table}</td>
-          <td>{price_cell}</td>
+          <td class="td-price">{price_cell}</td>
           <td>{esc(camp_txt)} {camp_badge}</td>
           <td>{mealform_txt}</td>
           <td>{', '.join(svc.get('target', []))}</td>
@@ -1460,8 +1504,8 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     <div class="ranking-desktop">
       <div class="card">
         <table id="ranking-table">
-          <tr><th>サービス</th><th>1食あたりの料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr>
-          {''.join(rows)}
+          <thead><tr><th>サービス</th><th>1食あたりの料金</th><th>初回キャンペーン</th><th>保存方法</th><th>向いている人</th><th></th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
         </table>
       </div>
     </div>
@@ -1599,14 +1643,16 @@ def _comparison_target_diff_html(service_a, service_b):
     only_a = [t for t in a_list if t not in b_set]
     only_b = [t for t in b_list if t not in a_set]
     common = [t for t in a_list if t in b_set]
-    parts = []
+    items = []
     if only_a:
-        parts.append(f"<p><strong>{esc(service_a['name'])}が向いている人：</strong>{esc('・'.join(only_a))}</p>")
+        items.append(f"<li><strong>{esc(service_a['name'])}が向いている人：</strong>{esc('・'.join(only_a))}</li>")
     if only_b:
-        parts.append(f"<p><strong>{esc(service_b['name'])}が向いている人：</strong>{esc('・'.join(only_b))}</p>")
+        items.append(f"<li><strong>{esc(service_b['name'])}が向いている人：</strong>{esc('・'.join(only_b))}</li>")
     if common:
-        parts.append(f"<p><strong>どちらでも当てはまる人：</strong>{esc('・'.join(common))}</p>")
-    return "".join(parts)
+        items.append(f"<li><strong>どちらでも当てはまる人：</strong>{esc('・'.join(common))}</li>")
+    if not items:
+        return ""
+    return f'<ul class="feature-list">{"".join(items)}</ul>'
 
 
 def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
@@ -1618,8 +1664,8 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     a_price = _price_inline_html(_pricing_of(service_a), sources_by_id)
     b_price = _price_inline_html(_pricing_of(service_b), sources_by_id)
 
-    a_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_a.get("tags", []))
-    b_tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in service_b.get("tags", []))
+    a_tags = "".join(_tag_html(t) for t in service_a.get("tags", []))
+    b_tags = "".join(_tag_html(t) for t in service_b.get("tags", []))
 
     price_diff_html = _comparison_price_diff_html(service_a, service_b)
     target_diff_html = _comparison_target_diff_html(service_a, service_b)
@@ -1715,6 +1761,7 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
     html += f"""
     <h1>宅配食 診断ツール</h1>
     <p>以下の条件を選ぶと、あなたに合いそうな宅配食サービスを表示します。</p>
+    <p class="price-meta">目的・保存方法を選ぶだけで、条件に近い上位3社をすぐに表示します。</p>
 
     <div class="card">
       <h3>目的を選んでください（複数可）</h3>
@@ -1802,15 +1849,18 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
           const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
           const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
           const link = url ? `<a class="btn-secondary" href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span class="btn-disabled">公式確認中</span>';
-          const reason = s.matchedGoals && s.matchedGoals.length > 0 ? s.matchedGoals.join('・') : '保存方法の条件に一致';
-          const tags = (s.tags || []).slice(0, 3).map(t => `<span class="tag">${{t}}</span>`).join('');
+          const isStorageTag = t => t.includes('冷凍') || t.includes('冷蔵') || t.includes('日配');
+          const tags = (s.tags || []).slice(0, 3).map(t => `<span class="tag${{isStorageTag(t) ? ' tag-storage' : ''}}">${{t}}</span>`).join('');
+          const matchTags = (s.matchedGoals && s.matchedGoals.length > 0)
+            ? s.matchedGoals.map(g => `<span class="tag">${{g}}</span>`).join('')
+            : '<span class="tag">保存方法の条件に一致</span>';
           html += `<div class="svc-card">
             <div class="svc-card-header">
               <h3 class="svc-card-name">${{s.name}}</h3>
             </div>
             <div class="svc-card-tags">${{tags}}</div>
             ${{s.price_html || ''}}
-            <div class="svc-card-meta">一致した条件：${{reason}}</div>
+            <div class="svc-card-meta">一致した条件：${{matchTags}}</div>
             <div class="svc-card-footer">${{detail}} ${{link}}</div>
           </div>`;
         }}
@@ -1872,7 +1922,7 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     # 並び替え・フィルタ・スコアリングは一切行わない（評価・ランキングの新設ではない）。
     # 1〜4枚目=常時表示／5〜6枚目=PC(900px以上)のみ常時表示／7枚目以降=<details>で段階開示。
     def _svc_card_html(svc, extra_class=""):
-        tags = "".join(f'<span class="tag">{esc(t)}</span>' for t in svc.get("tags", [])[:3])
+        tags = "".join(_tag_html(t) for t in svc.get("tags", [])[:3])
         # 「誰向けか」を価格の次に提示する（食欲喚起UI監査§11.4 提案1。既存targetをそのまま使用、
         # 新規文言は作らない。空なら非表示）。1行クランプで密度を下げる（文言・データは無変更）。
         target_txt = "・".join(esc(t) for t in svc.get("target", []) if t)
@@ -1929,6 +1979,9 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     <section class="hero">
       <h1>宅配食、どれを選べばいい？</h1>
       <p class="hero-lead">{hero_lead}</p>
+      <div class="trust-stat" style="margin:0 0 var(--space-3);">
+        <span class="trust-figure">{num_services}</span><span class="trust-label">社の宅配食サービスを掲載</span>
+      </div>
       <div class="hero-actions">
         <a class="btn-primary" href="/tool/diagnosis">自分に合う宅配食を探す →</a>
         <a class="hero-sub-cta" href="/ranking">{num_services}社を比較する →</a>

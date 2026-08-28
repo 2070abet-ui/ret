@@ -11,21 +11,6 @@ def _tag_set(svc):
     return set(svc.get("tags", [])) | set(svc.get("target", []))
 
 
-def meal_form_categories(meal_form_text):
-    """自由文のmeal_form（例:「冷凍（レンジで温めるだけ）」「冷凍 / 冷蔵」「日配（保冷ボックス）」）を
-    診断ツールで絞り込める3カテゴリ（冷凍/冷蔵/日配）に正規化する。新規データ収集は不要
-    （既存のmeal_formフィールドの文字列判定のみ）。PHASE2_IMPLEMENTATION_PLAN.md 8.1章。"""
-    text = meal_form_text or ""
-    cats = []
-    if "冷凍" in text:
-        cats.append("冷凍")
-    if "冷蔵" in text:
-        cats.append("冷蔵")
-    if "日配" in text:
-        cats.append("日配")
-    return cats
-
-
 # 目的別導線カード（TOP・ranking.htmlで共有するコンポーネント）の定義。
 # 既存のtags/target文字列に対する部分一致のみで、新規データフィールドは追加しない。
 # 「減塩」は表記ゆれ（減塩／塩分控えめ／塩分制限）が既存データに複数存在するため、
@@ -136,7 +121,7 @@ def main():
     # meal_formを正規化した3カテゴリ（冷凍/冷蔵/日配）を追加した複製リスト（元のservicesは変更しない）。
     # 診断ツールとranking.htmlの保存方法フィルタで同じ正規化ロジックを共有する
     # （PHASE3_IMPLEMENTATION_PLAN.md 2章：新しいmatching engineは作らず既存ロジックを再利用）。
-    services_with_mealform = [dict(s, meal_form_categories=meal_form_categories(s.get("meal_form"))) for s in services]
+    services_with_mealform = [dict(s, meal_form_categories=templates.meal_form_categories(s.get("meal_form"))) for s in services]
     purpose_matches = compute_purpose_matches(services)
     coverage = compute_verification_coverage(services, shipping_by_id)
     fully_verified_ids = compute_fully_verified_ids(services, shipping_by_id)
