@@ -532,6 +532,16 @@ tr:last-child td { border-bottom:none; }
 .faq-body { padding:0 var(--space-4) var(--space-3); font:var(--text-body-sm); color:var(--color-text-muted); }
 .faq-body p { margin-bottom:0; }
 
+/* ---------- 価格根拠アコーディオン（P2-7） ---------- */
+/* .faq-item はカード風の重い装飾のため、価格テーブル直下の注記1行には過剰。
+   .svc-moreと同じくJS不要のネイティブdetailsのみを使う軽量版。 */
+.price-notes { margin:var(--space-2) 0 0; border:none; }
+.price-notes summary { cursor:pointer; list-style:none; font:var(--text-meta); color:var(--color-text-muted); }
+.price-notes summary::-webkit-details-marker { display:none; }
+.price-notes summary::after { content:" ▾"; }
+.price-notes[open] summary::after { content:" ▴"; }
+.price-notes p.price-meta { margin-top:var(--space-2); }
+
 /* ---------- pros/cons / feature-list ---------- */
 .pros-cons { display:flex; gap:var(--space-4); flex-wrap:wrap; }
 .pros-cons > div { flex:1; min-width:240px; }
@@ -1068,7 +1078,10 @@ def pricing_detail_html(pricing, sources_by_id=None):
           {''.join(rows)}
         </table>
       </div>
-      <p class="price-meta">※★代表は比較一覧に表示する価格です。{note}</p>
+      <details class="price-notes">
+        <summary>価格の根拠を見る</summary>
+        <p class="price-meta">※★代表は比較一覧に表示する価格です。{note}</p>
+      </details>
     </div>"""
 
 
@@ -1306,30 +1319,35 @@ def service_recommend_block(service):
         return ""
     items = "".join(f"<li>{esc(t)}</li>" for t in target)
     return f"""
-    <div class="card panel-accent">
+    <div class="card panel-accent" id="recommend">
       <h2>こんな方におすすめ</h2>
       <ul class="feature-list">{items}</ul>
     </div>"""
 
 
 def service_faq_block(service, shipping_row):
-    """よくある質問。既存のtarget/cancellation_note/shipping.notesをQ&A形式に
-    再構成するだけで、新規データ収集は行わない。FINAL_REDESIGN_SPEC.md 8章。
-    見た目を<details>/<summary>による開閉式アコーディオンへ変更（JS追加なし・内容は無変更）。
+    """よくある質問。表示するかどうかの判定はtarget/cancellation_note/shipping.notesの
+    有無を使うが、回答本文は同じページ内で既に表示済みの本文（#recommend／
+    #cancellation-shipping）への短い参照リンクとし、全文の逐語再掲はしない
+    （文言重複の解消。FINAL_REDESIGN_SPEC.md 8章）。
+    見た目は<details>/<summary>による開閉式アコーディオンのまま変更しない。
     REDESIGN_UI_SPEC.md 12章・15.3節（モバイルの縦スクロール圧縮）。"""
     qa = []
     target_txt = "・".join(service.get("target", []))
     if target_txt:
-        qa.append(("どんな人に向いていますか？", f"{target_txt}などのニーズに向いています。詳しくは上記「こんな方におすすめ」もご参照ください。"))
+        qa.append(("どんな人に向いていますか？",
+                   '向いている人・向いていない人の具体例は、<a href="#recommend">上記「こんな方におすすめ」</a>にまとめています。'))
     cancel = service.get("cancellation_note")
     if cancel:
-        qa.append(("解約・スキップはいつまでにすればいいですか？", cancel))
+        qa.append(("解約・スキップはいつまでにすればいいですか？",
+                   '解約・スキップの条件は、<a href="#cancellation-shipping">上記「解約・送料について」</a>に記載しています。'))
     if shipping_row and shipping_row.get("notes"):
-        qa.append(("送料はいくらですか？地域で変わりますか？", shipping_row["notes"]))
+        qa.append(("送料はいくらですか？地域で変わりますか？",
+                   '送料の金額や地域差は、<a href="#cancellation-shipping">上記「解約・送料について」</a>をご確認ください。'))
     if not qa:
         return ""
     body = "".join(
-        f'<details class="faq-item"><summary>{esc(q)}</summary><div class="faq-body"><p>{esc(a)}</p></div></details>'
+        f'<details class="faq-item"><summary>{esc(q)}</summary><div class="faq-body"><p>{a}</p></div></details>'
         for q, a in qa
     )
     return f"""
@@ -1420,7 +1438,7 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
       <div class="svc-card-footer" style="margin-top:12px;">{aff_link(aff_links, s_id, label="公式サイトでキャンペーンを確認", cls="btn-secondary")}</div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cancellation-shipping">
       <h2>解約・送料について</h2>
       {shipping_html}
       <p>{esc(service.get("cancellation_note", "公式確認中（公式サイトで確認してください）"))}</p>
@@ -1565,6 +1583,20 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
           <div class="svc-card-footer">{detail_link} {aff_cta_card}</div>
         </div>""")
 
+    # モバイルの段階開示（TOP=build_index_pageのsvc_more_blockと同一パターン）。
+    # <details>は<table>の<tr>を直接ラップできないためdesktop tableは対象外とし、
+    # モバイルカードのみ先頭6件を常時表示・残りを<details>に格納する。並び順は
+    # servicesリスト（=services.json記載順）をそのままスライスするだけで、
+    # 確認状況・価格等による並び替えは行わない（FINAL_REDESIGN_SPEC.md 5章の順位付け禁止）。
+    MOBILE_PRIMARY_COUNT = 6
+    cards_primary = cards[:MOBILE_PRIMARY_COUNT]
+    cards_more = cards[MOBILE_PRIMARY_COUNT:]
+    mobile_more_html = (f"""
+      <details class="svc-more">
+        <summary>残り{len(cards_more)}社をすべて見る</summary>
+        {''.join(cards_more)}
+      </details>""" if cards_more else "")
+
     # 「ランキング」は名乗らない：確認済み項目数等いかなる基準でも数値順位は付けない
     # （根拠のないランキングを作らないという既存方針。FINAL_REDESIGN_SPEC.md 5章の最終判断）。
     # URL（ranking.html）・ナビゲーションのリンク先は変更しない。ページ内文言のみ「比較一覧」に改める。
@@ -1609,7 +1641,8 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
       </div>
     </div>
     <div class="ranking-mobile">
-      {''.join(cards)}
+      {''.join(cards_primary)}
+      {mobile_more_html}
     </div>
     {full_badge_note}
     {trust_line_html}
@@ -1636,8 +1669,12 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     // 「表示価格が安い順」並び替え（Fix2）。当サイトは点数・順位付けを行わないため、
     // これはユーザー起点・既定オフの並び替えであり、評価やランキングではない。
     // 元の並び順（表示中の全要素）をページ読み込み時に1回だけ記録し、解除時に復元する。
+    // モバイルの段階開示（.svc-more）導入により、カードの親要素が「.ranking-mobile直下」と
+    // 「<details>内」の2種類に分かれるため、それぞれ独立に並べ替える（親をまたいで
+    // 1つの配列を並べ替えると異なる親の要素が意図せず集まってしまうため）。
     const originalRows = [...document.querySelectorAll('#ranking-table tr[data-mealform]')];
-    const originalCards = [...document.querySelectorAll('.ranking-mobile .svc-card[data-mealform]')];
+    const originalCardsPrimary = [...document.querySelectorAll('.ranking-mobile > .svc-card[data-mealform]')];
+    const originalCardsMore = [...document.querySelectorAll('.ranking-mobile .svc-more .svc-card[data-mealform]')];
     function reorderTo(elements) {{
       // table直下の裸<tr>はブラウザが暗黙のtbodyを生成するため、table自体にでは
       // なく各要素のparentNodeにappendChildする（実際の親がどちらでも正しく動く）。
@@ -1647,7 +1684,8 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
       const asc = document.getElementById('sort-by-price').checked;
       if (!asc) {{
         reorderTo(originalRows);
-        reorderTo(originalCards);
+        reorderTo(originalCardsPrimary);
+        reorderTo(originalCardsMore);
         return;
       }}
       const byPrice = (a, b) => {{
@@ -1656,7 +1694,8 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
         return pa - pb;
       }};
       reorderTo([...originalRows].sort(byPrice));
-      reorderTo([...originalCards].sort(byPrice));
+      reorderTo([...originalCardsPrimary].sort(byPrice));
+      reorderTo([...originalCardsMore].sort(byPrice));
     }}
     </script>
     """
@@ -1679,11 +1718,16 @@ def build_campaigns_page(campaigns, services, aff_links):
         is_featured = (i == 0)
         wrapper_cls = "campaign-pick-featured" if is_featured else "card"
         label_html = '<p class="campaign-pick-label">PICK UP</p>' if is_featured else ""
+        # 割引タイプが確認済みの場合、summaryは同じ内容の言い換えになり重複するため非表示にする。
+        # discount_type未確認の場合はsummaryが唯一の説明文なので表示を維持する（情報欠落を避ける）。
+        discount_type = c.get('discount_type')
+        has_real_discount = bool(discount_type) and discount_type != '公式確認中'
+        summary_html = "" if has_real_discount else f"<p>{esc(c['summary'])}</p>"
         cards.append(f"""
         <div class="{wrapper_cls}">
           {label_html}
           <h2>{esc(c['title'])}</h2>
-          <p>{esc(c['summary'])}</p>
+          {summary_html}
           <table>
             <tr><th>対象サービス</th><td>{esc(svc_name)}</td></tr>
             <tr><th>割引タイプ</th><td>{esc(c.get('discount_type', '公式確認中'))}</td></tr>
@@ -1867,7 +1911,6 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
     html = page_header(title, desc, "tool/diagnosis.html")
     html += f"""
     <h1>宅配食 診断ツール</h1>
-    <p>以下の条件を選ぶと、あなたに合いそうな宅配食サービスを表示します。</p>
     <p class="price-meta">目的・保存方法を選ぶだけで、条件に近い上位3社をすぐに表示します。</p>
 
     <div class="card">
@@ -2234,25 +2277,13 @@ def build_article_chef_muten_kuchikomi(aff_links):
 
     <div class="card">
       <h2>「まずい？」の真相を考える（断定しない）</h2>
-      <p>検索で「シェフの無添つくりおき まずい」と調べている方は、「本当に美味しいのか不安」という気持ちがあるはずです。</p>
       <p>当サイトは現時点で実際に試食した独自レビューは保有していません。そのため「美味しい」「まずい」と断定はしませんが、公式情報から判断材料を整理します。</p>
       <ul class="feature-list">
         <li>一流シェフが手作りしている（公式）</li>
         <li>無添加・やさしい味付けをコンセプトにしている（公式）</li>
         <li>味の感じ方は個人差が大きいため、<strong>初回限定価格（26%OFF・送料無料）で実際に試す</strong>のが確実</li>
       </ul>
-      <p><strong>重要な注意点</strong>：無添加・やさしい味付けが「薄味」と感じる人もいれば「ちょうど良い」と感じる人もいます。また、冷蔵お届けのため冷凍タイプの宅配食とは食感・保存方法が異なります。</p>
-    </div>
-
-    <div class="card">
-      <h2>口コミ・評判の見方（事実と評価の分離）</h2>
-      <p>口コミ・評判を確認する際の注意点をまとめます。</p>
-      <ul class="feature-list">
-        <li><strong>確認できる事実</strong>：公式情報（料金・送料・メニュー構成・解約条件・消費期限）は上記の通り</li>
-        <li><strong>人によって評価が分かれる点</strong>：味付けの好み、量の適正（家族構成による）、調理の手間感</li>
-        <li><strong>特に確認したい点</strong>：家族構成に合った量か、週替わりメニューの好み、消費期限4日で食べ切れるか</li>
-      </ul>
-      <p class="price-meta">※当サイトは他サイトの口コミ文を転載していません。購入を検討する際は、公式サイトの情報と、ご自身の家族構成・食習慣に照らして判断してください。</p>
+      <p>冷蔵お届けのため、冷凍タイプの宅配食とは食感・保存方法が異なる点には注意してください。</p>
     </div>
 
     <div class="card">
@@ -2291,19 +2322,19 @@ def build_article_chef_muten_kuchikomi(aff_links):
         <tr><td>休止（解約）</td><td>2回目以降はいつでも可能・違約金なし</td></tr>
         <tr><td>退会</td><td>定期休止手続き後、退会申請。完了まで約1週間</td></tr>
       </table>
-      <p class="price-meta">初回はキャンセル不可・2回目以降はいつでも解約可能という点は、試しやすい一方で「初回分は必ず受け取る」必要がある点として押さえておきましょう。</p>
+      <p class="price-meta">初回はキャンセル不可のため、初回分は必ず受け取る前提で申し込んでください。2回目以降はいつでも解約できます。</p>
     </div>
 
     <div class="card panel-accent">
       <h2>まとめ：自分に合うかどうかの判断基準</h2>
-      <p>「シェフの無添つくりおき」は、<strong>無添加・手作りにこだわりたい家族向けの冷蔵惣菜宅配</strong>です。</p>
+      <p>購入前に確認しておきたいポイントは次の3点です。</p>
       <ul class="feature-list">
-        <li>✅ 家族（特に小さな子ども）に無添加の食事を食べさせたい → 検討価値あり</li>
-        <li>✅ 献立・調理の時短をしたい → 検討価値あり</li>
-        <li>⚠️ 一人暮らしで量が少ない方が良い → 他の宅配食（nosh等）と比較を推奨</li>
-        <li>⚠️ メニューを自分で選びたい → 不向き（おまかせ・週替わり）</li>
+        <li>家族構成に合った量か（想定家族・想定日数は上記の料金プラン表を参照）</li>
+        <li>週替わりメニューの好みに合うか（メニュー指定は不可）</li>
+        <li>消費期限4日以内に食べ切れるか（冷蔵お届け）</li>
       </ul>
-      <p>初回は26%OFF+送料無料（3,799円〜）で試せるため、「量・味・使い勝手」を実際に確認してから継続を判断するのがおすすめです。</p>
+      <p class="price-meta">当サイトは他サイトの口コミ文を転載していません。判断は公式情報と、ご自身の家族構成・食習慣に照らして行ってください。</p>
+      <p>初回は26%OFF+送料無料（3,799円〜）で試せます。</p>
       <div style="margin-top:12px;">{cta}</div>
       <p style="font-size:12px;color:#999;margin-top:8px;">※当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
     </div>
