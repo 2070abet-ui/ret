@@ -48,12 +48,24 @@ def meal_form_categories(meal_form_text):
     return cats
 
 
+_STORAGE_ICONS = {
+    "冷凍": '<svg class="tag-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1v14M2.5 4l11 8M13.5 4l-11 8"/></svg>',
+    "冷蔵": '<svg class="tag-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="1" width="10" height="14" rx="1"/><path d="M3 6h10"/></svg>',
+    "日配": '<svg class="tag-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="6" width="12" height="8" rx="1"/><path d="M2 6l6-4 6 4"/></svg>',
+}
+
+
 def _tag_html(t):
     """タグを「保存方法（冷凍/冷蔵/日配）」とそれ以外の特徴タグとで視覚的に区別する
     （VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目5）。tags配列の文字列自体を
-    meal_form_categories()の判定にかけるだけで、新規データ・新規スキーマは不要。"""
-    cls = "tag tag-storage" if meal_form_categories(t) else "tag"
-    return f'<span class="{cls}">{esc(t)}</span>'
+    meal_form_categories()の判定にかけるだけで、新規データ・新規スキーマは不要。
+    保存方法カテゴリのみ最小限の単色ラインアイコンを前置する
+    （VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目5）。"""
+    cats = meal_form_categories(t)
+    if cats:
+        icon = _STORAGE_ICONS.get(cats[0], "")
+        return f'<span class="tag tag-storage">{icon}{esc(t)}</span>'
+    return f'<span class="tag">{esc(t)}</span>'
 
 
 # ---------- デザインシステム（REDESIGN_UI_SPEC.md 2章〜16章）----------
@@ -127,6 +139,20 @@ body { font:var(--text-body); color:var(--color-text); background:var(--color-bg
 .container-top { max-width:1200px; margin:0 auto; padding:0 var(--space-4); }
 h1 { font:var(--text-h1); margin:var(--space-5) 0 var(--space-2); }
 h2 { font:var(--text-h2); margin:var(--space-5) 0 var(--space-2); }
+/* サイト最重要セクション（サービス一覧）の見出しのみに太罫線。h2全体には適用しない
+   （VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目4）。 */
+.heading-rule { display:inline-block; padding-bottom:var(--space-2); border-bottom:3px solid var(--color-border-strong); }
+/* 「選び方のポイント」見出し専用：2本のオフセット罫線で単調な下線と差別化する
+   （VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目6）。他の見出しには適用しない。 */
+.heading-staggered { position:relative; display:inline-block; padding-bottom:10px; margin-bottom:var(--space-2); }
+.heading-staggered::after {
+  content:""; position:absolute; left:0; bottom:0;
+  width:40px; height:3px; background:var(--color-primary); border-radius:2px;
+}
+.heading-staggered::before {
+  content:""; position:absolute; left:48px; bottom:2px;
+  width:14px; height:2px; background:var(--color-border-strong); border-radius:1px;
+}
 h3 { font:var(--text-h3); margin:var(--space-4) 0 var(--space-2); }
 p { margin-bottom:var(--space-2); }
 a { color:var(--color-primary); }
@@ -154,7 +180,28 @@ nav.main a:hover { color:#fff; border-bottom-color:rgba(255,255,255,.85); }
   （こんな方におすすめ＝.panel-accent）を相対的に際立たせる（VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目6）。
    .card自体は変更せず、新規トークンも追加しない。 */
 .card-quiet { box-shadow:none; background:transparent; border-color:var(--color-border); }
+/* TOP「このサイトのこだわり」専用：脱カード化で唯一の色面パネル扱いにする
+   （VISUAL_EXPRESSION_ANTI_GENERIC_AUDIT_2026_08_28.md P1）。他セクションには適用しない。 */
+.section-flat {
+  background:var(--color-surface-alt);
+  border:none;
+  border-radius:var(--radius-sm);
+  box-shadow:none;
+  padding:var(--space-4) var(--space-5);
+  margin:var(--space-4) 0;
+}
+.section-flat h2 { margin-top:0; }
 .panel-accent { background:var(--color-surface-alt); border:var(--border-default); }
+/* TOP・campaigns.html共通のキャンペーン訴求：色帯＋大小非対称化
+   （VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目3/3b）。box-shadowは追加しない。 */
+.campaign-pick { background:var(--color-primary-subtle); border:none; border-radius:var(--radius-md); box-shadow:none; padding:var(--space-5); margin:var(--space-3) 0; }
+.campaign-pick-body { display:flex; gap:var(--space-5); align-items:stretch; }
+.campaign-pick-main { flex:1 1 40%; background:var(--color-surface); border-radius:var(--radius-sm); padding:var(--space-4); display:flex; flex-direction:column; gap:4px; }
+.campaign-pick-label { font:var(--text-meta); color:var(--color-primary); font-weight:700; letter-spacing:.05em; margin:0; }
+.campaign-pick-name { font:var(--text-h3); margin:0; }
+.campaign-pick-value { font:var(--price-figure); margin:0; }
+.campaign-pick-list { flex:1 1 55%; margin:0; }
+.campaign-pick-featured { background:var(--color-primary-subtle); border:none; border-radius:var(--radius-md); box-shadow:none; padding:var(--space-5); margin:var(--space-3) 0; }
 table { width:100%; border-collapse:collapse; background:var(--color-surface); border-radius:var(--radius-md); overflow:hidden; font-size:14px; }
 th, td { padding:var(--space-3) var(--space-3); text-align:left; border-bottom:1px solid var(--color-border); vertical-align:top; }
 th { background:var(--color-surface-alt); font-weight:700; font-size:13px; white-space:nowrap; }
@@ -212,6 +259,9 @@ tr:last-child td { border-bottom:none; }
    （VISUAL_DESIGN_SYSTEM_IMPLEMENTATION_PLAN_2026_08_28.md 項目5）。新色は追加せず
    既存の--color-border-strong/--color-text-mutedのoutlineトーンのみ使用する。 */
 .tag-storage { background:transparent; border:1px solid var(--color-border-strong); color:var(--color-text-muted); }
+/* 保存方法タグの最小ラインアイコン。単色（currentColor継承）・16px以下・使用箇所はtag-storageのみに
+   限定する（VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目5）。 */
+.tag-icon { width:11px; height:11px; margin-right:3px; vertical-align:-1px; stroke:currentColor; fill:none; stroke-width:1.4; stroke-linecap:round; }
 .vstatus {
   display:inline-flex; align-items:center; gap:3px;
   padding:2px 8px; border-radius:999px;
@@ -332,6 +382,9 @@ tr:last-child td { border-bottom:none; }
 .trust-stat { display:flex; flex-direction:column; gap:2px; }
 .trust-figure { font:var(--price-figure); font-size:2rem; line-height:1.1; }
 .trust-label { font:var(--text-meta); color:var(--color-text-faint); }
+/* Hero専用の数字強調。.trust-figureとは独立させ、trust_panel()の統計数値には影響させない
+   （VISUAL_EXPRESSION_ANTI_GENERIC_AUDIT_2026_08_28.md P1「見出し数字の書体コントラスト強化」）。 */
+.hero-figure { font:var(--price-figure); font-size:2.75rem; line-height:1.05; letter-spacing:-0.01em; }
 .trust-bar { display:flex; height:12px; border-radius:999px; overflow:hidden; background:var(--color-border); margin:var(--space-3) 0; }
 .trust-bar > span { height:100%; min-width:2px; }
 .trust-bar-confirmed { background:var(--status-confirmed-fg); }
@@ -496,8 +549,12 @@ footer.site .container p { margin-bottom:6px; }
   /* Hero（15.1節）。TOP再設計：モバイルも縦余白を1段階詰めてサービス到達を早める。 */
   .hero { padding:var(--space-4); }
   .hero h1 { font-size:1.5rem; }
+  .hero-figure { font-size:2rem; }
   .hero-actions { flex-direction:column; align-items:stretch; }
   .hero-actions .btn-primary { width:100%; }
+  /* キャンペーンPICK UP（VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目3）：
+     狭幅では横並びを維持せず縦積みにする。 */
+  .campaign-pick-body { flex-direction:column; }
   /* ナビ（5章） */
   nav.main { gap:var(--space-2); }
   nav.main a { font-size:13px; padding:4px 2px; }
@@ -1514,7 +1571,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     </div>
     {full_badge_note}
     <div class="card">
-      <h2>選び方のポイント</h2>
+      <h2 class="heading-staggered">選び方のポイント</h2>
       <ul class="feature-list">
         <li>「お試し価格で始めたい」→ 初回キャンペーンがお得なサービスを選ぶ</li>
         <li>「糖質制限をしたい」→ nosh・三ツ星ファームなど低糖質に強いサービス</li>
@@ -1568,13 +1625,20 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
 
 def build_campaigns_page(campaigns, services, aff_links):
     svc_by_id = {s["id"]: s for s in services}
+    # 確認済み優先ソート（TOPのbuild_index_page内confirmed_firstと同一ロジック。変更時は
+    # 両方見ること＝VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目3/3b）。
+    confirmed_first = sorted(campaigns, key=lambda c: c.get("requires_verification", True))
     cards = []
-    for c in campaigns:
+    for i, c in enumerate(confirmed_first):
         svc = svc_by_id.get(c.get("service_id"))
         svc_name = svc["name"] if svc else "公式確認中"
         svc_id = c.get("service_id", "")
+        is_featured = (i == 0)
+        wrapper_cls = "campaign-pick-featured" if is_featured else "card"
+        label_html = '<p class="campaign-pick-label">PICK UP</p>' if is_featured else ""
         cards.append(f"""
-        <div class="card">
+        <div class="{wrapper_cls}">
+          {label_html}
           <h2>{esc(c['title'])}</h2>
           <p>{esc(c['summary'])}</p>
           <table>
@@ -1849,8 +1913,17 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
           const rel = s.aff_url ? 'rel="nofollow sponsored"' : '';
           const label = s.aff_url ? '公式サイトを見る' : '公式サイト';
           const link = url ? `<a class="btn-secondary" href="${{url}}" ${{rel}} target="_blank" rel="noopener">${{label}}</a>` : '<span class="btn-disabled">公式確認中</span>';
-          const isStorageTag = t => t.includes('冷凍') || t.includes('冷蔵') || t.includes('日配');
-          const tags = (s.tags || []).slice(0, 3).map(t => `<span class="tag${{isStorageTag(t) ? ' tag-storage' : ''}}">${{t}}</span>`).join('');
+          const STORAGE_ICONS = {{
+            '冷凍': '<svg class="tag-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1v14M2.5 4l11 8M13.5 4l-11 8"/></svg>',
+            '冷蔵': '<svg class="tag-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="1" width="10" height="14" rx="1"/><path d="M3 6h10"/></svg>',
+            '日配': '<svg class="tag-icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="6" width="12" height="8" rx="1"/><path d="M2 6l6-4 6 4"/></svg>'
+          }};
+          const storageCategory = t => ['冷凍', '冷蔵', '日配'].find(c => t.includes(c));
+          const tags = (s.tags || []).slice(0, 3).map(t => {{
+            const cat = storageCategory(t);
+            const icon = cat ? STORAGE_ICONS[cat] : '';
+            return `<span class="tag${{cat ? ' tag-storage' : ''}}">${{icon}}${{t}}</span>`;
+          }}).join('');
           const matchTags = (s.matchedGoals && s.matchedGoals.length > 0)
             ? s.matchedGoals.map(g => `<span class="tag">${{g}}</span>`).join('')
             : '<span class="tag">保存方法の条件に一致</span>';
@@ -1886,12 +1959,26 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     # キャンペーン一覧（確認済みのものを優先して最大3件。未確認のものより先に見せる。
     # 表示文言はcampaigns.htmlと同じdiscount_type（実額）を使う。titleは汎用ラベルのため
     # 使わない＝FINAL_REDESIGN_SPEC.md 6章「TOPのキャンペーン表示に実額を反映」）。
+    # 確認済み優先ソート（TOP・campaigns.htmlで同一ロジックを使用。変更時は両方見ること
+    # ＝VISUAL_EXPRESSION_ANTI_GENERIC_IMPLEMENTATION_PLAN_2026_08_28.md 項目3/3b）。
     confirmed_first = sorted(campaigns, key=lambda c: c.get("requires_verification", True))
-    camp_items = ""
-    for c in confirmed_first[:3]:
-        svc_name = svc_by_id.get(c["service_id"], {}).get("name", "要確認")
-        value_text = c.get("discount_type") or c.get("title", "要確認")
-        camp_items += f'<li><a href="/campaigns">{esc(svc_name)}：{esc(value_text)}</a></li>'
+    camp_big_html = ""
+    small_camp_items = ""
+    if confirmed_first:
+        c0 = confirmed_first[0]
+        svc_name0 = svc_by_id.get(c0["service_id"], {}).get("name", "要確認")
+        value_text0 = c0.get("discount_type") or c0.get("title", "要確認")
+        camp_big_html = f'''
+        <div class="campaign-pick-main">
+          <p class="campaign-pick-label">PICK UP</p>
+          <p class="campaign-pick-name">{esc(svc_name0)}</p>
+          <p class="campaign-pick-value">{esc(value_text0)}</p>
+          <a class="text-link" href="/campaigns">条件を見る →</a>
+        </div>'''
+        for c in confirmed_first[1:3]:
+            svc_name = svc_by_id.get(c["service_id"], {}).get("name", "要確認")
+            value_text = c.get("discount_type") or c.get("title", "要確認")
+            small_camp_items += f'<li><a href="/campaigns">{esc(svc_name)}：{esc(value_text)}</a></li>'
 
     # TOP再設計：目的で探すを検証カバレッジより上位の「入口」として扱う（extra_classで色帯ゾーン化）。
     # 検証カバレッジはcompact=Trueでスリムな信頼帯にする。数値・バッジ・文言は無変更。
@@ -1980,7 +2067,7 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       <h1>宅配食、どれを選べばいい？</h1>
       <p class="hero-lead">{hero_lead}</p>
       <div class="trust-stat" style="margin:0 0 var(--space-3);">
-        <span class="trust-figure">{num_services}</span><span class="trust-label">社の宅配食サービスを掲載</span>
+        <span class="hero-figure">{num_services}</span><span class="trust-label">社の宅配食サービスを掲載</span>
       </div>
       <div class="hero-actions">
         <a class="btn-primary" href="/tool/diagnosis">自分に合う宅配食を探す →</a>
@@ -1992,7 +2079,7 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     {trust_html}
 
     <div class="service-list-section">
-      <h2>📊 主要サービス一覧</h2>
+      <h2 class="heading-rule">📊 主要サービス一覧</h2>
       <div class="service-grid">{svc_primary}{svc_extra}</div>
       {svc_more_block}
       <!-- TOP_P2_IMPROVEMENT_PLAN_2026_08_28.md 3a：Hero内CTA（発見段階の主役、btn-primary）とは
@@ -2002,13 +2089,16 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     </div>
     {svc_more_anchor_script}
 
-    <div class="card panel-accent">
+    <div class="campaign-pick">
       <h2>🎯 初回キャンペーン・お試し情報（最新）</h2>
-      <ul class="feature-list">{camp_items or '<li>更新中</li>'}</ul>
+      <div class="campaign-pick-body">
+        {camp_big_html}
+        <ul class="feature-list campaign-pick-list">{small_camp_items or '<li>更新中</li>'}</ul>
+      </div>
       <p style="margin-top:8px;"><a class="text-link" href="/campaigns">すべてのキャンペーンを見る →</a></p>
     </div>
 
-    <div class="card">
+    <div class="section-flat">
       <h2>このサイトのこだわり</h2>
       <ul class="feature-list">
         <li><strong>鮮度</strong>：価格・キャンペーン情報を毎週更新し、最終確認日を明記</li>
