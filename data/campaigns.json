@@ -1,6 +1,6 @@
 {
   "_comment": "宅配食 初回キャンペーン・お試し情報DB。最短CV導線のための最重要データ。valid_from/valid_toで期間管理し、毎週更新して鮮度を保つ。",
-  "updated_at": "2026-08-27",
+  "updated_at": "2026-08-28",
   "campaigns": [
     {
       "campaign_id": "nosh-first-202608",
@@ -288,6 +288,25 @@
       },
       "requires_verification": true,
       "last_checked": "2026-08-27"
+    },
+    {
+      "campaign_id": "wanmairu-first-202608",
+      "service_id": "wanmairu",
+      "title": "わんまいる 初めての方向けお試しセット",
+      "summary": "初めての方向けのお試しセットが用意されているが、価格は公式サイトで確認できず",
+      "detail": "onemile.jp/fs/otameshi に「初めての方 お試しセット」への案内ページがあるが、価格の具体的な記載は公式ページで確認できなかった。外部情報に3,980円（税込）との記載があるが一次情報での裏付けが取れないため未掲載。",
+      "discount_type": "要確認",
+      "conditions": "要確認（公式サイトで確認）",
+      "valid_from": null,
+      "valid_to": null,
+      "source_url": "https://www.onemile.jp/fs/otameshi",
+      "affiliate": {
+        "asp": "A8.net",
+        "reward_yen": 5000,
+        "note": "健幸ディナー・美食弁当の定期お届けセット購入で5,000円/件（複数購入でも成果は1個分）。それ以外の商品は税抜金額の3%（プログラムID: s00000013027001、2026-08-28確認）"
+      },
+      "requires_verification": true,
+      "last_checked": "2026-08-28"
     }
   ]
 }

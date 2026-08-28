@@ -106,6 +106,13 @@
       "actual_url": "",
       "fallback_url": "https://www.tsuklio.com/",
       "note": "A8.netでセルフバック案件の存在を確認（2026-08-27）。報酬額は非公開"
+    },
+    "wanmairu": {
+      "asp": "A8.net",
+      "status": "提携承認済み（A8リンク設定済み）",
+      "actual_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXJ+DTQEIA+2SIM+609HU",
+      "fallback_url": "https://www.onemile.jp/",
+      "note": "新規購入（定期1回目出荷確定）5,000円（プログラムID: s00000013027001、確定率89.24%・Cookie90日、2026-08-28確認）"
     }
   }
 }

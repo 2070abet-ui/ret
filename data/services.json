@@ -1,6 +1,6 @@
 {
   "_comment": "宅配食サービス マスタDB。last_checked=最終確認日。価格は pricing.price_points[]（初回/通常/お試し/アラカルト等をbasisで分離）で表現し、各価格ポイント単位でstatus/source_id/last_checkedを保持する。既存price_planは移行期間中のフォールバック用に一時的に残置。未確認項目は要確認マーク。",
-  "updated_at": "2026-08-27",
+  "updated_at": "2026-08-28",
   "services": [
     {
       "id": "nosh",
@@ -1695,6 +1695,136 @@
             "status": "derived",
             "source_id": "tsuklio-official-202608",
             "last_checked": "2026-08-27"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wanmairu",
+      "name": "わんまいる",
+      "name_short": "わんまいる",
+      "operator": "株式会社ファミリーネットワークシステムズ",
+      "official_url": "https://www.onemile.jp/",
+      "official_url_note": "公式サイト確認済み（2026-08-28）",
+      "meal_type": "冷凍ミールキット",
+      "meal_form": "冷凍（湯せん・流水解凍）",
+      "main_features": [
+        "国産食材100%使用",
+        "合成保存料・合成着色料不使用",
+        "主菜1品+副菜2品の5食セットで栄養設計（5食平均：たんぱく質20g以上・糖質30g以下・塩分3.5g以下・400kcal以下）",
+        "1品ずつ個食包装、調理は湯せんまたは流水解凍",
+        "管理栄養士・料理人監修",
+        "累計販売360万食突破、日経DUAL食材宅配ランキング 味・品質部門1位（A8.net広告主提供情報、2026-08-28確認）"
+      ],
+      "price_plan": {
+        "lowest_per_meal_yen": 1256,
+        "plan_notes": "健幸ディナー週1回コース：6,280円（税込）/週＝主菜1品+副菜2品×5食＝1食約1,256円。2週間に1回コース：12,560円（税込）/2週＝10食（同じく1食約1,256円）。美食弁当（レンジ調理版）も6,280円（税込）/週＝5食＝1食約1,256円。いずれも送料別（本州・四国・九州1,080円、北海道・沖縄2,645円、税込）。初回お試しセットの提供はあるが価格は公式サイトで確認できず（外部情報に3,980円との記載があるが未確認のため掲載しない）（onemile.jp/product/370, /product/371, /product/1706 2026-08-28確認）",
+        "last_checked": "2026-08-28",
+        "source_id": "wanmairu-product370"
+      },
+      "first_time_campaign": {
+        "campaign_id": "wanmairu-first",
+        "summary": "初めての方向けお試しセットの案内あり（価格は公式サイトで未確認）",
+        "detail": "onemile.jp/fs/otameshi に「初めての方 お試しセット」への案内ページがあるが、価格の具体的な記載は公式ページで確認できなかった。外部情報に3,980円（税込）との記載があるが一次情報での裏付けが取れないため、金額はここには掲載しない。",
+        "requires_verification": true,
+        "last_checked": "2026-08-28",
+        "source_id": "wanmairu-otameshi"
+      },
+      "target": [
+        "健康志向",
+        "時短",
+        "無添加",
+        "高齢者",
+        "共働き"
+      ],
+      "tags": [
+        "無添加",
+        "冷凍",
+        "国産食材",
+        "湯せん調理",
+        "管理栄養士監修"
+      ],
+      "pros": [
+        "国産食材100%・無添加（合成保存料・合成着色料不使用）で健康志向層への訴求力が強い",
+        "主菜1品+副菜2品の3品構成で、単品弁当より食卓の品数を確保できる",
+        "累計360万食・ランキング受賞実績があり、第三者評価による裏付けがある",
+        "休止・解約とも回数制限なし、手数料も基本なし"
+      ],
+      "cons": [
+        "湯せん・流水解凍が必要で、レンジのみで完結する他社より手間がかかる",
+        "1食あたり約1,256円と、既存の低糖質系冷凍弁当（nosh等）より単価がやや高め",
+        "初回お試しセットの価格が公式サイトで確認できず、割引の有無が事前にわかりにくい"
+      ],
+      "cancellation_note": "休止は再開希望日の6日前まで、解約は次回お届け予定日の6日前までにサポートセンター（電話・メール）へ連絡（休止・解約とも回数・期間の制限なし）。定期購入自体に手数料はなし（atone翌月払いを選択した場合のみ月209円税込の請求手数料）。送料は本州・四国・九州1,080円、北海道・沖縄2,645円（税込）。1回の注文なら数量・金額にかかわらず送料は基本一律（公式サイト2026-08-28確認）。",
+      "affiliate": {
+        "campaigns": [
+          {
+            "asp": "A8.net",
+            "reward_yen": 5000,
+            "status": "提携中",
+            "cv_condition": "新規購入（広告主を初めて利用する方）・WEB注文後30日以内に定期1回目出荷確定（複数個購入でも成果は1個分）",
+            "last_verified": "2026-08-28",
+            "program_id": "s00000013027001"
+          }
+        ],
+        "source_url": "https://www.onemile.jp/"
+      },
+      "last_checked": "2026-08-28",
+      "pricing": {
+        "currency": "JPY",
+        "tax": "included",
+        "regional_dependency": false,
+        "price_notes": "健幸ディナー週1回コース：6,280円（税込）/週＝主菜1品+副菜2品×5食＝1食約1,256円。2週間に1回コース：12,560円（税込）/2週＝10食。美食弁当（レンジ調理版）も6,280円（税込）/週＝5食＝1食約1,256円。いずれも送料別（本州・四国・九州1,080円、北海道・沖縄2,645円、税込）。",
+        "display": {
+          "price_point_id": "regular-healthy-dinner-weekly",
+          "label": "通常価格",
+          "caption": "健幸ディナー 週1回コース・5食・税込・送料別"
+        },
+        "price_points": [
+          {
+            "id": "regular-healthy-dinner-weekly",
+            "basis": "regular",
+            "price_per_meal_yen": 1256,
+            "meal_count": 5,
+            "plan": "健幸ディナー 週1回コース",
+            "total_yen": 6280,
+            "conditions": "通常価格（税込・送料別）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "wanmairu-product370",
+            "last_checked": "2026-08-28"
+          },
+          {
+            "id": "regular-healthy-dinner-biweekly",
+            "basis": "regular",
+            "price_per_meal_yen": 1256,
+            "meal_count": 10,
+            "plan": "健幸ディナー 2週間に1回コース",
+            "total_yen": 12560,
+            "conditions": "通常価格（税込・送料別、2週間分10食）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "wanmairu-product371",
+            "last_checked": "2026-08-28"
+          },
+          {
+            "id": "regular-bishoku-bento-weekly",
+            "basis": "regular",
+            "price_per_meal_yen": 1256,
+            "meal_count": 5,
+            "plan": "美食弁当 週1回コース（レンジ調理版）",
+            "total_yen": 6280,
+            "conditions": "通常価格（税込・送料別）",
+            "shipping_included": false,
+            "regional": false,
+            "tax": "included",
+            "status": "confirmed",
+            "source_id": "wanmairu-product1706",
+            "last_checked": "2026-08-28"
           }
         ]
       }

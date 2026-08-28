@@ -1,6 +1,6 @@
 {
   "_comment": "出典・最終確認日管理。全てのデータの鮮度と信頼性を担保するための台帳。",
-  "updated_at": "2026-08-27",
+  "updated_at": "2026-08-28",
   "sources": [
     {
       "id": "a8-nosh",
@@ -253,6 +253,41 @@
       "url": "https://www.tsuklio.com/",
       "confirmed_at": "2026-08-27",
       "note": "料金プラン・送料・解約条件を直接確認"
+    },
+    {
+      "id": "wanmairu-product370",
+      "label": "わんまいる公式 健幸ディナー（週1回コース）商品ページ",
+      "url": "https://www.onemile.jp/product/370",
+      "confirmed_at": "2026-08-28",
+      "note": "週1回コース6,280円（税込）/週=5食、湯せん・流水解凍"
+    },
+    {
+      "id": "wanmairu-product371",
+      "label": "わんまいる公式 健幸ディナー（2週間に1回コース）商品ページ",
+      "url": "https://www.onemile.jp/product/371",
+      "confirmed_at": "2026-08-28",
+      "note": "2週間に1回コース12,560円（税込）/2週=10食"
+    },
+    {
+      "id": "wanmairu-product1706",
+      "label": "わんまいる公式 美食弁当商品ページ",
+      "url": "https://www.onemile.jp/product/1706",
+      "confirmed_at": "2026-08-28",
+      "note": "6,280円（税込）/週=5食。送料 本州等1,080円/北海道沖縄2,645円"
+    },
+    {
+      "id": "wanmairu-qa",
+      "label": "わんまいる公式FAQ（休止・解約）",
+      "url": "https://www.onemile.jp/fs/q_a",
+      "confirmed_at": "2026-08-28",
+      "note": "休止・解約とも6日前までにサポートセンター連絡、回数制限なし"
+    },
+    {
+      "id": "wanmairu-otameshi",
+      "label": "わんまいる公式 お試し案内ページ",
+      "url": "https://www.onemile.jp/fs/otameshi",
+      "confirmed_at": "2026-08-28",
+      "note": "初めての方向けお試しセットへの案内はあるが価格記載なし。送料935円/2,500円という別の数値の記載あり"
     }
   ]
 }
