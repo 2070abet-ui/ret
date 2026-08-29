@@ -10,9 +10,9 @@
       "note": "A8.net/afbで提携申請可能。承認後、actual_url を埋める"
     },
     "watami-takushoku": {
-      "asp": "A8.net / afb / アクセストレード",
-      "status": "未提携（ASP承認待ち）",
-      "actual_url": "",
+      "asp": "A8.net",
+      "status": "提携承認済み（A8リンク設定済み）",
+      "actual_url": "https://px.a8.net/svt/ejp?a8mat=4BAEXK+3YW1YQ+3YYE+15OK2A",
       "fallback_url": "https://www.watami-takushoku.co.jp/",
       "note": "報酬は新規申込時。A8.net最大3,095円"
     },
