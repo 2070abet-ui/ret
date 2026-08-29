@@ -7,7 +7,7 @@ Batch1では既存ページの本文・タイトル・canonical・価格・キ�
 import base64
 import json
 
-from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR, LAST_VERIFIED_DATE, GA4_MEASUREMENT_ID
+from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR, LAST_VERIFIED_DATE, GA4_MEASUREMENT_ID, GTM_CONTAINER_ID
 
 
 def esc(s):
@@ -1209,6 +1209,37 @@ def _ga4_block():
             f"gtag('js', new Date());gtag('config', '{gid}');</script>")
 
 
+def _gtm_head_block():
+    """Google Tag Managerのヘッド用スニペット（<head>のできるだけ高い位置に配置）。
+    GTMコンテナID（config/site.jsonのgtm_container_id）が未設定の間は何も出力しない。
+    Googleが配布するそのままのコードにコンテナIDを埋め込むのみで、既存のGA4ブロック
+    （gtag()スタブ or gtag.js）とは独立して動く。"""
+    if not GTM_CONTAINER_ID:
+        return ""
+    return (
+        "<!-- Google Tag Manager -->\n"
+        "<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':"
+        "new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],"
+        "j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src="
+        "'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);"
+        "})(window,document,'script','dataLayer','" + GTM_CONTAINER_ID + "');</script>\n"
+        "<!-- End Google Tag Manager -->"
+    )
+
+
+def _gtm_body_block():
+    """Google Tag Managerのnoscriptスニペット（<body>直後に配置）。
+    GTMコンテナIDが未設定の間は何も出力しない。"""
+    if not GTM_CONTAINER_ID:
+        return ""
+    return (
+        "<!-- Google Tag Manager (noscript) -->\n"
+        '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' + GTM_CONTAINER_ID + '"\n'
+        'height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n'
+        "<!-- End Google Tag Manager (noscript) -->"
+    )
+
+
 def page_header(title, description, canonical_path, main_class="container"):
     """main_class: <main>のクラス。既定は全ページ共通の"container"（1000px）。
     TOPページのみ"container-top"（1200px）を渡す（他ページは呼び出し元を変更しないため無影響）。
@@ -1222,11 +1253,14 @@ def page_header(title, description, canonical_path, main_class="container"):
         canonical_url = f"{SITE_URL}/{canonical_path.removesuffix('.html')}"
     meta_block = _meta_block(title, description, canonical_url)
     ga4_block = _ga4_block()
+    gtm_head = _gtm_head_block()
+    gtm_body = _gtm_body_block()
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{gtm_head}
 <title>{esc(title)} | {SITE_NAME}</title>
 <meta name="description" content="{esc(description)}">
 {GSC_META}
@@ -1238,6 +1272,7 @@ def page_header(title, description, canonical_path, main_class="container"):
 </style>
 </head>
 <body>
+{gtm_body}
 <header class="site">
   <div class="container">
     <a href="/" class="site-logo">{SITE_NAME}</a>
@@ -2401,11 +2436,14 @@ def build_verification_dashboard(services, shipping_by_id, sources_by_id, covera
 # ---------- 404ページ ----------
 
 def build_404_page():
+    gtm_head = _gtm_head_block()
+    gtm_body = _gtm_body_block()
     return f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{gtm_head}
 <title>ページが見つかりません | {SITE_NAME}</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="{FAVICON_DATA_URI}">
@@ -2418,6 +2456,7 @@ a {{ color:#e8552d; }}
 </style>
 </head>
 <body>
+{gtm_body}
 <h1>ページが見つかりません（404）</h1>
 <p>お探しのページは移動したか、存在しない可能性があります。</p>
 <p><a href="/">ホームに戻る</a> ｜ <a href="/ranking">宅配食の比較一覧を見る</a> ｜ <a href="/campaigns">初回キャンペーンを見る</a></p>

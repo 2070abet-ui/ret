@@ -71,9 +71,16 @@ gtag('event', 'diagnosis_complete', {
 - `result_count`により「診断したが0件だった」ケースも区別できる（診断ツールの実用性を測る上で重要）。
 - サービスIDまで送る必要は無い（診断結果は複数件あり得るため、個社への遷移は上記1.1の`outbound_click`側で捕捉される）。
 
-### 1.4 実装条件（今回は行わない）
+### 1.4 実装条件 → **2026-08-30時点でGTM方式により導入済み**
 
-GA4プロパティ作成・測定IDの取得はユーザー側の作業。`config/site.json`に測定IDを追加し、`page_header`にgtag.jsスニペットを1箇所追加する程度で導入可能（Phase3までの`site.json`拡張パターンと同型）。
+GA4プロパティ作成・測定IDの取得はユーザー側の作業。当初は`config/site.json`に測定IDを追加し、`page_header`にgtag.jsスニペットを1箇所追加する想定だった（Phase3までの`site.json`拡張パターンと同型）。
+
+**実装時の選択：直接gtag.jsではなくGoogle Tag Manager（GTM）を採用。**
+
+- `config/site.json` に `gtm_container_id`（`GTM-NFCK77CG`）を追加。
+- `templates.py` の `_gtm_head_block()` が`<head>`の高い位置に、`_gtm_body_block()` が`<body>`直後にGTMスニペットを出力する。全ページ（404を含む）に適用。`googlef4d8b0b633188b1b.html`（GSC所有権確認ファイル）のみGoogleの検証に必要なため除外。
+- GTM導入に伴う**二重計測の回避ルール**：`ga4_measurement_id`（直接gtag.js）とGTMコンテナ内のGA4タグを併用すると`page_view`が二重計測になる。GTMを導入したため`ga4_measurement_id`は**空のまま**とし、GA4タグはGTMコンテナ側で設定する。
+- `diagnosis_start`/`diagnosis_complete`は、現行の`_ga4_block()`が出力する`gtag()`スタブ（`dataLayer.push(arguments)`）経由でGTMの`dataLayer`に流れる。GTM側で「カスタムイベント」トリガー（`diagnosis_start`/`diagnosis_complete`）を作成すれば受け取れる。コード追加は不要。
 
 ---
 
