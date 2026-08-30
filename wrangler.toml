@@ -1,14 +1,21 @@
 # Cloudflare Workers Static Assets 設定（2026-08時点の公式仕様に準拠）
-# 静的サイト site/ をそのまま配信する。Workerスクリプト不要。
+# 静的サイト site/ を、Worker（src/worker.js）経由で配信する。
+# Workerは旧URL（.html付き）を拡張子なし正規URLへ301リダイレクトし、
+# それ以外は env.ASSETS.fetch() で静的アセットを配信する。
 # 参照: https://developers.cloudflare.com/workers/static-assets/
 # デプロイ: npx wrangler deploy  （Workers BuildsのGit連携ではこれが自動実行される）
 # name は実際にデプロイされたWorker名（公開URL: ret4853.2070abe.workers.dev）
 name = "ret4853"
+main = "src/worker.js"
 compatibility_date = "2026-08-26"
 
 [assets]
 directory = "./site"
+# Worker（src/worker.js）から env.ASSETS.fetch() でアセットを取得するためのバインド
+binding = "ASSETS"
 # 存在しないURLに対して site/404.html を404ステータスで返す
 not_found_handling = "404-page"
 # ルート"/"は index.html、"/foo.html" はスラッシュなし、ディレクトリindexはスラッシュ付きで配信
 html_handling = "auto-trailing-slash"
+# Workerを全リクエストの先頭で実行する（.html → 拡張子なし301化をアセット配信より先に処理するため）
+run_worker_first = true
