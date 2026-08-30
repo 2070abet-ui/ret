@@ -1,4 +1,4 @@
-# Cloudflare Pages へ直接アップロード（Windows PowerShell 用）
+﻿# Cloudflare Pages へ直接アップロード（Windows PowerShell 用）
 # 事前準備:
 #   1. npm install -g wrangler  または  npx を使う
 #   2. Cloudflareダッシュボード → マイプロフィール → APIトークン → 「Cloudflare Pages: Edit」権限のトークンを作成
