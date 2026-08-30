@@ -1,0 +1,25 @@
+{
+  "_comment": "ベンチマーク計測シナリオ定義。target_url は初期動作テスト用にパブリックなテストURL（httpbin.org / example.com）を仮設定。expect_contains は成功判定に使うキーワード（抽出結果に含まれるべき文字列）。repeat は各プロバイダーごとの試行回数。実運用前に、JS描画ページ等の実際の計測対象へ差し替えること。",
+  "scenarios": [
+    {
+      "id": "llm-markdown-static",
+      "name": "LLM Markdown: Static Page",
+      "description": "静的HTMLを返すパブリックテストページ（httpbin.org/html）から LLM 向け Markdown を抽出するシナリオ。",
+      "target_url": "https://httpbin.org/html",
+      "scrape_type": "markdown",
+      "expect_contains": ["Herman Melville", "Moby-Dick"],
+      "repeat": 5,
+      "enabled": true
+    },
+    {
+      "id": "llm-markdown-js-heavy",
+      "name": "LLM Markdown: JS-Heavy Page",
+      "description": "JS 描画ページを想定したシナリオ。初期テストは example.com（静的）でパイプライン動作を確認し、実運用前に JS 描画ページへ差し替える。",
+      "target_url": "https://example.com",
+      "scrape_type": "markdown",
+      "expect_contains": ["Example Domain"],
+      "repeat": 5,
+      "enabled": true
+    }
+  ]
+}

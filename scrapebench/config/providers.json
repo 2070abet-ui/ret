@@ -1,0 +1,70 @@
+{
+  "_comment": "ベンチマーク測定対象の Scraping API プロバイダー定義。enabled=true のみ bench.py の計測対象。key_env は API キーを格納する環境変数名（bench.py 実行時に os.environ から読み込む。key_env が空文字のプロバイダーはキー不要で計測される）。markdown_param は LLM 向け Markdown 抽出を指定する API パラメータの目安（null は返却形式が HTML）。httpbin-probe はキー不要のパイプライン検証用プローブであり、実プロバイダーではない。実APIキー取得後は enabled=false にすること。",
+  "providers": [
+    {
+      "id": "firecrawl",
+      "name": "Firecrawl",
+      "official_url": "https://firecrawl.dev",
+      "docs_url": "https://docs.firecrawl.dev",
+      "api": {
+        "base_url": "https://api.firecrawl.dev/v1",
+        "endpoint": "POST /scrape",
+        "auth": "header: Authorization: Bearer <api_key>",
+        "response_format": "json",
+        "markdown_param": "scrapeOptions.formats: [\"markdown\"]"
+      },
+      "key_env": "FIRECRAWL_API_KEY",
+      "notes": "LLM 向け Markdown 抽出に特化。scrapeOptions.formats で markdown / html / structured を指定できる。",
+      "enabled": true
+    },
+    {
+      "id": "apify",
+      "name": "Apify",
+      "official_url": "https://apify.com",
+      "docs_url": "https://docs.apify.com",
+      "api": {
+        "base_url": "https://api.apify.com/v2",
+        "endpoint": "POST /acts/apify~website-content-crawler/run-sync-get-dataset-items",
+        "auth": "query: token=<api_token>",
+        "response_format": "json",
+        "markdown_param": "outputFormat: \"markdown\""
+      },
+      "key_env": "APIFY_API_TOKEN",
+      "actor_id": "apify/website-content-crawler",
+      "notes": "Website Content Crawler actor を同期実行して dataset items を取得。",
+      "enabled": true
+    },
+    {
+      "id": "scrapingbee",
+      "name": "ScrapingBee",
+      "official_url": "https://www.scrapingbee.com",
+      "docs_url": "https://docs.scrapingbee.com",
+      "api": {
+        "base_url": "https://app.scrapingbee.com/api/v1",
+        "endpoint": "GET /",
+        "auth": "query: api_key=<api_key>",
+        "response_format": "html",
+        "markdown_param": null
+      },
+      "key_env": "SCRAPINGBEE_API_KEY",
+      "notes": "レンダリング + プロキシ。返却は HTML のため、LLM 向け Markdown 抽出の場合は HTML→Markdown 変換が別途必要。",
+      "enabled": true
+    },
+    {
+      "id": "httpbin-probe",
+      "name": "httpbin.org (keyless probe)",
+      "official_url": "https://httpbin.org",
+      "docs_url": "https://httpbin.org",
+      "api": {
+        "base_url": "https://httpbin.org",
+        "endpoint": "GET /html",
+        "auth": "none",
+        "response_format": "html",
+        "markdown_param": null
+      },
+      "key_env": "",
+      "notes": "キー不要のパイプライン検証用プローブ（実プロバイダーではない）。公開テストURLへ直接 GET し、計測パイプライン全体の動作を確認する。実APIキー取得後は enabled=false にする。",
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "_comment": "ScrapeBench サイト基本設定。name はサイトタイトル、url は canonical・OGP・sitemap に使う。url は Cloudflare デプロイ後の実URLへ更新すること。lang はHTML lang属性、description はmeta description・OGP・Topのリード文に使う。search_console_meta / ga4_measurement_id / gtm_container_id は取得後に設定（空の間は出力しない）。operator は公開前に必ず設定（架空の情報は記載しないこと）。",
+  "name": "ScrapeBench",
+  "url": "https://scrapebench.2070abe.workers.dev",
+  "lang": "en",
+  "description": "Real-world benchmarks for LLM-ready web scraping APIs. Success rate, latency, response size, and output quality measured across top providers.",
+  "search_console_meta": "",
+  "ga4_measurement_id": "",
+  "gtm_container_id": "",
+  "operator": {
+    "_comment": "運営者情報。公開前に必ず設定すること。",
+    "name": "",
+    "email": "",
+    "note": "Personal operator"
+  }
+}

@@ -1,0 +1,18 @@
+# ScrapeBench 用 Cloudflare Workers Static Assets 設定
+# 既存の宅食図鑑（root の wrangler.toml）と同じ方式に統一。
+# 静的サイト scrapebench/site/ を、Worker（src/worker.js）経由で配信する。
+# デプロイ: cd scrapebench && npx wrangler deploy
+name = "scrapebench"
+main = "src/worker.js"
+compatibility_date = "2026-08-26"
+
+[assets]
+directory = "./site"
+# Worker（src/worker.js）から env.ASSETS.fetch() でアセットを取得するためのバインド
+binding = "ASSETS"
+# 存在しないURLに対して site/404.html を404ステータスで返す
+not_found_handling = "404-page"
+# ルート"/"は index.html、ディレクトリ index はスラッシュ付きで配信
+html_handling = "auto-trailing-slash"
+# Workerを全リクエストの先頭で実行する（既存 worker.js の .html→拡張子なし301 を維持）
+run_worker_first = true

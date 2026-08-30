@@ -1,0 +1,9 @@
+# ScrapeBench 生成物・ローカルデータ（root の .gitignore とは独立して管理）
+site/
+*.db
+snapshots/
+__pycache__/
+*.pyc
+
+# Wrangler ローカル状態（デプロイ時に生成されるアカウントキャッシュ等）
+.wrangler/

@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-08-30T23:46:15+00:00",
+  "session_id": "20260830T234605Z",
+  "summary": {
+    "runs": 10,
+    "succeeded": 10,
+    "providers_measured": 1,
+    "scenarios_measured": 2,
+    "overall_success_rate": 1.0
+  },
+  "results": [
+    {
+      "provider_id": "httpbin-probe",
+      "scenario_id": "llm-markdown-js-heavy",
+      "runs": 5,
+      "success_rate": 1.0,
+      "latency_p50_ms": 90.0,
+      "latency_p95_ms": 123.19999999999999,
+      "ttfb_p50_ms": 89.0,
+      "avg_response_size_bytes": 559,
+      "avg_output_chars": 559,
+      "avg_match_ratio": 1.0,
+      "errors": 0,
+      "cost_estimate_usd": null
+    },
+    {
+      "provider_id": "httpbin-probe",
+      "scenario_id": "llm-markdown-static",
+      "runs": 5,
+      "success_rate": 1.0,
+      "latency_p50_ms": 824.0,
+      "latency_p95_ms": 1044.3999999999999,
+      "ttfb_p50_ms": 823.0,
+      "avg_response_size_bytes": 3741,
+      "avg_output_chars": 3739,
+      "avg_match_ratio": 1.0,
+      "errors": 0,
+      "cost_estimate_usd": null
+    }
+  ],
+  "providers": [
+    {
+      "provider_id": "httpbin-probe",
+      "runs": 10,
+      "success_rate": 1.0,
+      "latency_p50_ms": 443.0,
+      "avg_match_ratio": 1.0,
+      "errors": 0
+    }
+  ]
+}
