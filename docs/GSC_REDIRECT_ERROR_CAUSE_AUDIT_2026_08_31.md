@@ -198,9 +198,29 @@ run_worker_first = true          # 追加
 - リダイレクトチェーンは1ホップ（301→200）でループなし、5回連続で一貫。
 - 正規URLのcanonicalは自己参照（拡張子なし）のまま維持（`/services/nosh`→canonical=`…/services/nosh`）を確認。
 
-### 7.3 残タスク（ユーザー実施待ち）
+### 7.3 GSC操作の実施結果（2026-08-31、Playwrightで実施）
 
-1. **GSCで `sitemap.xml` を再送信**（拡張子なしURLの再通知）
-2. **GSCで拡張子なし正規URLへ個別「インデックス登録をリクエスト」**（例: `/tool/diagnosis`, `/ranking`, `/services/nosh`）
-   - 旧`.html`URLへのリクエストは**不要**（むしろしない方が良い。301化済みのためGoogleが自然に集約する）
-3. 1〜2週間後にGSCで旧URLの「Redirect error」解消と正規URLのインデックス状況を再確認
+**① `sitemap.xml` 再送信: 完了 ✅**
+- GSC Sitemaps で `sitemap.xml` を再送信 → 「Sitemap submitted successfully」を確認
+- テーブル更新: Submitted = **Aug 31, 2026** / Status = Success / 検出ページ = 34
+
+**② 拡張子なし正規URLへの個別「インデックス登録をリクエスト」: 4件成功 ✅（5件目は日次上限）**
+| URL | 結果 |
+|---|---|
+| `/tool/diagnosis` | ✅ リクエスト成功（本件の対象URL） |
+| `/ranking` | ✅ リクエスト成功 |
+| `/services/nosh` | ✅ リクエスト成功（「Indexing requested」ダイアログ確認） |
+| `/articles/chef-muten-tukuritoki-kuchikomi` | ✅ リクエスト成功（「Indexing requested」ダイアログ確認） |
+| `/services/chef-muten-tukuritoki` | ❌ **Quota Exceeded**（日次上限到達。翌日再試行） |
+
+- 旧`.html`URLへのリクエストは**未実施**（設計どおり。301化済みのため不要）
+
+**③ 旧URL `.html` のライブテスト（301化後の確認）: 改善確認 ✅**
+- `https://ret4853.2070abe.workers.dev/tool/diagnosis.html` を「Test live URL」で実測（Aug 31, 8:16 AM）
+- 結果: **「URL is available to Google」「Page can be indexed」**
+- 307時代のキャッシュ結果（「Redirect error」「Page fetch: Failed: Redirect error」）から**解消**。Google index タブの旧クロール結果（Aug 29）は、次回クロールで更新される見込み
+- 証跡スクリーンショット: `.playwright-mcp/gsc-live-test-tool-diagnosis-html-301-ok.png`
+
+**④ 残タスク**
+- `/services/chef-muten-tukuritoki` のインデックス登録リクエスト → **翌日（日次上限リセット後）再試行**
+- 1〜2週間後にGSCで旧URLの「Redirect error」解消（次回クロール反映）と、正規URL（`/tool/diagnosis` 等）のインデックス状況を再確認
