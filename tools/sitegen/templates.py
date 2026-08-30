@@ -1988,7 +1988,7 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
     }}
     document.querySelectorAll('#goals input, #mealforms input').forEach(el => {{
       el.addEventListener('change', () => {{
-        if (!_diagStarted) {{ _diagStarted = true; gtag('event', 'diagnosis_start'); }}
+        if (!_diagStarted) {{ _diagStarted = true; window.dataLayer.push({{event: 'diagnosis_start'}}); }}
         updateDiagSummary();
       }});
     }});
@@ -2017,7 +2017,12 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
           }}).filter(s => s.score > 0).sort((a,b) => b.score - a.score);
       // 診断完了（「please select」の早期returnケースでは発火しない＝実際に診断を実行した回数のみ計測）。
       // result_countは表示件数ではなく実際に条件へ一致した全件数を送る。
-      gtag('event', 'diagnosis_complete', {{ goal_count: goals.length, mealform_count: mealForms.length, result_count: scored.length }});
+      window.dataLayer.push({{
+        event: 'diagnosis_complete',
+        goal_count: goals.length,
+        mealform_count: mealForms.length,
+        result_count: scored.length
+      }});
       // 結果は上位3件のみ表示する（推薦エンジンではなく、既存スコア計算の表示件数を絞るだけ。
       // FINAL_REDESIGN_SPEC.md 10章）。
       const TOP_N = 3;
