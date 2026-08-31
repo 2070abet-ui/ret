@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-30T23:46:15+00:00",
-  "session_id": "20260830T234605Z",
+  "generated_at": "2026-08-31T04:32:19+00:00",
+  "session_id": "20260831T043205Z",
   "summary": {
     "runs": 10,
     "succeeded": 10,
@@ -10,29 +10,29 @@
   },
   "results": [
     {
-      "provider_id": "httpbin-probe",
+      "provider_id": "firecrawl",
       "scenario_id": "llm-markdown-js-heavy",
       "runs": 5,
       "success_rate": 1.0,
-      "latency_p50_ms": 90.0,
-      "latency_p95_ms": 123.19999999999999,
-      "ttfb_p50_ms": 89.0,
-      "avg_response_size_bytes": 559,
-      "avg_output_chars": 559,
+      "latency_p50_ms": 864.0,
+      "latency_p95_ms": 894.8,
+      "ttfb_p50_ms": 863.0,
+      "avg_response_size_bytes": 608,
+      "avg_output_chars": 167,
       "avg_match_ratio": 1.0,
       "errors": 0,
       "cost_estimate_usd": null
     },
     {
-      "provider_id": "httpbin-probe",
+      "provider_id": "firecrawl",
       "scenario_id": "llm-markdown-static",
       "runs": 5,
       "success_rate": 1.0,
       "latency_p50_ms": 824.0,
-      "latency_p95_ms": 1044.3999999999999,
+      "latency_p95_ms": 1072.8,
       "ttfb_p50_ms": 823.0,
-      "avg_response_size_bytes": 3741,
-      "avg_output_chars": 3739,
+      "avg_response_size_bytes": 3953,
+      "avg_output_chars": 3597,
       "avg_match_ratio": 1.0,
       "errors": 0,
       "cost_estimate_usd": null
@@ -40,10 +40,10 @@
   ],
   "providers": [
     {
-      "provider_id": "httpbin-probe",
+      "provider_id": "firecrawl",
       "runs": 10,
       "success_rate": 1.0,
-      "latency_p50_ms": 443.0,
+      "latency_p50_ms": 856.5,
       "avg_match_ratio": 1.0,
       "errors": 0
     }
