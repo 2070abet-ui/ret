@@ -81,7 +81,8 @@ def call_apify(provider, scenario, api_key):
     api = provider["api"]
     url = api["base_url"].rstrip("/") + "/acts/apify~website-content-crawler/run-sync-get-dataset-items"
     url += "?" + urllib.parse.urlencode({"token": api_key})
-    payload = json.dumps({"url": scenario["target_url"], "outputFormat": "markdown"}).encode("utf-8")
+    # apify/website-content-crawler の入力スキーマは startUrls 配列を要求する（url 単体だと 400 invalid-input）
+    payload = json.dumps({"startUrls": [{"url": scenario["target_url"]}], "outputFormat": "markdown"}).encode("utf-8")
     req = urllib.request.Request(url, data=payload, method="POST",
                                  headers={"Content-Type": "application/json", "User-Agent": UA})
     status, body, ttfb, lat = _do_request(req)

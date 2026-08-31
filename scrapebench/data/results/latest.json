@@ -1,22 +1,50 @@
 {
-  "generated_at": "2026-08-31T04:32:19+00:00",
-  "session_id": "20260831T043205Z",
+  "generated_at": "2026-08-31T04:53:53+00:00",
+  "session_id": "20260831T045044Z",
   "summary": {
-    "runs": 10,
-    "succeeded": 10,
-    "providers_measured": 1,
-    "scenarios_measured": 2,
+    "runs": 20,
+    "succeeded": 20,
+    "providers_measured": 2,
+    "scenarios_measured": 4,
     "overall_success_rate": 1.0
   },
   "results": [
+    {
+      "provider_id": "apify",
+      "scenario_id": "llm-markdown-js-heavy",
+      "runs": 5,
+      "success_rate": 1.0,
+      "latency_p50_ms": 17606.0,
+      "latency_p95_ms": 19635.0,
+      "ttfb_p50_ms": 17606.0,
+      "avg_response_size_bytes": 1287,
+      "avg_output_chars": 167,
+      "avg_match_ratio": 1.0,
+      "errors": 0,
+      "cost_estimate_usd": null
+    },
+    {
+      "provider_id": "apify",
+      "scenario_id": "llm-markdown-static",
+      "runs": 5,
+      "success_rate": 1.0,
+      "latency_p50_ms": 18785.0,
+      "latency_p95_ms": 19309.6,
+      "ttfb_p50_ms": 18782.0,
+      "avg_response_size_bytes": 8170,
+      "avg_output_chars": 3598,
+      "avg_match_ratio": 1.0,
+      "errors": 0,
+      "cost_estimate_usd": null
+    },
     {
       "provider_id": "firecrawl",
       "scenario_id": "llm-markdown-js-heavy",
       "runs": 5,
       "success_rate": 1.0,
-      "latency_p50_ms": 864.0,
-      "latency_p95_ms": 894.8,
-      "ttfb_p50_ms": 863.0,
+      "latency_p50_ms": 821.0,
+      "latency_p95_ms": 10142.0,
+      "ttfb_p50_ms": 821.0,
       "avg_response_size_bytes": 608,
       "avg_output_chars": 167,
       "avg_match_ratio": 1.0,
@@ -28,9 +56,9 @@
       "scenario_id": "llm-markdown-static",
       "runs": 5,
       "success_rate": 1.0,
-      "latency_p50_ms": 824.0,
-      "latency_p95_ms": 1072.8,
-      "ttfb_p50_ms": 823.0,
+      "latency_p50_ms": 884.0,
+      "latency_p95_ms": 2560.7999999999997,
+      "ttfb_p50_ms": 884.0,
       "avg_response_size_bytes": 3953,
       "avg_output_chars": 3597,
       "avg_match_ratio": 1.0,
@@ -40,10 +68,18 @@
   ],
   "providers": [
     {
+      "provider_id": "apify",
+      "runs": 10,
+      "success_rate": 1.0,
+      "latency_p50_ms": 18381.5,
+      "avg_match_ratio": 1.0,
+      "errors": 0
+    },
+    {
       "provider_id": "firecrawl",
       "runs": 10,
       "success_rate": 1.0,
-      "latency_p50_ms": 856.5,
+      "latency_p50_ms": 873.0,
       "avg_match_ratio": 1.0,
       "errors": 0
     }
