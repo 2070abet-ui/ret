@@ -14,6 +14,8 @@ REQUIRED_META = [
     ('<meta name="description"', "meta description"),
     ('<meta property="og:title"', "og:title"),
     ('<meta property="og:description"', "og:description"),
+    ('<meta property="og:image"', "og:image"),
+    ('rel="icon"', "favicon"),
 ]
 
 # 検証対象の主要タグ（templates.py が常に閉じタグを明示的に出力するもの）

@@ -5,6 +5,8 @@ data.py が用意したデータ構造を受け取り、HTML文字列を組み�
 """
 import datetime as _dt
 import html as _html
+import json as _json
+import urllib.parse as _up
 
 from sitegen.data import SITE_NAME, SITE_URL, SITE_DESC, LANG, OPERATOR, GSC_META
 
@@ -13,6 +15,28 @@ def esc(s):
     if s is None:
         return ""
     return _html.escape(str(s), quote=True)
+
+
+# ---------- favicon（インラインSVG data URI・B2対応）・JSON-LD（B3対応） ----------
+
+_FAVICON_SVG = (
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>"
+    "<rect width='100' height='100' rx='20' fill='#1E6FD9'/>"
+    "<rect x='22' y='54' width='12' height='26' rx='3' fill='white'/>"
+    "<rect x='42' y='38' width='12' height='42' rx='3' fill='white'/>"
+    "<rect x='62' y='24' width='12' height='56' rx='3' fill='white'/>"
+    "</svg>")
+FAVICON_HREF = "data:image/svg+xml," + _up.quote(_FAVICON_SVG, safe="")
+
+_JSONLD = {
+    "@context": "https://schema.org",
+    "@graph": [
+        {"@type": "WebSite", "@id": f"{SITE_URL}/#website", "url": f"{SITE_URL}/",
+         "name": SITE_NAME, "description": SITE_DESC},
+        {"@type": "Organization", "@id": f"{SITE_URL}/#organization",
+         "url": f"{SITE_URL}/", "name": SITE_NAME},
+    ],
+}
 
 
 # ---------- デザイン（軽量・技術系サイト向け） ----------
@@ -85,6 +109,30 @@ ul, ol { padding-left:22px; }
   color:var(--muted); font-size:0.85rem; }
 .site-footer a { color:var(--muted); text-decoration:none; }
 .site-footer a:hover { color:var(--accent); }
+
+/* C2: スキップリンク（キーボード利用者向け・フォーカス時のみ表示） */
+.skip-link { position:absolute; left:-9999px; top:auto; width:1px; height:1px;
+  overflow:hidden; }
+.skip-link:focus { position:fixed; left:12px; top:12px; z-index:200; width:auto;
+  height:auto; overflow:visible; background:var(--surface); color:var(--accent);
+  padding:10px 16px; border-radius:6px; border:2px solid var(--accent); font-weight:600; }
+
+/* C3: スクリーンリーダー専用（caption用） */
+.visually-hidden { position:absolute; width:1px; height:1px; margin:-1px;
+  padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+
+/* C1: ナビタップターゲット拡大（モバイルで高さ44px以上を確保） */
+.nav a { padding:10px 8px; border-radius:6px; }
+
+/* D2: カード内CTA行・小ボタン */
+.cta-row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 0; }
+.btn-sm { padding:7px 12px; font-size:0.88rem; }
+
+/* A1: テーブル1列目固定（モバイル横スクロール時もProvider名を可視化） */
+.table-wrap { -webkit-overflow-scrolling:touch; }
+th:first-child, td:first-child { position:sticky; left:0; background:var(--surface);
+  box-shadow:1px 0 0 var(--border); z-index:1; }
+thead th:first-child { background:#F1F3F6; z-index:2; }
 """
 
 
@@ -93,6 +141,9 @@ ul, ol { padding-left:22px; }
 def _head(title, description, canonical, noindex=False):
     robots = "noindex, nofollow" if noindex else "index, follow"
     gsc = f'<meta name="google-site-verification" content="{esc(GSC_META)}">\n' if GSC_META else ""
+    og_image = f"{SITE_URL}/og-image.png"
+    twitter_card = "summary" if noindex else "summary_large_image"
+    jsonld = '<script type="application/ld+json">' + _json.dumps(_JSONLD, ensure_ascii=False) + "</script>"
     return f"""<!DOCTYPE html>
 <html lang="{esc(LANG)}">
 <head>
@@ -101,14 +152,18 @@ def _head(title, description, canonical, noindex=False):
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(description)}">
 <link rel="canonical" href="{esc(canonical)}">
+<link rel="icon" href="{FAVICON_HREF}">
 <meta name="robots" content="{robots}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{esc(SITE_NAME)}">
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(description)}">
 <meta property="og:url" content="{esc(canonical)}">
-<meta name="twitter:card" content="summary">
-{gsc}<style>
+<meta property="og:image" content="{esc(og_image)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="{twitter_card}">
+{gsc}{jsonld}<style>
 {_CSS}</style>
 </head>"""
 
@@ -141,8 +196,9 @@ def _footer():
 
 def page(title, description, content_html, canonical, noindex=False):
     return (_head(title, description, canonical, noindex)
-            + "\n<body>\n" + _nav()
-            + "\n<main>\n" + content_html + "\n</main>\n"
+            + '\n<body>\n<a class="skip-link" href="#main">Skip to main content</a>\n'
+            + _nav()
+            + '\n<main id="main">\n' + content_html + "\n</main>\n"
             + _footer() + "\n</body>\n</html>\n")
 
 
@@ -192,18 +248,26 @@ No benchmark data yet. Run <code>python scrapebench/tools/bench.py</code> to col
     pstats = d["provider_stats"]
     pcards = []
     for p in d["providers"]:
-        ps = pstats.get(p.get("id"))
+        pid = p.get("id", "")
+        ps = pstats.get(pid)
         badge = '<span class="badge badge-ok">measured</span>' if ps else '<span class="badge badge-muted">pending</span>'
-        link = f'<a href="{esc(p.get("official_url", "#"))}" rel="noopener noreferrer" target="_blank">{esc(p.get("name", p.get("id")))}</a>'
+        link = f'<a href="{esc(p.get("official_url", "#"))}" rel="noopener noreferrer" target="_blank">{esc(p.get("name", pid))}</a>'
         detail = ""
         if ps:
             detail = f'<div class="stat"><div class="num">{_pct(ps.get("success_rate"))}</div><div class="lbl">success · p50 {_ms(ps.get("latency_p50_ms"))} ms</div></div>'
         notes = p.get("notes") or ""
+        trial_url = p.get("trial_url")
+        cta = ""
+        if trial_url:
+            cta = (f'<p class="cta-row"><a class="btn btn-primary btn-sm" href="{esc(trial_url)}" '
+                   f'rel="noopener noreferrer" target="_blank">Try free trial</a> '
+                   f'<a class="btn btn-secondary btn-sm" href="/benchmarks/{esc(pid)}/">Details</a></p>')
         pcards.append(f"""<article class="card">
 <h3>{link}</h3>
 <p>{badge}</p>
 {detail}
 <p class="muted">{esc(notes)}</p>
+{cta}
 </article>""")
 
     how = """<section>
@@ -217,7 +281,7 @@ No benchmark data yet. Run <code>python scrapebench/tools/bench.py</code> to col
 
     providers_section = f'<section><h2>Providers</h2><div class="cards">{"".join(pcards)}</div></section>' if pcards else ""
     return page(
-        f"{SITE_NAME} — LLM Web Scraping API Benchmarks",
+        f"{SITE_NAME} — Web Scraping API Latency & Success Rate Benchmarks",
         SITE_DESC,
         hero + stats + providers_section + how,
         f"{SITE_URL}/")
@@ -231,7 +295,8 @@ def build_benchmarks_page(d):
         rows = []
         for cell in d["cells"]:
             p, s, r = cell["provider"], cell["scenario"], cell["result"]
-            pname = esc(p.get("name", p.get("id")))
+            pid = p.get("id", "")
+            pname = f'<a href="/benchmarks/{esc(pid)}/">{esc(p.get("name", pid))}</a>'
             sname = esc(s.get("name", s.get("id")))
             turl = esc(s.get("target_url", ""))
             if r is None:
@@ -264,20 +329,90 @@ def build_benchmarks_page(d):
 {gen}
 <div class="table-wrap">
 <table>
+<caption class="visually-hidden">Provider by scenario benchmark results: success rate, p50/p95 latency, match ratio, and response size.</caption>
 <thead>
-<tr><th>Provider</th><th>Scenario</th><th class="num">Runs</th><th>Success</th>
-<th class="num">p50</th><th class="num">p95</th><th class="num">Match ratio</th><th class="num">Avg size</th></tr>
+<tr><th scope="col">Provider</th><th scope="col">Scenario</th><th scope="col" class="num">Runs</th><th scope="col">Success</th>
+<th scope="col" class="num">p50 (ms)</th><th scope="col" class="num">p95 (ms)</th><th scope="col" class="num">Match (%)</th><th scope="col" class="num">Avg Size (KB)</th></tr>
 </thead>
 <tbody>
 {"".join(rows)}
 </tbody>
 </table>
 </div>
-<p class="muted">p50 / p95 are latency percentiles in milliseconds. Match ratio = expected keywords found in extracted output.</p>"""
+<p class="muted">p50 / p95 are latency percentiles in milliseconds. Match (%) = expected keywords found in the extracted output. Avg Size (KB) = mean HTTP response body size.</p>"""
     return page(
-        f"Benchmarks — {SITE_NAME}",
+        f"Benchmarks — Web Scraping API Latency & Success Rates | {SITE_NAME}",
         "Provider-by-provider benchmark results: success rate, p50/p95 latency, response size, and keyword-match quality for LLM web scraping APIs.",
         content, f"{SITE_URL}/benchmarks/")
+
+
+def build_provider_page(d, provider):
+    """プロバイダー詳細ページ（D1: 表のProvider名リンクの遷移先）。
+    プロバイダー情報・CTA・そのプロバイダーのシナリオ別結果を表示する。"""
+    pid = provider.get("id", "")
+    name = provider.get("name", pid)
+    rows = []
+    for cell in d["cells"]:
+        if cell["provider"].get("id") != pid:
+            continue
+        s = cell["scenario"]
+        r = cell["result"]
+        sname = esc(s.get("name", s.get("id")))
+        turl = esc(s.get("target_url", ""))
+        if r is None:
+            rows.append(f"""<tr>
+<td>{sname}<br><code>{turl}</code></td>
+<td class="num">—</td><td><span class="badge badge-muted">no data</span></td>
+<td class="num">—</td><td class="num">—</td><td class="num">—</td>
+</tr>""")
+            continue
+        sr = r.get("success_rate")
+        if sr is None:
+            badge = '<span class="badge badge-muted">—</span>'
+        elif sr >= 1.0:
+            badge = f'<span class="badge badge-ok">{_pct(sr)}</span>'
+        else:
+            badge = f'<span class="badge badge-err">{_pct(sr)}</span>'
+        rows.append(f"""<tr>
+<td>{sname}<br><code>{turl}</code></td>
+<td class="num">{r.get("runs", "—")}</td>
+<td>{badge}</td>
+<td class="num">{_ms(r.get("latency_p50_ms"))}</td>
+<td class="num">{_ms(r.get("latency_p95_ms"))}</td>
+<td class="num">{_pct(r.get("avg_match_ratio"))}</td>
+</tr>""")
+
+    official = provider.get("official_url", "#")
+    trial_url = provider.get("trial_url")
+    if trial_url:
+        cta = (f'<p class="cta-row"><a class="btn btn-primary" href="{esc(trial_url)}" '
+               f'rel="noopener noreferrer" target="_blank">Try free trial</a> '
+               f'<a class="btn btn-secondary" href="{esc(official)}" rel="noopener noreferrer" target="_blank">Official site</a></p>')
+    else:
+        cta = (f'<p><a class="btn btn-secondary" href="{esc(official)}" '
+               f'rel="noopener noreferrer" target="_blank">Official site</a></p>')
+
+    content = f"""<h1>{esc(name)}</h1>
+<p class="muted"><a href="/benchmarks/">← All benchmarks</a></p>
+<p>{esc(provider.get("notes", ""))}</p>
+{cta}
+<h2>Results</h2>
+<div class="table-wrap">
+<table>
+<caption class="visually-hidden">Benchmark results for {esc(name)} by scenario.</caption>
+<thead>
+<tr><th scope="col">Scenario</th><th scope="col" class="num">Runs</th><th scope="col">Success</th>
+<th scope="col" class="num">p50 (ms)</th><th scope="col" class="num">p95 (ms)</th><th scope="col" class="num">Match (%)</th></tr>
+</thead>
+<tbody>
+{"".join(rows)}
+</tbody>
+</table>
+</div>"""
+    return page(
+        f"{name} — Web Scraping API Benchmarks | {SITE_NAME}",
+        f"Benchmark results for {name}: success rate, p50/p95 latency, and match ratio across web scraping API scenarios.",
+        content, f"{SITE_URL}/benchmarks/{pid}/")
 
 
 def build_methodology_page(d):
@@ -306,7 +441,7 @@ def build_methodology_page(d):
 <h2>Transparency</h2>
 <p>Scenario definitions and provider configuration are version-controlled in <code>config/</code>. The latest aggregation is published with its session timestamp.</p>"""
     return page(
-        f"Methodology — {SITE_NAME}",
+        f"Methodology — How We Measure Web Scraping APIs | {SITE_NAME}",
         "How ScrapeBench measures web scraping APIs: metric definitions, procedure, fairness notes, and caveats.",
         content, f"{SITE_URL}/methodology/")
 

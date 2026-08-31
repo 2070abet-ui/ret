@@ -5,6 +5,7 @@ ScrapeBench 静的サイト生成 - 生成の司令塔
 import shutil
 
 from sitegen import data
+from sitegen import ogimage
 from sitegen import templates
 from sitegen import validate
 
@@ -38,6 +39,14 @@ def main():
     (out / "benchmarks" / "index.html").write_text(templates.build_benchmarks_page(bd), encoding="utf-8")
     pages.append("benchmarks/index.html")
 
+    # プロバイダー詳細ページ（D1: 表のProvider名リンクの遷移先）
+    for p in bd["providers"]:
+        pid = p.get("id", "")
+        pdir = out / "benchmarks" / pid
+        pdir.mkdir(parents=True, exist_ok=True)
+        (pdir / "index.html").write_text(templates.build_provider_page(bd, p), encoding="utf-8")
+        pages.append(f"benchmarks/{pid}/index.html")
+
     # メソドロジー
     (out / "methodology" / "index.html").write_text(templates.build_methodology_page(bd), encoding="utf-8")
     pages.append("methodology/index.html")
@@ -53,6 +62,9 @@ def main():
     for fname, fn in info_pages:
         (out / fname).write_text(fn(bd), encoding="utf-8")
         pages.append(fname)
+
+    # OGP画像（B1: 1200x630、純Pythonで自動生成）
+    (out / "og-image.png").write_bytes(ogimage.render_og_image())
 
     # 404 / sitemap / robots
     (out / "404.html").write_text(templates.build_404_page(bd), encoding="utf-8")

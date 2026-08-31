@@ -6,6 +6,7 @@
       "name": "Firecrawl",
       "official_url": "https://firecrawl.dev",
       "docs_url": "https://docs.firecrawl.dev",
+      "trial_url": "https://firecrawl.dev/pricing",
       "api": {
         "base_url": "https://api.firecrawl.dev/v1",
         "endpoint": "POST /scrape",
@@ -22,6 +23,7 @@
       "name": "Apify",
       "official_url": "https://apify.com",
       "docs_url": "https://docs.apify.com",
+      "trial_url": "https://apify.com/pricing",
       "api": {
         "base_url": "https://api.apify.com/v2",
         "endpoint": "POST /acts/apify~website-content-crawler/run-sync-get-dataset-items",
@@ -39,6 +41,7 @@
       "name": "ScrapingBee",
       "official_url": "https://www.scrapingbee.com",
       "docs_url": "https://docs.scrapingbee.com",
+      "trial_url": "https://www.scrapingbee.com/pricing/",
       "api": {
         "base_url": "https://app.scrapingbee.com/api/v1",
         "endpoint": "GET /",
@@ -55,6 +58,7 @@
       "name": "httpbin.org (keyless probe)",
       "official_url": "https://httpbin.org",
       "docs_url": "https://httpbin.org",
+      "trial_url": null,
       "api": {
         "base_url": "https://httpbin.org",
         "endpoint": "GET /html",
