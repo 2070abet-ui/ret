@@ -102,8 +102,8 @@
     },
     "tsuklio": {
       "asp": "A8.net",
-      "status": "未提携（ASP承認待ち）",
-      "actual_url": "",
+      "status": "提携承認済み（A8リンク設定済み）",
+      "actual_url": "https://px.a8.net/svt/ejp?a8mat=4BAFPL+7XS35E+59UQ+5YJRM",
       "fallback_url": "https://www.tsuklio.com/",
       "note": "A8.netでセルフバック案件の存在を確認（2026-08-27）。報酬額は非公開"
     },
