@@ -174,6 +174,11 @@ def main():
         templates.build_article_chef_muten_kuchikomi(aff_links), encoding="utf-8")
     pages.append("articles/chef-muten-tukuritoki-kuchikomi.html")
 
+    # 記事ページ（高齢者向け宅配食 比較、2本目）
+    (out_dir / "articles" / "koreisha-takushoku-hikaku.html").write_text(
+        templates.build_article_koreisha_takushoku(services_with_mealform, aff_links, sources_by_id), encoding="utf-8")
+    pages.append("articles/koreisha-takushoku-hikaku.html")
+
     # 法務ページ
     legal_pages = [
         ("privacy.html", templates.build_privacy_page),

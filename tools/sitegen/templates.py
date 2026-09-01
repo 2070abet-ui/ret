@@ -1528,6 +1528,25 @@ def comparison_pairs_block(comparison_pairs):
     </div>"""
 
 
+# 記事ページへの内部リンク一覧（TOP・ranking.htmlで共有）。記事ページはservices.jsonの
+# article_linkによるサービス詳細ページからの被リンクしか持たず孤立しやすいため、
+# comparison_pairs_block（比較ページの内部リンク孤立解消）と同じ考え方で主要導線に
+# 集約リンクを1本追加する。新規ページ・新規データフィールドは作らず、既存記事を列挙するのみ。
+ARTICLES_INDEX = [
+    ("/articles/chef-muten-tukuritoki-kuchikomi", "シェフの無添つくりおきの口コミ・評判・料金を徹底検証"),
+    ("/articles/koreisha-takushoku-hikaku", "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮】"),
+]
+
+
+def articles_index_block():
+    items = "".join(f'<li><a href="{esc(url)}">{esc(label)}</a></li>' for url, label in ARTICLES_INDEX)
+    return f"""
+    <div class="card card-quiet">
+      <h2 class="heading-staggered">読み物・特集記事</h2>
+      <ul class="feature-list">{items}</ul>
+    </div>"""
+
+
 def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
                         purpose_matches=None, coverage=None, fully_verified_ids=None,
                         sources_by_id=None):
@@ -1690,6 +1709,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
       </ul>
       <p style="margin-top:12px;"><a class="btn-primary" href="/tool/diagnosis">自分に合うサービスを診断する →</a></p>
     </div>
+    {articles_index_block()}
     {comparison_pairs_block(comparison_pairs)}
     <p class="price-meta">※各サービスの詳細はサービス名リンクから。価格・キャンペーン情報は常に変動するため、最新情報は公式サイトをご確認ください。</p>
     <script>
@@ -2220,6 +2240,8 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
       <p style="margin-top:8px;"><a class="text-link" href="/campaigns">すべてのキャンペーンを見る →</a></p>
     </div>
 
+    {articles_index_block()}
+
     <div class="section-flat">
       <h2>このサイトのこだわり</h2>
       <ul class="feature-list">
@@ -2383,6 +2405,196 @@ def build_article_chef_muten_kuchikomi(aff_links):
       <a class="btn-secondary" href="/services/chef-muten-tukuritoki">シェフの無添つくりおきの詳細ページを見る</a>
       <a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>
       <a class="btn-secondary" href="/campaigns">初回キャンペーン一覧を見る</a>
+    </div>
+    """
+    html += page_footer(LAST_VERIFIED_DATE)
+    return html
+
+
+def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
+    """高齢者向け宅配食 比較記事（商標非依存・非ランキング型ロングテール、2本目）。
+    data/services.jsonのtarget/tagsに「高齢者」を含む5社を、既存の確認状態表示
+    （vstatus・price_cell系）をそのまま使って比較する。数値順位・★評価は付けない
+    （UI_DESIGN_PRINCIPLES.md 8章／ranking_evaluation_policy：十分なデータと明示された
+    評価基準が無い限り主観評価はしない。ここでは並び順=services.json記載順で固定）。
+    servicesはgenerators.mainのservices_with_mealform（meal_form_categories付与済み）を渡す想定。"""
+    svc_by_id = {s["id"]: s for s in services}
+    ids = ["magokoro-care", "syokurakuzen", "kenko-chokkyokubin", "wanmairu", "shokutakubin"]
+    picked = [svc_by_id[i] for i in ids if i in svc_by_id]
+
+    title = "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮を徹底解説】"
+    desc = "高齢者向けの宅配食・冷凍弁当5社を比較。やわらか食・塩分配慮の有無、1食あたりの価格、個食かどうかを公式情報で整理。自治体配食との違い、離れて暮らす家族が代理で注文する際の確認点も解説します。"
+    html = page_header(title, desc, "articles/koreisha-takushoku-hikaku.html")
+
+    cta_wanmairu = aff_link(aff_links, "wanmairu", label="わんまいるを公式サイトで見る", cls="btn-primary")
+    cta_syokurakuzen = aff_link(aff_links, "syokurakuzen", label="食楽膳を公式サイトで見る", cls="btn-primary")
+    cta_kenko = aff_link(aff_links, "kenko-chokkyokubin", label="健康直球便を公式サイトで見る", cls="btn-primary")
+    cta_magokoro = aff_link(aff_links, "magokoro-care", label="まごころケア食を公式サイトで見る", cls="btn-secondary")
+    cta_shokutakubin = aff_link(aff_links, "shokutakubin", label="食宅便を公式サイトで見る", cls="btn-secondary")
+
+    # 比較表（5社・並び順はservices.json記載順のまま固定。価格セルは検証状態バッジ付きで
+    # ranking.html/verification.htmlと同じ_price_inline_htmlをそのまま再利用する）。
+    rows = []
+    for svc in picked:
+        pricing = _pricing_of(svc)
+        price_cell = _price_inline_html(pricing, sources_by_id)
+        mealform_cats = svc.get("meal_form_categories") or []
+        mealform_txt = "・".join(mealform_cats) if mealform_cats else esc(svc.get("meal_form", "")) or "公式確認中"
+        target_txt = "・".join(svc.get("target", [])) or "公式確認中"
+        rows.append(f"""
+        <tr>
+          <td><a href="/services/{svc['id']}"><strong>{esc(svc['name'])}</strong></a></td>
+          <td class="td-price">{price_cell}</td>
+          <td>{esc(mealform_txt)}</td>
+          <td>{esc(target_txt)}</td>
+        </tr>""")
+
+    html += f"""
+    <h1>高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮を徹底解説】</h1>
+    <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（data/services.json記載の確認日は社ごとに異なります）</p>
+
+    <div class="card panel-accent">
+      <h2>結論：高齢者向け宅配食は「やわらか食・塩分配慮の有無」で選ぶ</h2>
+      <p>高齢者向けの宅配食・冷凍弁当を選ぶときに比較すべきポイントは、主に次の3つです。</p>
+      <ul class="feature-list">
+        <li><strong>やわらか食・ムース食に対応しているか</strong>：噛む力・飲み込む力が低下している場合に重要</li>
+        <li><strong>塩分・カロリーが配慮されているか</strong>：持病（高血圧・腎臓病等）がある場合に重要</li>
+        <li><strong>個食（1食ずつ食べきりサイズ）かどうか</strong>：一人暮らしの高齢者は個食タイプが食べ残しを防ぎやすい</li>
+      </ul>
+      <p>当サイトは独自の点数やランキング順位を付けていません。以下は<strong>data/services.jsonに記載の並び順のまま</strong>、公式情報で確認できた内容を並べたものです。</p>
+    </div>
+
+    <div class="card">
+      <h2>高齢者向け宅配食5社の比較表</h2>
+      {mobile_scroll_hint()}
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>サービス</th><th>1食あたりの料金</th><th>保存方法</th><th>向いている人</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料込み表記への正規化はしていません。</p>
+    </div>
+
+    <div class="card">
+      <h2>まごころケア食：やわらか食・ムース食に対応</h2>
+      <ul class="feature-list">
+        <li>高齢者向けの専門性が高く、やわらか食・ムース食に対応（公式情報より）</li>
+        <li>配達エリアが広い</li>
+        <li>初回限定14食2,660円（税込・1食190円・66%OFF）、2回目以降は1食398円</li>
+      </ul>
+      <p class="price-meta">気になる点：若年層には訴求しにくい／価格の全プラン確認は要公式サイト確認。</p>
+      <div style="margin-top:12px;">{cta_magokoro}</div>
+    </div>
+
+    <div class="card">
+      <h2>食楽膳：SOMPOグループ・個食タイプで塩分控えめセットが選べる</h2>
+      <ul class="feature-list">
+        <li>SOMPOグループが運営する冷凍おかず宅配</li>
+        <li>個食タイプ（1食ずつ食べきりサイズ）で食べ残しを防ぎやすい</li>
+        <li>お肉・お魚・塩分控えめセットから選択可能</li>
+        <li>21食セット7,380円（税込・1食約351円）。定期購入で最大10%OFF、定期初回は15%OFF</li>
+      </ul>
+      <p class="price-meta">気になる点：おかず中心のためごはん（主食）は別途用意が必要。冷凍庫のスペースが必要。</p>
+      <div style="margin-top:12px;">{cta_syokurakuzen}</div>
+    </div>
+
+    <div class="card">
+      <h2>健康直球便：減塩食・やわらか食・消化にやさしい食事に特化</h2>
+      <ul class="feature-list">
+        <li>減塩食・やわらか食・消化にやさしい食事に特化した冷凍弁当</li>
+        <li>カロリー・塩分調整食セット10食5,780円（税込・1食578円）</li>
+        <li>新規会員登録で3食無料キャンペーン実施中（{esc(LAST_VERIFIED_DATE)}時点、詳細は公式サイトで要確認）</li>
+        <li>沖縄県以外は送料無料</li>
+      </ul>
+      <p class="price-meta">気になる点：減塩・やわらか食ニーズ以外の人には訴求しにくい。メニュー数・価格の詳細は要公式サイト確認。</p>
+      <div style="margin-top:12px;">{cta_kenko}</div>
+    </div>
+
+    <div class="card">
+      <h2>わんまいる：無添加・国産食材で健康志向の高い高齢者向け</h2>
+      <ul class="feature-list">
+        <li>国産食材100%使用、合成保存料・合成着色料不使用（無添加）</li>
+        <li>主菜1品+副菜2品の3品構成で、単品弁当より食卓の品数を確保できる</li>
+        <li>週1回コース6,280円（税込・5食・1食約1,256円、送料別）</li>
+        <li>休止・解約とも回数制限なし</li>
+      </ul>
+      <p class="price-meta">気になる点：湯せん・流水解凍が必要（レンジのみでは完結しない）。1食あたりの単価は本比較の中でやや高め。</p>
+      <div style="margin-top:12px;">{cta_wanmairu}</div>
+    </div>
+
+    <div class="card card-quiet">
+      <h2>食宅便：日清医療食品運営・価格帯は比較的手頃</h2>
+      <p>日清医療食品が運営する宅配食で、病院給食のノウハウを活かしたメニューが特徴です。週間人気商品「おまかせコース7食セット」は4,830円（税込・1食690円）ですが、これは公式サイトの人気商品ページ内での最安値であり、全プラン中の最安であることまでは確認できていません（{esc(LAST_VERIFIED_DATE)}時点）。</p>
+      <div style="margin-top:12px;">{cta_shokutakubin}</div>
+    </div>
+
+    <div class="card">
+      <h2>やわらか食のレベルってどう見る？</h2>
+      <p>やわらか食には、噛む力・飲み込む力の程度に応じた段階があるのが一般的です（日本介護食品協議会の「ユニバーサルデザインフード」区分など、業界共通の目安として広く使われています）。</p>
+      <ul class="feature-list">
+        <li>容易にかめる（普通の食事に近いやわらかさ）</li>
+        <li>歯ぐきでつぶせる</li>
+        <li>舌でつぶせる</li>
+        <li>かまなくてよい（ムース状）</li>
+      </ul>
+      <p class="price-meta">当サイトで比較した5社について、公式サイトでこの区分（どのレベルに対応するか）まで明記しているかは個社ごとに異なり、当サイトでは網羅的に確認できていません。段階が気になる方は、各社の公式サイトの「やわらか食」ページで直接ご確認ください。</p>
+    </div>
+
+    <div class="card">
+      <h2>自治体の配食サービスとの違い</h2>
+      <p>自治体（市区町村）にも高齢者向けの配食サービスがあります。一般的に、以下のような違いがあります。</p>
+      <div class="pros-cons">
+        <div>
+          <strong>自治体の配食サービス</strong>
+          <ul class="feature-list">
+            <li>要介護認定・一人暮らし等の対象要件があることが多い</li>
+            <li>配達時の安否確認を兼ねる場合が多い</li>
+            <li>費用は自治体の補助により割安なことが多い</li>
+            <li>提供エリア・注文方法は自治体ごとに異なる</li>
+          </ul>
+        </div>
+        <div>
+          <strong>民間の宅配食サービス（本記事で比較した5社等）</strong>
+          <ul class="feature-list">
+            <li>対象要件がなく、誰でも注文できる</li>
+            <li>全国対応のサービスが多く、注文・スキップも自由度が高い</li>
+            <li>メニューの種類・やわらか食対応等の選択肢が豊富</li>
+          </ul>
+        </div>
+      </div>
+      <p class="price-meta">具体的な対象要件・費用は自治体ごとに異なるため、お住まいの市区町村の窓口（地域包括支援センター等）でご確認ください。</p>
+    </div>
+
+    <div class="card">
+      <h2>離れて暮らす家族が代理で注文するときの確認点</h2>
+      <ul class="feature-list">
+        <li><strong>支払い方法</strong>：注文者（家族）と届け先（本人）を分けられるか、クレジットカード以外の支払いに対応しているか</li>
+        <li><strong>配達時の在宅確認</strong>：宅配ボックス・置き配に対応しているか、不在時の対応はどうなるか</li>
+        <li><strong>解約・スキップの手続き</strong>：本人が手続きできない場合、家族が電話・マイページで代理変更できるか</li>
+        <li><strong>初回のみ量を減らして試せるか</strong>：本人の食べる量・好みが分からない段階では、少量から試せるプランがあると安心</li>
+      </ul>
+      <p class="price-meta">上記は一般的な確認ポイントであり、各社の対応可否は本記事では確認していません。契約前に各社公式サイト・カスタマーサポートへ直接お問い合わせください。</p>
+    </div>
+
+    <div class="card panel-accent">
+      <h2>まとめ：まず何を優先するかを決める</h2>
+      <ul class="feature-list">
+        <li>やわらか食・ムース食が必要 → まごころケア食・健康直球便</li>
+        <li>塩分・カロリー配慮を重視 → 健康直球便・食楽膳</li>
+        <li>無添加・食材の質を重視 → わんまいる</li>
+        <li>個食で食べ残しを防ぎたい → 食楽膳</li>
+      </ul>
+      <p class="price-meta">当サイトは他サイトの口コミ文を転載していません。判断は公式情報と、ご本人の噛む力・持病の有無・食習慣に照らして行ってください。</p>
+      <p style="font-size:12px;color:#999;margin-top:8px;">※当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
+    </div>
+
+    <div style="margin-top:16px;">
+      <a class="btn-secondary" href="/services/magokoro-care">まごころケア食の詳細ページ</a>
+      <a class="btn-secondary" href="/services/syokurakuzen">食楽膳の詳細ページ</a>
+      <a class="btn-secondary" href="/services/kenko-chokkyokubin">健康直球便の詳細ページ</a>
+      <a class="btn-secondary" href="/services/wanmairu">わんまいるの詳細ページ</a>
+      <a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>
     </div>
     """
     html += page_footer(LAST_VERIFIED_DATE)

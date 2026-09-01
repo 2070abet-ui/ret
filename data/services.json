@@ -1,6 +1,6 @@
 {
   "_comment": "宅配食サービス マスタDB。last_checked=最終確認日。価格は pricing.price_points[]（初回/通常/お試し/アラカルト等をbasisで分離）で表現し、各価格ポイント単位でstatus/source_id/last_checkedを保持する。既存price_planは移行期間中のフォールバック用に一時的に残置。未確認項目は要確認マーク。",
-  "updated_at": "2026-08-28",
+  "updated_at": "2026-09-02",
   "services": [
     {
       "id": "nosh",
@@ -811,6 +811,8 @@
       },
       "last_checked": "2026-08-26",
       "official_url_note": "公式サイトはmagokoro-care-shoku.com（2026-08-27確認）。magokoro-care.comは法人情報サイト",
+      "article_link": "/articles/koreisha-takushoku-hikaku.html",
+      "article_label": "高齢者向け宅配食おすすめ比較記事を見る",
       "pricing": {
         "currency": "JPY",
         "tax": "included",
@@ -1085,6 +1087,8 @@
         "source_url": "https://shokurakuzen-sompocarefoods.com/"
       },
       "last_checked": "2026-08-26",
+      "article_link": "/articles/koreisha-takushoku-hikaku.html",
+      "article_label": "高齢者向け宅配食おすすめ比較記事を見る",
       "pricing": {
         "currency": "JPY",
         "tax": "included",
@@ -1283,6 +1287,8 @@
         "source_url": "https://kenko-chokkyubin.com/"
       },
       "last_checked": "2026-08-26",
+      "article_link": "/articles/koreisha-takushoku-hikaku.html",
+      "article_label": "高齢者向け宅配食おすすめ比較記事を見る",
       "pricing": {
         "currency": "JPY",
         "tax": "included",
@@ -1770,6 +1776,8 @@
         "source_url": "https://www.onemile.jp/"
       },
       "last_checked": "2026-08-28",
+      "article_link": "/articles/koreisha-takushoku-hikaku.html",
+      "article_label": "高齢者向け宅配食おすすめ比較記事を見る",
       "pricing": {
         "currency": "JPY",
         "tax": "included",
