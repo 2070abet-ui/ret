@@ -78,11 +78,18 @@ _CSS = """/* ===== 宅食図鑑 デザインシステム（REDESIGN_UI_SPEC.md�
   --color-primary-hover:#C8431F;
   --color-primary-active:#A8371A;
   --color-primary-subtle:#FDEEE8;
+  /* COLOR_AUDIT_2026_09_02：--color-primary(#E8552D)単体は白/クリーム背景の文字色として
+     使うとWCAG AAの4.5:1に届かない（3.2〜3.6:1）。新しい色相は追加せず、既存の
+     hover/active値のエイリアスとして「文字用」「白文字を乗せる塗り背景用」を分ける。 */
+  --color-primary-text:var(--color-primary-active);  /* 文字色用。E8552Dの代わりにこちらを使う */
+  --color-primary-fill:var(--color-primary-hover);   /* 白文字を乗せる塗り背景用（ボタン等） */
 
   /* ニュートラル */
   --color-text:#1F2328;
   --color-text-muted:#5B6470;
-  --color-text-faint:#8A9099;
+  /* COLOR_AUDIT_2026_09_02：#8A9099は#FAF7F5上で3.01:1しかなくAA未達（4.5:1）だったため、
+     視覚的に「muted」より控えめというヒエラルキーは保ちつつAAを満たす濃さに調整。 */
+  --color-text-faint:#69717C;
   --color-border:#E7E2DB;
   --color-border-strong:#D3CCC1;
   --color-bg:#FAF7F5;
@@ -93,10 +100,11 @@ _CSS = """/* ===== 宅食図鑑 デザインシステム（REDESIGN_UI_SPEC.md�
   --status-confirmed-fg:#1E7E34; --status-confirmed-bg:#E6F4EA;
   --status-derived-fg:#1A56DB;   --status-derived-bg:#E8F0FE;
   --status-pending-fg:#B45300;   --status-pending-bg:#FFF4E5;
-  --status-uncollected-fg:#6B7280; --status-uncollected-bg:#F1F1F1;
+  /* COLOR_AUDIT_2026_09_02：旧#6B7280は#F1F1F1上で4.28:1とAAにわずかに届かなかったため微調整。 */
+  --status-uncollected-fg:#63697A; --status-uncollected-bg:#F1F1F1;
 
   /* 全項目確認済みバッジ（primaryの輪郭のみ。★・金色は使わない） */
-  --badge-full-fg:var(--color-primary);
+  --badge-full-fg:var(--color-primary-text);
   --badge-full-border:var(--color-primary);
 
   /* タイポグラフィ（2.2節） */
@@ -154,15 +162,19 @@ h2 { font:var(--text-h2); margin:var(--space-5) 0 var(--space-2); }
 }
 h3 { font:var(--text-h3); margin:var(--space-4) 0 var(--space-2); }
 p { margin-bottom:var(--space-2); }
-a { color:var(--color-primary); }
+a { color:var(--color-primary-text); }
 ul, ol { padding-left:1.4em; }
 
 /* ---------- ヘッダー / ナビ（5章） ---------- */
-header.site { background:var(--color-primary); color:#fff; padding:var(--space-3) 0; }
+/* COLOR_AUDIT_2026_09_02：白文字を乗せる塗り背景はvar(--color-primary)ではなく
+   var(--color-primary-fill)を使う（E8552D単体は白文字とのコントラストがAA未達のため）。 */
+header.site { background:var(--color-primary-fill); color:#fff; padding:var(--space-3) 0; }
 header.site .container { display:flex; align-items:center; justify-content:space-between; gap:var(--space-4); flex-wrap:wrap; }
 header.site .site-logo { color:#fff; font-size:18px; font-weight:700; text-decoration:none; letter-spacing:.02em; }
 nav.main { display:flex; align-items:center; gap:var(--space-4); flex-wrap:wrap; }
-nav.main a { color:rgba(255,255,255,.9); text-decoration:none; font-size:14px; font-weight:600; padding:6px 2px; border-bottom:2px solid transparent; transition:border-color var(--transition-fast), color var(--transition-fast); }
+/* 透過率.9で不透明白より若干暗くしていたが、これがAA未達（3.2:1）の一因だったため不透明白に統一。
+   非ホバー時との区別はborder-bottomの有無で引き続き付く。 */
+nav.main a { color:#fff; text-decoration:none; font-size:14px; font-weight:600; padding:6px 2px; border-bottom:2px solid transparent; transition:border-color var(--transition-fast), color var(--transition-fast); }
 nav.main a:hover { color:#fff; border-bottom-color:rgba(255,255,255,.85); }
 
 /* ---------- カード / テーブル ---------- */
@@ -199,7 +211,7 @@ nav.main a:hover { color:#fff; border-bottom-color:rgba(255,255,255,.85); }
 .container-top .campaign-pick { margin:0 0 var(--space-7); }
 .campaign-pick-body { display:flex; gap:var(--space-5); align-items:stretch; }
 .campaign-pick-main { flex:1 1 40%; background:var(--color-surface); border-radius:var(--radius-sm); padding:var(--space-4); display:flex; flex-direction:column; gap:4px; }
-.campaign-pick-label { font:var(--text-meta); color:var(--color-primary); font-weight:700; letter-spacing:.05em; margin:0; }
+.campaign-pick-label { font:var(--text-meta); color:var(--color-primary-text); font-weight:700; letter-spacing:.05em; margin:0; }
 .campaign-pick-name { font:var(--text-h3); margin:0; }
 .campaign-pick-value { font:var(--price-figure); margin:0; }
 .campaign-pick-list { flex:1 1 55%; margin:0; }
@@ -219,15 +231,19 @@ tr:last-child td { border-bottom:none; }
    （build_ranking_pageのJSソートはparentNode.appendChildに依存しており明示的tbodyでも壊れない）。 */
 
 /* ---------- ボタン（10章） ---------- */
+/* COLOR_AUDIT_2026_09_02：白文字(14px太字)とvar(--color-primary)の組み合わせは3.64:1でAA(4.5:1)未達
+   だったため、地の色をvar(--color-primary-fill)（=primary-hoverの濃さ）に変更。
+   hover/activeは1段階ずつ濃くなる関係を保つため、hoverをprimary-active、activeも同色を使う
+   （新しい色相・4段階目の色は追加しない）。 */
 .btn-primary {
   display:inline-flex; align-items:center; justify-content:center;
-  background:var(--color-primary); color:#fff;
+  background:var(--color-primary-fill); color:#fff;
   padding:12px 24px; border-radius:var(--radius-sm);
   text-decoration:none; font-weight:700; font-size:14px;
   min-height:44px; border:none; cursor:pointer;
   transition:background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
-.btn-primary:hover { background:var(--color-primary-hover); transform:translateY(-1px); }
+.btn-primary:hover { background:var(--color-primary-active); transform:translateY(-1px); }
 .btn-primary:active { background:var(--color-primary-active); transform:none; }
 .btn-primary:focus-visible { outline:none; box-shadow:var(--shadow-focus); }
 .btn-secondary {
@@ -248,12 +264,12 @@ tr:last-child td { border-bottom:none; }
   padding:10px 20px; border-radius:var(--radius-sm);
   font-size:13px; font-weight:700; min-height:44px;
 }
-.text-link { color:var(--color-primary); text-decoration:none; font-weight:700; }
+.text-link { color:var(--color-primary-text); text-decoration:none; font-weight:700; }
 .text-link:hover { text-decoration:underline; }
 
 /* ---------- タグ / バッジ ---------- */
 .tag {
-  display:inline-block; background:var(--color-primary-subtle); color:var(--color-primary);
+  display:inline-block; background:var(--color-primary-subtle); color:var(--color-primary-text);
   padding:2px var(--space-3); border-radius:999px;
   font:var(--text-micro); letter-spacing:.02em; margin:2px 2px 2px 0;
 }
@@ -302,15 +318,16 @@ tr:last-child td { border-bottom:none; }
 .price-unconfirmed { color:var(--color-text-muted); font-size:0.95rem; font-weight:400; line-height:1.2; }
 /* 長い基準ラベル（例：ツクリオ「1人前あたり換算価格（当サイト算出）」）がモバイル幅で
    横に突き抜けないよう、折り返しを許可し丸角を控えめにする（15章：横スクロール禁止方針）。 */
-.price-basis { font-size:12px; font-weight:600; color:var(--color-primary); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:10px; padding:1px 8px; white-space:normal; max-width:100%; line-height:1.4; }
+.price-basis { font-size:12px; font-weight:600; color:var(--color-primary-text); background:var(--color-surface-alt); border:1px solid var(--color-border); border-radius:10px; padding:1px 8px; white-space:normal; max-width:100%; line-height:1.4; }
 /* 初回/お試し価格は「継続利用時の実質価格ではない」ため、通常の.price-basisより
    高コントラストな塗りつぶしで区別する（COMPETITOR_UX_FUNNEL_AUDIT_2026_08_28.md：
    通常価格と初回/お試し価格が同一の視覚重量で並び、ユーザーが誤読する問題への対処）。
    --color-primaryの塗り潰しは.checks label:has(input:checked)と同じトーンを再利用し、
-   新規の色トークンは追加しない。--status-*系（確認状態バッジ）とは別軸のため使わない。 */
-.price-basis-onetime { background:var(--color-primary); color:#fff; border-color:var(--color-primary); font-weight:700; }
+   新規の色トークンは追加しない。--status-*系（確認状態バッジ）とは別軸のため使わない。
+   COLOR_AUDIT_2026_09_02：白文字を乗せる塗りのためvar(--color-primary-fill)を使用。 */
+.price-basis-onetime { background:var(--color-primary-fill); color:#fff; border-color:var(--color-primary-fill); font-weight:700; }
 .source-link { font:var(--text-meta); color:var(--color-text-faint); }
-.source-link:hover { color:var(--color-primary); }
+.source-link:hover { color:var(--color-primary-text); }
 .price-points-table { width:100%; border-collapse:collapse; margin-top:12px; }
 .price-points-table th, .price-points-table td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--color-border); font-size:13px; vertical-align:top; }
 .price-points-table th { font-size:12px; color:var(--color-text-muted); font-weight:600; white-space:nowrap; }
@@ -330,7 +347,7 @@ tr:last-child td { border-bottom:none; }
 .hero h1 { font:var(--text-display); margin:0 0 var(--space-3); }
 .hero-lead { font:var(--text-body); color:var(--color-text-muted); margin:0 0 var(--space-4); max-width:44em; }
 .hero-actions { display:flex; gap:var(--space-4); align-items:center; flex-wrap:wrap; }
-.hero-sub-cta { font-weight:700; color:var(--color-primary); text-decoration:none; font-size:15px; }
+.hero-sub-cta { font-weight:700; color:var(--color-primary-text); text-decoration:none; font-size:15px; }
 .hero-sub-cta:hover { text-decoration:underline; }
 
 /* ---------- ページ見出し（詳細ページ 12章） ---------- */
@@ -362,7 +379,7 @@ tr:last-child td { border-bottom:none; }
 .purpose-group { flex:1 1 180px; min-width:180px; }
 .purpose-chip {
   display:inline-flex; align-items:center;
-  background:var(--color-primary-subtle); color:var(--color-primary);
+  background:var(--color-primary-subtle); color:var(--color-primary-text);
   border:1px solid var(--color-primary);
   border-radius:999px; padding:6px 14px;
   font-size:13px; font-weight:700; letter-spacing:.02em;
@@ -373,7 +390,7 @@ tr:last-child td { border-bottom:none; }
   text-decoration:none; border-bottom:1px solid var(--color-border-strong);
   padding:2px 0; line-height:1.5;
 }
-.purpose-services a:hover { color:var(--color-primary); border-bottom-color:var(--color-primary); }
+.purpose-services a:hover { color:var(--color-primary-text); border-bottom-color:var(--color-primary); }
 /* TOP専用：詳細ページ直リンクの隣に、TOP自身の一覧内カードへのページ内アンカーを追加
    （TOP_PROGRESSIVE_DISCLOSURE_FINAL_AUDIT_2026_08_28.md）。既存リンクは維持し選択肢を1つ追加するのみ。 */
 .purpose-service-link { display:inline-flex; align-items:center; gap:1px; }
@@ -381,14 +398,15 @@ tr:last-child td { border-bottom:none; }
    独立した小さなチップ（背景+角丸）にする。色・文言・遷移先は無変更。 */
 .purpose-services a.purpose-anchor {
   display:inline-flex; align-items:center; justify-content:center;
-  font-size:11px; color:var(--color-primary); text-decoration:none;
+  font-size:11px; color:var(--color-primary-text); text-decoration:none;
   /* TOP_P2_IMPROVEMENT_IMPLEMENTATION_2026_08_28.md 追記：親セクション
      (.purpose-section-top)の背景と同一トークンだったため溶け込んでいた。
      既存の白系トークンに変更しコントラストを確保する（新規色は追加しない）。 */
   background:var(--color-surface); border-radius:999px;
   border-bottom:none; min-width:20px; height:20px; padding:0 5px; margin-left:2px; line-height:1.5;
 }
-.purpose-services a.purpose-anchor:hover { background:var(--color-primary); color:#fff; }
+/* COLOR_AUDIT_2026_09_02：白文字を乗せる塗りのためvar(--color-primary-fill)を使用。 */
+.purpose-services a.purpose-anchor:hover { background:var(--color-primary-fill); color:#fff; }
 
 /* ---------- Trust Panel（8章） ---------- */
 .trust-panel {
@@ -430,7 +448,7 @@ tr:last-child td { border-bottom:none; }
 .svc-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-2); flex-wrap:wrap; }
 .svc-card-name { font:var(--text-h3); margin:0; }
 .svc-card-name a { color:var(--color-text); text-decoration:none; }
-.svc-card-name a:hover { color:var(--color-primary); }
+.svc-card-name a:hover { color:var(--color-primary-text); }
 .svc-card-tags { display:flex; flex-wrap:wrap; gap:2px; }
 /* 確認済み価格（price-figure）と未確認価格（price-unconfirmed）で行の高さが
    ばらつかないよう最小高さを揃える（15社の価格表示リズム統一）。 */
@@ -482,7 +500,7 @@ tr:last-child td { border-bottom:none; }
 .svc-more { margin:var(--space-4) 0; border:none; }
 .svc-more summary {
   cursor:pointer; list-style:none; text-align:center;
-  padding:var(--space-3); font-weight:700; color:var(--color-primary);
+  padding:var(--space-3); font-weight:700; color:var(--color-primary-text);
   border:1px solid var(--color-border-strong); border-radius:var(--radius-sm);
 }
 .svc-more summary::-webkit-details-marker { display:none; }
@@ -504,7 +522,7 @@ tr:last-child td { border-bottom:none; }
   user-select:none;
 }
 .checks label:hover { border-color:var(--color-primary); background:var(--color-primary-subtle); }
-.checks label:has(input:checked) { background:var(--color-primary); border-color:var(--color-primary); color:#fff; }
+.checks label:has(input:checked) { background:var(--color-primary-fill); border-color:var(--color-primary-fill); color:#fff; }
 .checks label:has(input:checked)::after { content:"✓"; margin-left:2px; font-weight:700; }
 .checks input[type=checkbox] { position:absolute; opacity:0; width:1px; height:1px; pointer-events:none; }
 .checks label:has(input:focus-visible) { outline:none; box-shadow:var(--shadow-focus); }
@@ -521,10 +539,10 @@ tr:last-child td { border-bottom:none; }
   transition:color var(--transition-fast);
 }
 .faq-item summary::-webkit-details-marker { display:none; }
-.faq-item summary:hover { color:var(--color-primary); }
+.faq-item summary:hover { color:var(--color-primary-text); }
 .faq-item summary::after {
   content:"＋"; position:absolute; right:var(--space-3); top:50%; transform:translateY(-50%);
-  color:var(--color-primary); font-weight:700; font-size:16px;
+  color:var(--color-primary-text); font-weight:700; font-size:16px;
   transition:transform var(--transition-fast);
 }
 .faq-item[open] summary::after { content:"－"; }
@@ -2253,6 +2271,17 @@ def build_index_page(services, campaigns, aff_links, purpose_matches=None, cover
     return html
 
 
+# ---------- 記事共通パーツ ----------
+
+def affiliate_disclosure_note():
+    """アフィリエイト広告表記（PR表記）。記事ページ間で同一文言をコピーしていたのを1箇所に統合。
+    COLOR_AUDIT_2026_09_02：色は#999直書き（白背景で2.85:1、WCAG AA未達）から
+    var(--color-text-muted)（5.62:1、AA達成）に変更。"""
+    return ('<p style="font-size:12px;color:var(--color-text-muted);margin-top:8px;">'
+            '※当サイトはアフィリエイト広告（PR）を含みます。'
+            'リンク経由で購入すると当サイトに報酬が入ることがあります。</p>')
+
+
 # ---------- 記事ページ：シェフの無添つくりおき 口コミ・評判 ----------
 
 def build_article_chef_muten_kuchikomi(aff_links):
@@ -2396,7 +2425,7 @@ def build_article_chef_muten_kuchikomi(aff_links):
       <p class="price-meta">当サイトは他サイトの口コミ文を転載していません。判断は公式情報と、ご自身の家族構成・食習慣に照らして行ってください。</p>
       <p>初回は26%OFF+送料無料（3,799円〜）で試せます。</p>
       <div style="margin-top:12px;">{cta}</div>
-      <p style="font-size:12px;color:#999;margin-top:8px;">※当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
+      {affiliate_disclosure_note()}
     </div>
 
     <div style="margin-top:16px;">
@@ -2584,7 +2613,7 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
         <li>個食で食べ残しを防ぎたい → 食楽膳</li>
       </ul>
       <p class="price-meta">当サイトは他サイトの口コミ文を転載していません。判断は公式情報と、ご本人の噛む力・持病の有無・食習慣に照らして行ってください。</p>
-      <p style="font-size:12px;color:#999;margin-top:8px;">※当サイトはアフィリエイト広告（PR）を含みます。リンク経由で購入すると当サイトに報酬が入ることがあります。</p>
+      {affiliate_disclosure_note()}
     </div>
 
     <div style="margin-top:16px;">
@@ -2663,11 +2692,14 @@ def build_404_page():
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/png" href="{FAVICON_PATH}">
 <style>
-body {{ font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif; background:#faf7f5; color:#222; text-align:center; padding:60px 16px; }}
+/* COLOR_AUDIT_2026_09_02：このページだけ共通トークン（_CSS）を使わず色を再定義しており、
+   本文トークン#1F2328ではなく#222、#5B6470ではなく#666、#999（AA未達）等の別値になっていた。
+   実際のトークン値に合わせ、リンク色は文字用の濃さ（--color-primary-textと同値）にする。 */
+body {{ font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif; background:#FAF7F5; color:#1F2328; text-align:center; padding:60px 16px; }}
 h1 {{ font-size:1.5rem; margin-bottom:16px; }}
-p {{ margin-bottom:16px; color:#666; }}
-a {{ color:#e8552d; }}
-.footer {{ margin-top:48px; font-size:12px; color:#999; }}
+p {{ margin-bottom:16px; color:#5B6470; }}
+a {{ color:#A8371A; }}
+.footer {{ margin-top:48px; font-size:12px; color:#5B6470; }}
 </style>
 </head>
 <body>
@@ -2676,10 +2708,10 @@ a {{ color:#e8552d; }}
 <p>お探しのページは移動したか、存在しない可能性があります。</p>
 <p><a href="/">ホームに戻る</a> ｜ <a href="/ranking">宅配食の比較一覧を見る</a> ｜ <a href="/campaigns">初回キャンペーンを見る</a></p>
 <p class="footer">
-<a href="/privacy" style="color:#999;margin:0 6px;">プライバシーポリシー</a>｜
-<a href="/disclaimer" style="color:#999;margin:0 6px;">免責事項</a>｜
-<a href="/operator" style="color:#999;margin:0 6px;">運営者情報</a>｜
-<a href="/contact" style="color:#999;margin:0 6px;">お問い合わせ</a>
+<a href="/privacy" style="color:#5B6470;margin:0 6px;">プライバシーポリシー</a>｜
+<a href="/disclaimer" style="color:#5B6470;margin:0 6px;">免責事項</a>｜
+<a href="/operator" style="color:#5B6470;margin:0 6px;">運営者情報</a>｜
+<a href="/contact" style="color:#5B6470;margin:0 6px;">お問い合わせ</a>
 </p>
 </body>
 </html>"""
