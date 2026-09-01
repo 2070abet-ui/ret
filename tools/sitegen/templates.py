@@ -4,7 +4,6 @@ data.py が読み込んだデータを受け取り、HTML文字列を組み立�
 Batch1では既存ページの本文・タイトル・canonical・価格・キャンペーン内容は一切変更していない。
 追加したのは共通ヘッダーへのOGP/favicon/基本JSON-LD、モバイル用テーブルCSSのみ。
 """
-import base64
 import json
 
 from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR, LAST_VERIFIED_DATE, GA4_MEASUREMENT_ID, GTM_CONTAINER_ID
@@ -1161,13 +1160,12 @@ def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
 
 # ---------- 共通メタ基盤（favicon / OGP / JSON-LD）----------
 
-_FAVICON_SVG = (
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-    '<rect width="64" height="64" rx="14" fill="#e8552d"/>'
-    '<text x="32" y="44" font-size="32" font-family="sans-serif" font-weight="bold" '
-    'text-anchor="middle" fill="#ffffff">宅</text></svg>'
-)
-FAVICON_DATA_URI = "data:image/svg+xml;base64," + base64.b64encode(_FAVICON_SVG.encode("utf-8")).decode("ascii")
+# 実PNGファイル・固定URL（/favicon.png）で配信する。Googleがfavicon検索結果表示で
+# 対応する形式はBMP/GIF/ICO/PNG/JPEG/PPM/TIFFでSVGは含まれず、data URIには
+# Googlebotが個別クロールできる安定URLが無いため、インラインSVGは使わない
+# （FAVICON_REVIEW 2026-09-02。ファイル本体はtools/sitegen/assets/favicon.png、
+# generators.mainがビルド時にsite/favicon.pngへコピーする）。
+FAVICON_PATH = "/favicon.png"
 
 
 def _meta_block(title, description, canonical_url):
@@ -1181,7 +1179,7 @@ def _meta_block(title, description, canonical_url):
         "description": SITE_DESC,
     }
     json_ld_script = json.dumps(json_ld, ensure_ascii=False)
-    return f"""<link rel="icon" href="{FAVICON_DATA_URI}">
+    return f"""<link rel="icon" type="image/png" href="{FAVICON_PATH}">
 <meta property="og:site_name" content="{esc(SITE_NAME)}">
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(description)}">
@@ -2663,7 +2661,7 @@ def build_404_page():
 {gtm_head}
 <title>ページが見つかりません | {SITE_NAME}</title>
 <meta name="robots" content="noindex">
-<link rel="icon" href="{FAVICON_DATA_URI}">
+<link rel="icon" type="image/png" href="{FAVICON_PATH}">
 <style>
 body {{ font-family:"Hiragino Kaku Gothic ProN","Meiryo",sans-serif; background:#faf7f5; color:#222; text-align:center; padding:60px 16px; }}
 h1 {{ font-size:1.5rem; margin-bottom:16px; }}

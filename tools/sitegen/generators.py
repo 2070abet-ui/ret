@@ -2,9 +2,14 @@
 宅食図鑑 静的サイト生成 - 生成の司令塔
 「何を何件生成するか」を決める唯一の場所。ページ描画そのものは templates.py に委譲する。
 """
+import shutil
+from pathlib import Path
+
 from sitegen import data
 from sitegen import templates
 from sitegen import validate
+
+ASSETS_DIR = Path(__file__).resolve().parent / "assets"
 
 
 def _tag_set(svc):
@@ -131,7 +136,6 @@ def main():
     # 外部プロセス（例: python -m http.server）が OUT_DIR をCWDとして使用していると
     # Windows ではディレクトリ自体を削除できないため、その場合は中身を削除して上書き再生成する。
     if out_dir.exists():
-        import shutil
         try:
             shutil.rmtree(out_dir)
         except OSError:
@@ -215,6 +219,11 @@ def main():
             (out_dir / "comparisons" / f"{a_id}-vs-{b_id}.html").write_text(
                 templates.build_comparison_page(svc_by_id[a_id], svc_by_id[b_id], aff_links, sources_by_id), encoding="utf-8")
             pages.append(f"comparisons/{a_id}-vs-{b_id}.html")
+
+    # favicon（実PNGファイル。Googleのfavicon対応形式にSVGは含まれず、data URIには
+    # Googlebotが個別クロールできる安定URLが無いため、/favicon.png という実ファイル・
+    # 固定URLとして配信する。ソースはtools/sitegen/assets/favicon.png）
+    shutil.copy(ASSETS_DIR / "favicon.png", out_dir / "favicon.png")
 
     # 404 / sitemap / robots
     (out_dir / "404.html").write_text(templates.build_404_page(), encoding="utf-8")

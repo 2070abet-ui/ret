@@ -12,3 +12,4 @@ site/*/*.html
 site/robots.txt
 site/sitemap.xml
 site/google*.html
+site/favicon.png
