@@ -1558,6 +1558,7 @@ ARTICLES_INDEX = [
     ("/articles/chef-muten-tukuritoki-kuchikomi", "シェフの無添つくりおきの口コミ・評判・料金を徹底検証"),
     ("/articles/koreisha-takushoku-hikaku", "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮】"),
     ("/articles/takushoku-demerit-chuiten", "宅配食のデメリット・注意点｜後悔しないために知っておきたいこと"),
+    ("/articles/diet-bodymake-hikaku", "ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】"),
 ]
 
 
@@ -2772,6 +2773,132 @@ def build_article_demerit_chuiten(services):
       <h2>まとめ：デメリットを踏まえたうえで、自分に合うサービスを選ぶ</h2>
       <p>宅配食のデメリット・注意点は、裏を返せば「何を確認してから選べば後悔しにくいか」の指標にもなります。保存スペース・送料・価格体系・解約条件の4点を確認したうえで、自分の生活スタイルに合うサービスを選ぶことをおすすめします。</p>
       <div style="margin-top:12px;">{cta_diagnosis} {cta_ranking}</div>
+      {affiliate_disclosure_note()}
+    </div>
+    """
+    html += page_footer(LAST_VERIFIED_DATE)
+    return html
+
+
+# ---------- 記事ページ：ダイエット・ボディメイク向け宅配食比較 ----------
+
+def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sources_by_id=None):
+    """ダイエット・ボディメイク向け宅配食比較記事（B型、4本目）。
+    ARTICLE_WRITING_PRINCIPLES.md 3章候補3「属性掛け合わせの手薄な領域」（高タンパク志向）を
+    出発点にしたが、対象を「高タンパク」単独（該当2社のみ）で絞るとデータが薄いため、
+    ダイエット/糖質制限/カロリー制限/ボディメイクのtarget/tagsで括った6社に広げて採用
+    （Phase1のデータ薄チェックに基づくピボット。過去の「無添加」→「高齢者向け」と同種）。
+    比較表の価格は_price_inline_html、カード本文の送料はshipping_line、pros/consは
+    data/services.json記載をそのまま列挙し、金額を手で書き下さない（5章6項：本文直書きの
+    メンテナンス性リスク回避）。★評価・順位付けはしない。並び順はservices.json記載順。
+    servicesはgenerators.mainのservices_with_mealform想定。既存のmuscle-deli×fit-food-home
+    比較ページ（config/comparisons.json）とは内容を重複させず、末尾からリンクするに留める。"""
+    svc_by_id = {s["id"]: s for s in services}
+    ids = ["nosh", "mitsuboshi-farm", "wellness-dining", "fit-food-home", "muscle-deli", "green-spoon"]
+    picked = [svc_by_id[i] for i in ids if i in svc_by_id]
+    num = len(picked)
+
+    slug = "articles/diet-bodymake-hikaku.html"
+    title = "ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】"
+    desc = (f"ダイエット・ボディメイクに向いた宅配食{num}社を比較。低糖質・高タンパク・カロリー制限のうち"
+            "何を重視するかで選び方が変わります。料金・保存方法・向いている人を公式情報でまとめました。")
+    html = page_header(title, desc, slug)
+
+    cta_by_id = {
+        svc["id"]: aff_link(aff_links, svc["id"], label=f"{svc['name']}を公式サイトで見る",
+                             cls="btn-primary" if svc["id"] in ("nosh", "muscle-deli", "wellness-dining") else "btn-secondary")
+        for svc in picked
+    }
+
+    toc_items = "".join(
+        f'<li><a href="#{svc["id"]}">{esc(svc["name"])}</a></li>' for svc in picked
+    )
+
+    rows = []
+    for svc in picked:
+        pricing = _pricing_of(svc)
+        price_cell = _price_inline_html(pricing, sources_by_id)
+        mealform_cats = svc.get("meal_form_categories") or []
+        mealform_txt = "・".join(mealform_cats) if mealform_cats else esc(svc.get("meal_form", "")) or "公式確認中"
+        target_txt = "・".join(svc.get("target", [])) or "公式確認中"
+        rows.append(f"""
+        <tr>
+          <td><a href="#{svc['id']}"><strong>{esc(svc['name'])}</strong></a></td>
+          <td class="td-price">{price_cell}</td>
+          <td>{esc(mealform_txt)}</td>
+          <td>{esc(target_txt)}</td>
+        </tr>""")
+
+    cards = []
+    for svc in picked:
+        pros_html = "".join(f"<li>{esc(p)}</li>" for p in svc.get("pros", []))
+        cons_html = "".join(f"<li>{esc(c)}</li>" for c in svc.get("cons", []))
+        ship_html = shipping_line((shipping_by_id or {}).get(svc["id"]), sources_by_id)
+        cards.append(f"""
+    <div class="card" id="{esc(svc['id'])}">
+      <h2><a href="/services/{esc(svc['id'])}">{esc(svc['name'])}</a></h2>
+      <div class="pros-cons">
+        <div><strong>特徴</strong><ul class="feature-list">{pros_html}</ul></div>
+        <div><strong>気になる点</strong><ul class="feature-list">{cons_html}</ul></div>
+      </div>
+      {ship_html}
+      <div style="margin-top:12px;">{cta_by_id[svc['id']]}</div>
+    </div>""")
+
+    html += f"""
+    <h1>ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】</h1>
+    <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（掲載{num}社。個別の確認日は各サービス詳細ページに記載）</p>
+
+    <div class="card panel-accent">
+      <h2>結論：重視する軸で選ぶサービスが変わる</h2>
+      <p>ダイエット・ボディメイク向けの宅配食は、どの軸を重視するかによって向くサービスが変わります。</p>
+      <ul class="feature-list">
+        <li><strong>低糖質を重視</strong>：nosh・三ツ星ファーム</li>
+        <li><strong>高タンパク・ボディメイクを重視</strong>：マッスルデリ・FIT FOOD HOME</li>
+        <li><strong>カロリー制限・医療的な厳密さを重視</strong>：ウェルネスダイニング</li>
+        <li><strong>野菜不足の解消・アラカルトの柔軟性を重視</strong>：GREEN SPOON</li>
+      </ul>
+      <p>当サイトは独自の点数やランキング順位を付けていません。以下は<strong>data/services.jsonに記載の並び順のまま</strong>、公式情報で確認できた内容を並べたものです。</p>
+    </div>
+
+    <div class="card card-quiet">
+      <h2>目次</h2>
+      <nav aria-label="目次">
+        <ul class="feature-list">
+          <li><a href="#comparison-table">{num}社の比較表</a></li>
+          {toc_items}
+          <li><a href="#faq">よくある質問</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="card" id="comparison-table">
+      {mobile_scroll_hint()}
+      <h2>{num}社の比較表</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>サービス</th><th>1食あたりの料金</th><th>保存方法</th><th>向いている人</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料込み表記への正規化はしていません。</p>
+    </div>
+    {''.join(cards)}
+
+    <div class="card" id="faq">
+      <h2>よくある質問</h2>
+      <details class="faq-item"><summary>低糖質と高タンパク、どちらを優先すべき？</summary><div class="faq-body"><p>糖質を減らしたい場合はnosh・三ツ星ファームのような低糖質メニュー中心のサービス、筋肉量を増やしたい・維持したい場合はマッスルデリ・FIT FOOD HOMEのような高タンパクメニュー中心のサービスが候補になります。目的が併存する場合は、両方の観点でメニュー設計されているサービスを公式サイトで確認してください。</p></div></details>
+      <details class="faq-item"><summary>ボディメイク中でも冷凍弁当だけで足りる？</summary><div class="faq-body"><p>掲載社はいずれも主菜・副菜を中心とした構成で、トレーニング量や目標に応じて主食（ごはん等）やプロテインを別途追加する前提のメニューが一般的です。具体的な必要量は個人差が大きいため、公式サイトのPFC（タンパク質/脂質/糖質）表示があるサービスを参考に検討することをおすすめします。</p></div></details>
+      <details class="faq-item"><summary>糖尿病等で医療的な食事制限がある場合は？</summary><div class="faq-body"><p>ウェルネスダイニングは糖質制限・カロリー制限に特化し、医療・介護領域での実績を公式情報として挙げています。持病がある場合は自己判断せず、まず主治医・管理栄養士に相談したうえで、各社の制限食メニューが自分の制限内容に合うか公式サイトで確認してください。</p></div></details>
+    </div>
+
+    <div class="card panel-accent">
+      <h2>まとめ：目的を先に決めてから比較する</h2>
+      <p>ダイエット・ボディメイク向け宅配食は、糖質制限・高タンパク・カロリー制限のどれを主軸にするかで選ぶべきサービスが変わります。まず自分の目的を明確にしたうえで、上の比較表・各社カードを参考にしてください。マッスルデリとFIT FOOD HOMEをより詳しく比較したい場合は、専用の比較ページもあわせてご覧ください。</p>
+      <div style="margin-top:12px;">
+        <a class="btn-secondary" href="/comparisons/muscle-deli-vs-fit-food-home">マッスルデリ×FIT FOOD HOMEを比較する</a>
+        <a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>
+      </div>
       {affiliate_disclosure_note()}
     </div>
     """

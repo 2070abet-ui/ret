@@ -188,6 +188,12 @@ def main():
         templates.build_article_demerit_chuiten(services_with_mealform), encoding="utf-8")
     pages.append("articles/takushoku-demerit-chuiten.html")
 
+    # 記事ページ（ダイエット・ボディメイク向け宅配食比較、4本目）
+    (out_dir / "articles" / "diet-bodymake-hikaku.html").write_text(
+        templates.build_article_diet_bodymake_hikaku(services_with_mealform, shipping_by_id, aff_links, sources_by_id),
+        encoding="utf-8")
+    pages.append("articles/diet-bodymake-hikaku.html")
+
     # 法務ページ
     legal_pages = [
         ("privacy.html", templates.build_privacy_page),

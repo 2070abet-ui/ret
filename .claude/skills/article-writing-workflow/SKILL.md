@@ -11,7 +11,7 @@ description: 宅食図鑑の記事作成依頼（「記事を書いて」「新�
 
 - **`docs/ARTICLE_WRITING_PRINCIPLES.md`（記事執筆原則・基準文書）を必ず読む。** 本サイトの記事コンテンツを恒久的に導く執筆基準であり、すべての記事作成・見直しはこの原則（結論先出し＋自己完結型構成、検証データの見せ方、タイトルルール、行動経済学の許可/禁止リスト、体験の誠実性、恒久禁止事項）に従う。
 - 既存のプロジェクト方針・data/model・差別化要素・機能を勝手に変更しない。
-- data/schema変更（`data/services.json`への`article_link`/`article_label`追加を含む）・アフィリエイトロジック変更・SEO構造（canonical/robots/sitemap）の変更を伴う場合は、実行前にユーザーへ確認する。
+- data/schema変更（`data/services.json`への`article_link`/`article_label`追加を含む）・アフィリエイトロジック変更・SEO構造そのもの（canonical生成ロジック・robots.txtのルール・sitemap生成の仕組み自体・タイトル構造）の変更を伴う場合は、実行前にユーザーへ確認する。Phase 6の手順どおり新記事を`pages.append`で登録した結果sitemap.xmlに1行追加されるのは正常な想定内の変更であり、これは含まない（絶対禁止の項も参照）。
 - 実在しない体験談・口コミ・数値を書かない。検証データ（公式一次情報）と主観的体験は明確に区別する（`ARTICLE_WRITING_PRINCIPLES.md` 8章）。
 - 既存記事・既存ページ（ranking/services/comparisons）とテーマ・内容が重複する記事を作らない。
 
@@ -22,7 +22,8 @@ description: 宅食図鑑の記事作成依頼（「記事を書いて」「新�
 - 記事の出力配線は **`tools/sitegen/generators.py`**：`(out_dir / "articles" / "<slug>.html").write_text(templates.build_article_X(...), encoding="utf-8")` → `pages.append("articles/<slug>.html")` の2行を追加する。
 - 記事一覧への内部リンクは `templates.py` の **`ARTICLES_INDEX`**（リストに `(url, label)` タプルを追加）と `articles_index_block()`（TOP・ranking.htmlの両方から呼ばれる共通ブロック）。新規記事は必ずここに追加し、孤立ページ（被リンクなし）を作らない。
 - サービス詳細ページから記事への被リンクは `data/services.json` 各サービスの `article_link`/`article_label` フィールド（任意）。新設・変更する場合はdata/schema変更にあたるため事前確認が必要。
-- 記事内で使う共通関数（再利用する。重複実装しない）: `_pricing_of`, `_price_inline_html`, `pricing_detail_html`, `mobile_scroll_hint()`, `aff_link(aff_links, service_id, label=..., cls=...)`, `affiliate_disclosure_note()`, `vstatus_badge()`, `source_link()`, `esc()`。
+- 送料の実データは **`data/shipping.json`**（`service_id`ごとの`shipping_fee`/`notes`/`cancellation_condition`）。送料・コストに触れる記事では`services.json`の`cons`/`pricing`だけでなくこのファイルも確認する（services.jsonだけでは送料の実額・無料条件までは分からない）。
+- 記事内で使う共通関数（再利用する。重複実装しない）: `_pricing_of`, `_price_inline_html`, `pricing_detail_html`, `shipping_line(shipping_row, sources_by_id)`（送料を`data/shipping.json`から動的表示。本文に送料の金額を手で書き下す代わりにこれを使う）, `mobile_scroll_hint()`, `aff_link(aff_links, service_id, label=..., cls=...)`, `affiliate_disclosure_note()`, `vstatus_badge()`, `source_link()`, `esc()`。
 - **`site/` は生成物。読まない・直接編集しない。** 変更反映は `python tools/build.py` で再生成する。
 - 検証: リポジトリルートから `PYTHONPATH=tools python tools/sitegen/validate.py`（`PYTHONPATH`なしだと`ModuleNotFoundError: No module named 'sitegen'`になる。実行確認済み） / ビルド: リポジトリルートから `python tools/build.py`
 - 記事執筆の基準: **`docs/ARTICLE_WRITING_PRINCIPLES.md`（必読）**。UI全般の基準は `docs/UI_DESIGN_PRINCIPLES.md`（記事以外のページが対象、本Skillの対象外）。docsの索引は `docs/README.md`。
@@ -37,6 +38,7 @@ description: 宅食図鑑の記事作成依頼（「記事を書いて」「新�
 - 既存記事の一覧: `templates.py` の `ARTICLES_INDEX` とテンプレート内の `build_article_*` 関数を確認し、依頼テーマとの重複がないか確認
 - `data/services.json` を読み、依頼テーマに該当するサービス数・タグ・データの厚み（価格confirmed件数等）を確認する。**データが薄いテーマ（該当サービスが1〜2社しかない等）は、書ける記事にならないため早期にユーザーへ報告しピボットを提案する**（過去の「無添加」→「高齢者向け」ピボットの教訓）。
 - `data/campaigns.json` / `data/sources.json`（確認日・出典として使う一次情報）
+- `data/shipping.json`（送料の実データ。送料・コストに触れる記事では必ず確認する）
 - `config/affiliates.json`（既存のアフィリエイトリンク有無。新サービスへのリンクが必要な場合は事前確認）
 
 ## Phase 2 — Topic & Keyword Research（テーマ・キーワード選定）
@@ -46,7 +48,8 @@ description: 宅食図鑑の記事作成依頼（「記事を書いて」「新�
 - `docs/ARTICLE_WRITING_PRINCIPLES.md` 3章「今後の記事候補」を優先候補として参照する
 - WebSearch等で競合・類似サイト（silver-choice.jp・マイベスト・宅食グルメ・宅食レポ等）の人気記事・ロングテールキーワードを調査する（`ARTICLE_WRITING_PRINCIPLES.md` 2章の記事タイプ分類に沿って評価する）
 - 検索意図（informational / commercial investigation）を明確にし、記事タイプ（`ARTICLE_WRITING_PRINCIPLES.md` 2章のA〜H）を決定する
-- 決定したテーマ・キーワード・記事タイプ・対象サービスをユーザーに簡潔に共有してから執筆に進む（大規模な新規記事の場合）
+- 記事がファネル上のどの役割を担うか（新規流入・離脱防止・信頼構築等）と、想定するCTA導線（内部リンク中心か、アフィリエイトCTAを含めるか）を決める。C型（デメリット系）等、直接的なCVを狙わない記事の場合はその旨も含める
+- 決定したテーマ・キーワード・記事タイプ・対象サービス・ファネル上の役割とCTA方針をユーザーに簡潔に共有してから執筆に進む（大規模な新規記事の場合）
 
 ## Phase 3 — Outline（構成設計）
 
@@ -58,6 +61,8 @@ description: 宅食図鑑の記事作成依頼（「記事を書いて」「新�
 4. Q&Aブロック（末尾、想定質問をそのまま見出しに）
 5. 目安文字数（`ARTICLE_WRITING_PRINCIPLES.md` 9章の記事タイプ別目安）
 6. CTA配置（記事内の公式サイトCTA回数・配置。既存記事の`aff_link(..., cls="btn-primary"/"btn-secondary")`パターンに合わせる）
+7. デメリット・不安ワード系（C型）の場合、各見出しの直後に実データに基づく「気になる方は◯◯が候補」等の代替案・向いている人を明記する配置を組み込む（`ARTICLE_WRITING_PRINCIPLES.md` 4章6項）
+8. H2見出しが5つ以上になる場合、結論ブロック直後に目次（アンカーリンク一覧）を配置する（同4章7項）
 
 ## Phase 4 — Draft（執筆・実装）
 
@@ -69,6 +74,7 @@ description: 宅食図鑑の記事作成依頼（「記事を書いて」「新�
 - 行動経済学の許可リスト（7.1章）のみ使用し、禁止リスト（7.2章）・偽の緊急性・★評価等の恒久禁止事項（10章）に触れない
 - 体験の誠実性（8章）: 実際に行っていない体験談を書かない
 - `affiliate_disclosure_note()` を末尾に含める
+- 本文中に価格・送料等の具体的数値を書く場合、比較表のように`svc`辞書から動的に取得できないか検討する。やむを得ず直書きする場合は、将来のデータ改定時に本文が追従しない構造的リスクがあることを認識する（5章6項）
 
 ## Phase 5 — Self-Review & Fact-Check（自己レビュー）
 
@@ -78,24 +84,28 @@ description: 宅食図鑑の記事作成依頼（「記事を書いて」「新�
    - 記事中の価格・送料・キャンペーン等の数値が `data/services.json` / `data/campaigns.json` / `data/sources.json` の値と一致しているか
    - 確認日・出典リンクが主要な数値に付いているか
 2. **構成・一貫性パス**（章立て・整合性）
-   - `ARTICLE_WRITING_PRINCIPLES.md` 11章のチェックリスト（8項目）を通す
+   - `ARTICLE_WRITING_PRINCIPLES.md` 11章のチェックリスト（10項目）を通す
    - 記事タイトル・見出しが実際の内容量・比較軸数と一致しているか（誇張がないか）
 3. **文章パス**（表現・誠実性）
    - 捏造した体験談・口コミ・緊急性演出・根拠のない断定表現がないか
    - 冗長な言い回し・同じ主張の繰り返しがないか
+4. **行動喚起パス**（読者の次の一歩）
+   - 各セクションが情報の羅列で終わらず、読者が次に何をすべきか（代替案・比較表・診断ツール・関連サービスへの導線等）を示しているか（特にC型のデメリット系）
+   - 本文中に直書きした価格・送料等の数値が、将来のデータ改定時に追従しない構造的リスクを認識しているか（次回そのサービスのデータを更新する際の再確認対象として扱う）
 
 ## Phase 6 — Wire-up（配線）
 
 1. `generators.py` に出力呼び出しを追加（`out_dir / "articles" / "<slug>.html"` への `write_text` と `pages.append(...)`）
 2. `templates.py` の `ARTICLES_INDEX` に `(url, label)` を追加し、TOP・ranking.htmlからの内部リンクを確保する
 3. 関連サービスへの逆リンクが必要な場合、`data/services.json` の該当サービスに `article_link`/`article_label` を追加する。**これはdata/schema変更にあたるため、事前にユーザーへ確認してから実施する。**
+4. `ARTICLE_WRITING_PRINCIPLES.md` 3章の候補から採用したテーマがある場合、2章のステータス・3章のリストを実装済みの内容に更新する（同一セッション内。CLAUDE.mdのUI版spec更新フロー〔FINAL_REDESIGN_SPEC.md〕の記事版）。
 
 ## Phase 7 — SEO / GEO Technical Review
 
 - meta title・meta description（`page_header` に渡す `title`/`desc`）が記事内容と一致しているか、鮮度表記が動的算出になっているか
 - 見出し階層（H1→H2→H3）が論理的か、キーワード詰め込みになっていないか
 - 比較表・Q&Aブロックの構造（GEO対応：自己完結段落・結論先出し）が`ARTICLE_WRITING_PRINCIPLES.md` 4章の基準を満たしているか
-- 内部リンク（`ARTICLES_INDEX`・関連サービスへのリンク・戻り導線）が機能しているか、孤立ページになっていないか
+- 内部リンク（`ARTICLES_INDEX`・関連サービスへのリンク・戻り導線・目次のアンカーリンク・C型記事の「気になる方は」代替案リンク）が機能しているか、孤立ページになっていないか。特にサービスへのリンクは実在する`svc['id']`を指しているか（`git grep`等で確認）
 - 構造化データとの整合性: 記事ページが継承する `page_header` のJSON-LD（現状サイト全体で`WebSite`のみ）と、記事内の可視テキスト（タイトル・見出し・Q&A等）に矛盾がないか確認する。新たにArticle/FAQPage等のJSON-LDを追加する場合はtemplates.pyの構造変更にあたるため、事前にユーザーへ確認してから実施する（可視コンテンツと一致しない構造化データを書かない）
 
 ## Phase 8 — Build & Validate
@@ -111,6 +121,7 @@ Playwright等のブラウザ操作環境が利用可能なら、実際のブラ�
 - 記事ページのfirst view・見出し階層・比較表の表示
 - CTAボタンの表示崩れ（特に`.aff-note`を含む`btn-primary`/`btn-secondary`。折り返し崩れは過去に実際に発生した既知の不具合パターン）
 - 内部リンク（`ARTICLES_INDEX`経由のTOP・ranking.htmlからの導線、関連サービスへのリンク）が実際に機能するか
+- 目次がある記事は、アンカーリンクをクリックして実際に該当セクションへジャンプするか
 - モバイルでの比較表の横スクロール・情報欠落の有無
 
 **コードだけを見て「問題なし」と判断しない。**
@@ -124,7 +135,8 @@ Playwright等のブラウザ操作環境が利用可能なら、実際のブラ�
 3. 配線状況（`ARTICLES_INDEX`・`generators.py`・`data/services.json`の`article_link`変更有無）
 4. build/validate結果
 5. data/schema変更を伴う場合はその内容と承認状況
-6. 追加で変更すべきでない事項（触らなかった範囲の明示）
+6. `ARTICLE_WRITING_PRINCIPLES.md`の更新有無（3章候補の採用に伴う2章/3章のステータス更新）
+7. 追加で変更すべきでない事項（触らなかった範囲の明示）
 
 ---
 
@@ -137,13 +149,13 @@ Playwright等のブラウザ操作環境が利用可能なら、実際のブラ�
 | 新規記事の追加（テーマ未指定） | 全Phase |
 | 新規記事の追加（テーマ・キーワード指定済み） | Context Audit → Outline → Draft → Self-Review → Wire-up → SEO/GEO Review → Build/Validate → Browser Review → Report（Phase 2は簡略化） |
 | 既存記事の文言・数値見直し（鮮度更新等） | Context Audit → Self-Review/Fact-Check → Build/Validate → Report |
-| 既存記事の構成見直し（`ARTICLE_WRITING_PRINCIPLES.md`準拠チェック） | Context Audit → Outline見直し → Self-Review → SEO/GEO Review → Report |
+| 既存記事の構成見直し（`ARTICLE_WRITING_PRINCIPLES.md`準拠チェック） | Context Audit → Outline見直し → Self-Review → SEO/GEO Review → Build/Validate → Browser Review → Report |
 
 ## 絶対禁止
 
 - data/schema変更（`data/*.json`・`config/*.json`）を事前確認なしに行う
 - アフィリエイトロジック変更（`config/affiliates.json` のリンク等）
-- SEO構造の不用意な変更（canonical・robots・sitemap・タイトル構造）
+- SEO構造そのものの変更（canonical生成ロジック・robots.txtのルール・sitemap生成の仕組み自体・タイトル構造の変更）。Phase 6の手順どおり新記事を`pages.append`で登録した結果sitemap.xmlに1行追加されるのは正常な想定内の変更であり、これは禁止に含まない
 - `ranking`/`services`/`comparisons`/`diagnosis`等、記事以外のページUIを記事作成のついでに変更する
 - 実在しない体験談・口コミ・数値の記載
 - 偽の緊急性・残りわずか演出、根拠のない「おすすめNo.1」等の恒久禁止事項（`ARTICLE_WRITING_PRINCIPLES.md` 10章）
