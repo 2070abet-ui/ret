@@ -1557,6 +1557,7 @@ def comparison_pairs_block(comparison_pairs):
 ARTICLES_INDEX = [
     ("/articles/chef-muten-tukuritoki-kuchikomi", "シェフの無添つくりおきの口コミ・評判・料金を徹底検証"),
     ("/articles/koreisha-takushoku-hikaku", "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮】"),
+    ("/articles/takushoku-demerit-chuiten", "宅配食のデメリット・注意点｜後悔しないために知っておきたいこと"),
 ]
 
 
@@ -2641,6 +2642,137 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
       <a class="btn-secondary" href="/services/kenko-chokkyokubin">健康直球便の詳細ページ</a>
       <a class="btn-secondary" href="/services/wanmairu">わんまいるの詳細ページ</a>
       <a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>
+    </div>
+    """
+    html += page_footer(LAST_VERIFIED_DATE)
+    return html
+
+
+# ---------- 記事ページ：宅配食のデメリット・注意点 ----------
+
+def build_article_demerit_chuiten(services):
+    """宅配食のデメリット・注意点を正直に解説する記事（C型、3本目）。
+    ARTICLE_WRITING_PRINCIPLES.md 3章の優先候補1位（デメリット直球記事）。
+    実食体験・口コミは一切捏造せず、data/services.json各社のcons/cancellation_note/
+    meal_formという既存の検証済みフィールドのみを再構成する（8章の体験誠実性）。
+    ★評価・順位付けはしない。並び順はservices.json記載順のまま
+    （ranking_evaluation_policy）。servicesはgenerators.mainのservices_with_mealform
+    （meal_form_categories付与済み）を渡す想定。"""
+    slug = "articles/takushoku-demerit-chuiten.html"
+    num = len(services)
+    title = "宅配食のデメリット・注意点｜後悔しないために知っておきたいこと"
+    desc = (f"宅配食・冷凍弁当のデメリットや注意点を、{num}社の公式情報をもとに正直にまとめました。"
+            "冷凍庫のスペース、送料、価格の分かりにくさ、解約条件の違いなど、"
+            "後悔しやすいポイントを客観的な事実で整理しています。")
+    html = page_header(title, desc, slug)
+
+    rows = []
+    for svc in services:
+        mealform_cats = svc.get("meal_form_categories") or []
+        mealform_txt = "・".join(mealform_cats) if mealform_cats else esc(svc.get("meal_form", "")) or "公式確認中"
+        cons_list = svc.get("cons") or []
+        cons_txt = "".join(f"<li>{esc(c)}</li>" for c in cons_list[:2]) if cons_list else "<li>公式確認中</li>"
+        rows.append(f"""
+        <tr>
+          <td><a href="/services/{svc['id']}"><strong>{esc(svc['name'])}</strong></a></td>
+          <td>{esc(mealform_txt)}</td>
+          <td><ul class="feature-list">{cons_txt}</ul></td>
+          <td><a href="/services/{svc['id']}#cancellation-shipping">解約条件を見る</a></td>
+        </tr>""")
+
+    cta_diagnosis = '<a class="btn-primary" href="/tool/diagnosis">向いているサービスを診断する</a>'
+    cta_ranking = '<a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>'
+
+    html += f"""
+    <h1>宅配食のデメリット・注意点｜後悔しないために知っておきたいこと</h1>
+    <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（掲載{num}社。個別の確認日は各サービス詳細ページに記載）</p>
+
+    <div class="card panel-accent">
+      <h2>結論：後悔しやすいのは「保存スペース」「送料」「解約条件の違い」</h2>
+      <p>宅配食・冷凍弁当で後悔しやすいポイントは、主に次の3つです。</p>
+      <ul class="feature-list">
+        <li><strong>冷凍庫・冷蔵庫の保存スペースを圧迫する</strong>：まとめ買いするほどスペースが必要になる</li>
+        <li><strong>送料が別途かかる・変動する</strong>：1食あたりの価格表示に送料が含まれていないことが多い</li>
+        <li><strong>解約・スキップの条件が社によって異なる</strong>：初回分がキャンセルできないサービスもある</li>
+      </ul>
+      <p>当サイトは実際に注文した体験談・口コミを掲載していません。以下は<strong>掲載{num}社が公式サイトで開示している「気になる点」「保存方法」「解約条件」</strong>を、当サイトが整理したものです。★評価やランキング順位は付けていません。</p>
+    </div>
+
+    <div class="card card-quiet">
+      <h2>目次</h2>
+      <nav aria-label="目次">
+        <ul class="feature-list">
+          <li><a href="#cons-storage">1. 冷凍庫・冷蔵庫のスペースを圧迫する</a></li>
+          <li><a href="#cons-shipping">2. 送料が別途かかる・食数や地域で変動する</a></li>
+          <li><a href="#cons-pricing">3. 価格体系がわかりにくいサービスもある</a></li>
+          <li><a href="#cons-menu">4. メニューの好みが分かれる・万人向けではない場合がある</a></li>
+          <li><a href="#cons-cancellation">5. 解約・スキップの条件は社によって大きく異なる</a></li>
+          <li><a href="#comparison-table">掲載{num}社の保存方法・気になる点 一覧</a></li>
+          <li><a href="#faq">よくある質問</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="card" id="cons-storage">
+      <h2>1. 冷凍庫・冷蔵庫のスペースを圧迫する</h2>
+      <p>冷凍タイプの宅配食は、まとめ買いするほど冷凍庫のスペースが必要になります。nosh・ワタミの宅食ダイレクト・三ツ星ファーム・食楽膳・健康直球便など、冷凍弁当を扱う多くのサービスが、公式情報として「冷凍庫のスペースが必要」という点を挙げています。</p>
+      <p>冷蔵タイプ（シェフの無添つくりおき・ツクリオ等）は保存スペースの問題は小さい一方、消費期限が短くなる傾向があります（シェフの無添つくりおきは冷蔵お届けのため消費期限が4日）。日配タイプ（ヨシケイ）は保存の問題自体はありませんが、毎日の受け取りが必要です。</p>
+      <p><strong>気になる方は</strong>：冷蔵タイプの<a href="/services/chef-muten-tukuritoki">シェフの無添つくりおき</a>・<a href="/services/tsuklio">ツクリオ</a>や、日配タイプの<a href="/services/yoshikei">ヨシケイ</a>も選択肢になります（保存スペースの問題は小さくなりますが、冷蔵タイプは消費期限が短くなる傾向があります）。</p>
+    </div>
+
+    <div class="card" id="cons-shipping">
+      <h2>2. 送料が別途かかる・食数や地域で変動する</h2>
+      <p>1食あたりの価格表示だけを見ると安く感じても、送料が別途必要なサービスは少なくありません。シェフの無添つくりおきは送料990円（初回無料）、GREEN SPOONは定期購入時に送料990円が別途必要です。マッスルデリは送料が食数・地域により変動し（5食1,100円、10・15食1,320円、北海道・沖縄は1,430円〜）、わんまいるは地域により送料1,080円または2,645円です。</p>
+      <p>送料込みか送料別かは各社の表示ルールが統一されていないため、価格を比較する際は「1食あたりの価格」だけでなく送料の有無・金額もあわせて確認することをおすすめします。</p>
+      <p><strong>気になる方は</strong>：送料込み表記の<a href="/services/tsuklio">ツクリオ</a>、配達料無料を明記する<a href="/services/yoshikei">ヨシケイ</a>・<a href="/services/kenko-chokkyokubin">健康直球便</a>、定期購入なら送料無料になる<a href="/services/wellness-dining">ウェルネスダイニング</a>などが候補になります（地域・プランによる例外は各社公式サイトでご確認ください）。</p>
+    </div>
+
+    <div class="card" id="cons-pricing">
+      <h2>3. 価格体系がわかりにくいサービスもある</h2>
+      <p>「1食○円」という単純な表示ではなく、独自の単位で価格を計算するサービスもあります。Kit Oisixは「1食」ではなく「人前」単位の価格体系、ツクリオは「人数×週食数」のパッケージ料金（1人前あたりの単価は当サイトによる換算値）、マッスルデリは食数別の1食あたり価格が公式サイトで明確に確認できませんでした。</p>
+      <p>他社と単純比較する場合は、公式サイトの価格表記の単位（1食あたりか、1人前あたりか、セットあたりか）を必ず確認してください。</p>
+      <p><strong>気になる方は</strong>：<a href="/services/nosh">nosh</a>のように「1食◯円」で明確に表示しているサービスから比較すると、他社との単純比較がしやすくなります。</p>
+    </div>
+
+    <div class="card" id="cons-menu">
+      <h2>4. メニューの好みが分かれる・万人向けではない場合がある</h2>
+      <p>健康配慮・専門特化型のサービスは、メニューの好みが分かれることがあります。ワタミの宅食ダイレクトは公式情報として「メニューの好みが分かれる可能性」を挙げており、ウェルネスダイニング・FIT FOOD HOME・まごころケア食・健康直球便のような専門色の強いサービスは、糖質制限やカロリー制限、高齢者向けやわらか食など特定のニーズに合わせて味付けが調整されているため、対象外の人には物足りなく感じられる場合があります。</p>
+      <p>「まずい」と感じるかどうかは味の好みに左右されるため、初回お試しプランがあるサービスから少量で試すのも一つの方法です。</p>
+      <p><strong>気になる方は</strong>：特定の制限食ではなく標準的なメニューを求める場合は<a href="/services/watami-takushoku">ワタミの宅食ダイレクト</a>・<a href="/services/yoshikei">ヨシケイ</a>、逆に糖質制限・カロリー管理など明確な目的がある場合は<a href="/services/wellness-dining">ウェルネスダイニング</a>・<a href="/services/fit-food-home">FIT FOOD HOME</a>のような専門特化型が候補になります。</p>
+    </div>
+
+    <div class="card" id="cons-cancellation">
+      <h2>5. 解約・スキップの条件は社によって大きく異なる</h2>
+      <p>解約・スキップのしやすさは各社で差があります。noshは継続回数の制限や解約金がなくスキップ・停止は何度でも可能です。一方、GREEN SPOONとシェフの無添つくりおきは初回お届け分のキャンセルができません。マッスルデリはお届け予定日の5日前までの連絡が必要で、確定・発送済みの注文はスキップできません。</p>
+      <p>「合わなかったらすぐやめられるか」を重視する場合は、契約前に各社の解約・スキップ条件を公式サイトで確認することをおすすめします（下の比較表から各社の解約条件ページへ移動できます）。</p>
+      <p><strong>気になる方は</strong>：継続回数の制限・解約金なしを公式情報で確認できる<a href="/services/nosh">nosh</a>・<a href="/services/wanmairu">わんまいる</a>が候補になります（<a href="/services/tsuklio">ツクリオ</a>もお休み・解約はいつでも可能ですが、解約手数料の記載自体は確認できていません）。</p>
+    </div>
+
+    <div class="card" id="comparison-table">
+      {mobile_scroll_hint()}
+      <h2>掲載{num}社の保存方法・気になる点 一覧</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>サービス</th><th>保存方法</th><th>気になる点（公式情報より）</th><th>解約条件</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
+      <p class="price-meta">「気になる点」は各社最大2件を抜粋表示しています。全件はサービス詳細ページでご確認いただけます。並び順はdata/services.json記載順のままで、順位付けではありません。</p>
+    </div>
+
+    <div class="card" id="faq">
+      <h2>よくある質問</h2>
+      <details class="faq-item"><summary>宅配食は本当に「まずい」の？</summary><div class="faq-body"><p>味の感じ方は個人差が大きく、当サイトでは実食による評価を行っていません。ただし、減塩・低カロリー・低糖質など健康配慮のあるメニューは、味付けが控えめになる傾向があるとする情報が一般的です。初回お試しプランがあるサービスから少量で試すことをおすすめします。</p></div></details>
+      <details class="faq-item"><summary>冷凍庫に入らない場合はどうすればいい？</summary><div class="faq-body"><p>冷凍庫のスペースが心配な場合は、冷蔵タイプ（シェフの無添つくりおき・ツクリオ等）や日配タイプ（ヨシケイ）のサービスも選択肢になります。ただし冷蔵タイプは消費期限が短くなる傾向がある点にご注意ください。</p></div></details>
+      <details class="faq-item"><summary>解約は簡単？</summary><div class="faq-body"><p>社によって条件が異なります。初回分がキャンセルできないサービス（GREEN SPOON・シェフの無添つくりおき等）や、届け日の数日前までに連絡が必要なサービス（マッスルデリ・わんまいる等）があります。契約前に各社の解約条件を確認してください。</p></div></details>
+      <details class="faq-item"><summary>送料はどのくらいかかる？</summary><div class="faq-body"><p>送料無料のサービスもあれば、990円前後の定額、食数・地域により変動するサービスもあります。1食あたりの価格だけでなく送料もあわせて総額で比較することをおすすめします。</p></div></details>
+    </div>
+
+    <div class="card panel-accent">
+      <h2>まとめ：デメリットを踏まえたうえで、自分に合うサービスを選ぶ</h2>
+      <p>宅配食のデメリット・注意点は、裏を返せば「何を確認してから選べば後悔しにくいか」の指標にもなります。保存スペース・送料・価格体系・解約条件の4点を確認したうえで、自分の生活スタイルに合うサービスを選ぶことをおすすめします。</p>
+      <div style="margin-top:12px;">{cta_diagnosis} {cta_ranking}</div>
+      {affiliate_disclosure_note()}
     </div>
     """
     html += page_footer(LAST_VERIFIED_DATE)

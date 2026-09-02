@@ -183,6 +183,11 @@ def main():
         templates.build_article_koreisha_takushoku(services_with_mealform, aff_links, sources_by_id), encoding="utf-8")
     pages.append("articles/koreisha-takushoku-hikaku.html")
 
+    # 記事ページ（宅配食のデメリット・注意点、3本目）
+    (out_dir / "articles" / "takushoku-demerit-chuiten.html").write_text(
+        templates.build_article_demerit_chuiten(services_with_mealform), encoding="utf-8")
+    pages.append("articles/takushoku-demerit-chuiten.html")
+
     # 法務ページ
     legal_pages = [
         ("privacy.html", templates.build_privacy_page),
