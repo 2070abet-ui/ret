@@ -234,9 +234,12 @@ tr:last-child td { border-bottom:none; }
 /* COLOR_AUDIT_2026_09_02：白文字(14px太字)とvar(--color-primary)の組み合わせは3.64:1でAA(4.5:1)未達
    だったため、地の色をvar(--color-primary-fill)（=primary-hoverの濃さ）に変更。
    hover/activeは1段階ずつ濃くなる関係を保つため、hoverをprimary-active、activeも同色を使う
-   （新しい色相・4段階目の色は追加しない）。 */
+   （新しい色相・4段階目の色は追加しない）。
+   UI_AUDIT_2026_09_02：flex-wrap:wrapが無いと、aff_link()の.aff-note（flex-basis:100%で
+   自身の行に落とす想定）が改行できず、ラベル文中で不自然な折り返しと重なる崩れが発生していた
+   （campaigns/comparison/記事CTAで再現。.btn-secondaryは元から持っていた）。 */
 .btn-primary {
-  display:inline-flex; align-items:center; justify-content:center;
+  display:inline-flex; align-items:center; justify-content:center; flex-wrap:wrap;
   background:var(--color-primary-fill); color:#fff;
   padding:12px 24px; border-radius:var(--radius-sm);
   text-decoration:none; font-weight:700; font-size:14px;
@@ -1450,8 +1453,11 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     # 未確認の値は小さく控えめに。
     price_block_html = pricing_detail_html(pricing, sources_by_id)
 
+    # 「2026年8月」直書きはranking/comparisonと同種の鮮度ズレ（UI監査2026-09-02）。LAST_VERIFIED_DATEから算出する。
+    _lv_year, _lv_month, *_ = LAST_VERIFIED_DATE.split("-") if LAST_VERIFIED_DATE else ("", "")
+    _lv_label = f"{_lv_year}年{int(_lv_month)}月" if _lv_year and _lv_month else ""
     title = f"{s_name}の特徴・料金・初回キャンペーンを解説"
-    desc = f"{s_name}の特徴・料金・初回キャンペーン・お試し情報をまとめました。{SITE_NAME}が公式サイトで最終確認した情報（2026年8月）に基づく内容です。"
+    desc = f"{s_name}の特徴・料金・初回キャンペーン・お試し情報をまとめました。{SITE_NAME}が公式サイトで最終確認した情報（{_lv_label}）に基づく内容です。"
 
     html = page_header(title, desc, f"services/{s_id}.html")
     html += f"""
@@ -1670,7 +1676,12 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
     # 「ランキング」は名乗らない：確認済み項目数等いかなる基準でも数値順位は付けない
     # （根拠のないランキングを作らないという既存方針。FINAL_REDESIGN_SPEC.md 5章の最終判断）。
     # URL（ranking.html）・ナビゲーションのリンク先は変更しない。ページ内文言のみ「比較一覧」に改める。
-    title = "宅配食 比較一覧【2026年8月最新】"
+    # 【◯年◯月最新】はLAST_VERIFIED_DATE（services/campaigns等のupdated_at最大値）から算出する。
+    # 以前は月表記を直書きしていたため、データ更新後もtitle/H1だけ古い月のまま表示される鮮度ズレが
+    # あった（COLOR_AUDIT_2026_09_02後のUI監査で発見）。
+    _lv_year, _lv_month, *_ = LAST_VERIFIED_DATE.split("-") if LAST_VERIFIED_DATE else ("", "")
+    freshness_label = f"【{_lv_year}年{int(_lv_month)}月最新】" if _lv_year and _lv_month else ""
+    title = f"宅配食 比較一覧{freshness_label}"
     desc = "宅配食・宅配弁当サービスの最新比較。nosh、ワタミの宅食ダイレクト、三ツ星ファームなど主要サービスの料金・特徴・初回キャンペーンを一覧で比較。順位付けはせず、確認できた情報のみを一覧にしています。"
 
     num_services = len(services)
@@ -1683,7 +1694,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
 
     html = page_header(title, desc, "ranking.html")
     html += f"""
-    <h1>宅配食 比較一覧【2026年8月最新】</h1>
+    <h1>宅配食 比較一覧{freshness_label}</h1>
     <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（{LAST_VERIFIED_DATE}時点）。当サイトは独自の点数やランキング順位を付けていません。</p>
     {purpose_chips_block(purpose_matches)}
     <div class="card card-quiet">
@@ -1811,7 +1822,10 @@ def build_campaigns_page(campaigns, services, aff_links):
           </div>
         </div>""")
 
-    title = "宅配食 初回キャンペーン・お試し情報まとめ【2026年8月】"
+    # 同種の鮮度ズレ修正（UI監査2026-09-02）。LAST_VERIFIED_DATEから算出する。
+    _lv_year, _lv_month, *_ = LAST_VERIFIED_DATE.split("-") if LAST_VERIFIED_DATE else ("", "")
+    _lv_label = f"【{_lv_year}年{int(_lv_month)}月】" if _lv_year and _lv_month else ""
+    title = f"宅配食 初回キャンペーン・お試し情報まとめ{_lv_label}"
     desc = "宅配食サービスの最新の初回キャンペーン・お試し価格情報を一覧で紹介。お得に宅配食を始めたい人向け。"
 
     html = page_header(title, desc, "campaigns.html")
@@ -1892,13 +1906,18 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     price_diff_html = _comparison_price_diff_html(service_a, service_b)
     target_diff_html = _comparison_target_diff_html(service_a, service_b)
 
-    title = f"{a_name}と{b_name}を徹底比較！どっちがおすすめ？【2026年】"
+    # 「2026年8月時点の情報」を直書きしていたため、データ更新後も本文だけ古い月のまま表示される
+    # 鮮度ズレがあった（ranking.htmlと同種の問題。UI監査2026-09-02で発見・LAST_VERIFIED_DATEから算出に統一）。
+    _lv_year, _lv_month, *_ = LAST_VERIFIED_DATE.split("-") if LAST_VERIFIED_DATE else ("", "")
+    as_of_label = f"（{_lv_year}年{int(_lv_month)}月時点の情報）" if _lv_year and _lv_month else ""
+
+    title = f"{a_name}と{b_name}を徹底比較！どっちがおすすめ？【{_lv_year or '2026'}年】"
     desc = f"{a_name}と{b_name}を料金・特徴・初回キャンペーンで比較。一人暮らし・ダイエット・糖質制限など目的別におすすめを解説。"
 
     html = page_header(title, desc, f"comparisons/{a_id}-vs-{b_id}.html")
     html += f"""
     <h1>{esc(a_name)}と{esc(b_name)}を徹底比較</h1>
-    <p>どちらにするか迷っている人向けに、料金・特徴・初回キャンペーンを比較します。（2026年8月時点の情報）</p>
+    <p>どちらにするか迷っている人向けに、料金・特徴・初回キャンペーンを比較します。{as_of_label}</p>
 
     <div class="card panel-accent">
       <h2>結論</h2>
