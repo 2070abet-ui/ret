@@ -194,6 +194,12 @@ def main():
         encoding="utf-8")
     pages.append("articles/diet-bodymake-hikaku.html")
 
+    # 記事ページ（一人暮らし向け宅配食比較、5本目）
+    (out_dir / "articles" / "hitorigurashi-takushoku-hikaku.html").write_text(
+        templates.build_article_hitorigurashi_takushoku(services_with_mealform, shipping_by_id, aff_links, sources_by_id),
+        encoding="utf-8")
+    pages.append("articles/hitorigurashi-takushoku-hikaku.html")
+
     # 法務ページ
     legal_pages = [
         ("privacy.html", templates.build_privacy_page),

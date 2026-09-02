@@ -1559,6 +1559,7 @@ ARTICLES_INDEX = [
     ("/articles/koreisha-takushoku-hikaku", "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮】"),
     ("/articles/takushoku-demerit-chuiten", "宅配食のデメリット・注意点｜後悔しないために知っておきたいこと"),
     ("/articles/diet-bodymake-hikaku", "ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】"),
+    ("/articles/hitorigurashi-takushoku-hikaku", "一人暮らし向け宅配食比較｜新生活・冷凍庫が心配な人の選び方"),
 ]
 
 
@@ -2897,6 +2898,190 @@ def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sour
       <p>ダイエット・ボディメイク向け宅配食は、糖質制限・高タンパク・カロリー制限のどれを主軸にするかで選ぶべきサービスが変わります。まず自分の目的を明確にしたうえで、上の比較表・各社カードを参考にしてください。マッスルデリとFIT FOOD HOMEをより詳しく比較したい場合は、専用の比較ページもあわせてご覧ください。</p>
       <div style="margin-top:12px;">
         <a class="btn-secondary" href="/comparisons/muscle-deli-vs-fit-food-home">マッスルデリ×FIT FOOD HOMEを比較する</a>
+        <a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>
+      </div>
+      {affiliate_disclosure_note()}
+    </div>
+    """
+    html += page_footer(LAST_VERIFIED_DATE)
+    return html
+
+
+def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, sources_by_id=None):
+    """一人暮らし向け宅配食比較記事（B型+F型、5本目）。
+    ARTICLE_WRITING_PRINCIPLES.md 3章候補2「ライフイベント記事（新生活の一人暮らし）」と、
+    候補3の残り「一人暮らし男性」を統合して着手。「男性」限定はdata側に性別軸の
+    target/tagsが一切存在せず裏付けが取れないため、性別を限定しない「一人暮らし」に
+    一般化した（diet-bodymake-hikakuの高タンパク→ダイエット全般ピボットと同種の判断）。
+    対象はtarget/tagsに「一人暮らし」を明記する3社（nosh・ワタミの宅食ダイレクト・
+    三ツ星ファーム）に加え、pros欄に「単品購入で低コミット」「回数縛りがない」と
+    明記されているマッスルデリ・GREEN SPOONを、一人暮らし特有の不安（続けられるか・
+    冷凍庫を圧迫しないか）に応える基準として追加（Phase1のデータ薄チェックに基づく
+    ピボット）。config/comparisons.jsonの既存2ペア（nosh×三ツ星ファーム、nosh×ワタミ）
+    とは内容を重複させず、末尾からリンクするに留める。
+    2026-09-02の調査知見（読者の飽き対策）の実運用テスト記事：橋渡し文（各H2末尾）、
+    本文中盤の内部リンク、見出しのギャップ提示（FAQ内）、太字上限（1段落2箇所）、
+    CTA密度上限（btn-primaryは2箇所のみ）、5,000字超のチャンク化（表を2つ配置）を
+    ARTICLE_WRITING_PRINCIPLES.md 4章8-10項・5章7項・6章・9章の定義どおりに適用する。"""
+    svc_by_id = {s["id"]: s for s in services}
+    ids = ["nosh", "watami-takushoku", "mitsuboshi-farm", "muscle-deli", "green-spoon"]
+    picked = [svc_by_id[i] for i in ids if i in svc_by_id]
+    num = len(picked)
+
+    slug = "articles/hitorigurashi-takushoku-hikaku.html"
+    title = "一人暮らし向け宅配食比較｜新生活・冷凍庫が心配な人の選び方"
+    desc = (f"一人暮らしに向いた宅配食{num}社を比較。冷凍庫のスペースや続けられるか不安な人向けに、"
+            "低コミットで試せるサービスも含めて料金・送料・解約条件を公式情報でまとめました。")
+    html = page_header(title, desc, slug)
+
+    primary_ids = {"nosh", "green-spoon"}
+    cta_by_id = {
+        svc["id"]: aff_link(aff_links, svc["id"], label=f"{svc['name']}を公式サイトで見る",
+                             cls="btn-primary" if svc["id"] in primary_ids else "btn-secondary")
+        for svc in picked
+    }
+
+    reason_by_id = {
+        "nosh": "メニュー数が豊富で飽きにくく、レンジで温めるだけ",
+        "watami-takushoku": "大手グループの信頼性と、複数セットプランからの選びやすさ",
+        "mitsuboshi-farm": "シェフ監修で味の満足度が高く、14・21食コースは初回送料無料",
+        "muscle-deli": "単品購入も可能で、低コミットから始められる",
+        "green-spoon": "初回のみの購入も可能で、回数縛りがない",
+    }
+    lockin_by_id = {
+        "nosh": "継続回数の制限・解約金なし",
+        "watami-takushoku": "要確認（公式サイトで確認）",
+        "mitsuboshi-farm": "要確認（公式サイトで確認）",
+        "muscle-deli": "5日前までの連絡が必要。確定・発送済分はスキップ不可",
+        "green-spoon": "初回分は解約不可。2回目以降は自由（違約金なし）",
+    }
+
+    toc_items = "".join(
+        f'<li><a href="#{svc["id"]}">{esc(svc["name"])}</a></li>' for svc in picked
+    )
+
+    rows = []
+    for svc in picked:
+        pricing = _pricing_of(svc)
+        price_cell = _price_inline_html(pricing, sources_by_id)
+        rows.append(f"""
+        <tr>
+          <td><a href="#{svc['id']}"><strong>{esc(svc['name'])}</strong></a></td>
+          <td>{esc(reason_by_id.get(svc['id'], ''))}</td>
+          <td class="td-price">{price_cell}</td>
+          <td>{esc(lockin_by_id.get(svc['id'], ''))}</td>
+        </tr>""")
+
+    ship_rows = []
+    for svc in picked:
+        ship_row = (shipping_by_id or {}).get(svc["id"])
+        ship_html = shipping_line(ship_row, sources_by_id)
+        ship_rows.append(f"""
+        <tr>
+          <td><a href="#{svc['id']}"><strong>{esc(svc['name'])}</strong></a></td>
+          <td>{ship_html}</td>
+          <td>{esc(lockin_by_id.get(svc['id'], ''))}</td>
+        </tr>""")
+
+    bridge_by_id = {
+        "nosh": "メニューの豊富さは分かったが、大手ならではの安心感を重視するなら次のワタミの宅食ダイレクトが気になるところだ。",
+        "watami-takushoku": "栄養バランス重視の次は、味の満足度を重視する人向けの三ツ星ファームを見てみよう。",
+        "mitsuboshi-farm": "続けられるか不安な人がまず気になるのは、少量から試せるかどうかだろう。",
+        "muscle-deli": "単品購入以外に、回数の縛りそのものがないサービスはあるのだろうか。",
+        "green-spoon": "最後に、5社の送料・解約条件をまとめて比較しておこう。",
+    }
+    mid_link_id = "mitsuboshi-farm"
+
+    cards = []
+    for svc in picked:
+        pros_html = "".join(f"<li>{esc(p)}</li>" for p in svc.get("pros", []))
+        cons_html = "".join(f"<li>{esc(c)}</li>" for c in svc.get("cons", []))
+        ship_html = shipping_line((shipping_by_id or {}).get(svc["id"]), sources_by_id)
+        mid_link_html = ""
+        if svc["id"] == mid_link_id:
+            mid_link_html = ('<p>自分の生活スタイルに合うか迷ったら、'
+                              '<a href="/tool/diagnosis">宅配食診断ツール</a>で絞り込むこともできる。</p>')
+        cards.append(f"""
+    <div class="card" id="{esc(svc['id'])}">
+      <h2><a href="/services/{esc(svc['id'])}">{esc(svc['name'])}</a></h2>
+      <div class="pros-cons">
+        <div><strong>特徴</strong><ul class="feature-list">{pros_html}</ul></div>
+        <div><strong>気になる点</strong><ul class="feature-list">{cons_html}</ul></div>
+      </div>
+      {ship_html}
+      {mid_link_html}
+      <div style="margin-top:12px;">{cta_by_id[svc['id']]}</div>
+      <p>{esc(bridge_by_id.get(svc['id'], ''))}</p>
+    </div>""")
+
+    html += f"""
+    <h1>一人暮らし向け宅配食比較｜新生活・冷凍庫が心配な人の選び方</h1>
+    <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（掲載{num}社。個別の確認日は各サービス詳細ページに記載）</p>
+
+    <div class="card panel-accent">
+      <h2>結論：定番3社と、低コミットで試せる2社がある</h2>
+      <p>一人暮らし向けの宅配食は、<strong>target/tagsに「一人暮らし」と明記された定番3社</strong>（nosh・ワタミの宅食ダイレクト・三ツ星ファーム）と、続けられるか不安な人向けに<strong>単品購入・回数縛りなしで試せる2社</strong>（マッスルデリ・GREEN SPOON）に分けて比較する。当サイトは独自の点数やランキング順位を付けておらず、以下はdata/services.json記載の並び順のまま公式情報をまとめたもの。</p>
+    </div>
+
+    <div class="card card-quiet">
+      <h2>目次</h2>
+      <nav aria-label="目次">
+        <ul class="feature-list">
+          <li><a href="#comparison-table">{num}社の比較表</a></li>
+          <li><a href="#freezer-tips">冷凍庫が心配な人への考え方</a></li>
+          {toc_items}
+          <li><a href="#shipping-table">送料・解約のしやすさ早見表</a></li>
+          <li><a href="#faq">よくある質問</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="card" id="comparison-table">
+      {mobile_scroll_hint()}
+      <h2>{num}社の比較表</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>サービス</th><th>一人暮らし向けの理由</th><th>料金</th><th>縛り・解約のしやすさ</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料込み表記への正規化はしていません。</p>
+    </div>
+
+    <div class="card" id="freezer-tips">
+      <h2>冷凍庫が心配な人への考え方</h2>
+      <p>nosh・ワタミの宅食ダイレクト・三ツ星ファームは、公式データ上「冷凍庫のスペースが必要」という注意点が明記されている。一人暮らしの小さい冷凍庫だと置き場所に困る可能性がある。</p>
+      <p>冷凍庫が心配な場合は、まず<strong>マッスルデリの単品購入</strong>や<strong>GREEN SPOONの初回のみ購入</strong>のように、届く量を自分で調整できるサービスで試し、置き場所を確認してから定期プランに切り替える方法が考えられる。</p>
+      <p>気になるのは、この2社が具体的にどんなサービスなのかだろう。1社ずつ見ていこう。</p>
+    </div>
+    {''.join(cards)}
+
+    <div class="card" id="shipping-table">
+      {mobile_scroll_hint()}
+      <h2>送料・解約のしやすさ早見表</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>サービス</th><th>送料</th><th>縛り・解約のしやすさ</th></tr></thead>
+          <tbody>{''.join(ship_rows)}</tbody>
+        </table>
+      </div>
+      <p>残る疑問は、個別の細かい条件だろう。よくある質問にまとめた。</p>
+    </div>
+
+    <div class="card" id="faq">
+      <h2>よくある質問</h2>
+      <details class="faq-item"><summary>三ツ星ファームの送料は無料？</summary><div class="faq-body"><p>全プラン一律無料ではない。14食・21食コースは初回送料無料だが、7食コースは初回から送料（税込990円、北海道・沖縄等は2,500円）が加算される（公式プランページ確認）。</p></div></details>
+      <details class="faq-item"><summary>一人暮らしでも冷凍庫はどのくらい必要？</summary><div class="faq-body"><p>各社とも必要な冷凍庫容量を公式に数値で示していない。まずはマッスルデリの単品購入やGREEN SPOONの初回のみ購入のような少量プランで試し、置き場所を確認してから定期プランに切り替える方法が考えられる。</p></div></details>
+      <details class="faq-item"><summary>定番のnosh・三ツ星ファーム・ワタミをもっと詳しく比較したい</summary><div class="faq-body"><p>2社間の細かい違いをさらに詳しく比較したい場合は、専用の比較ページも用意している。</p></div></details>
+    </div>
+
+    <div class="card panel-accent">
+      <h2>まとめ：不安な点から逆算して選ぶ</h2>
+      <p>一人暮らし向けの宅配食は、メニュー数・信頼性・味のどれを重視するかで定番3社から選ぶか、続けられるか不安なら低コミットの2社から試すかを決めるとよい。上の比較表・各社カードを参考にしてほしい。定番2社をさらに詳しく比較したい場合は、専用の比較ページもあわせてどうぞ。</p>
+      <div style="margin-top:12px;">
+        <a class="btn-secondary" href="/comparisons/nosh-vs-mitsuboshi-farm">nosh×三ツ星ファームを比較する</a>
+        <a class="btn-secondary" href="/comparisons/nosh-vs-watami-takushoku">nosh×ワタミの宅食ダイレクトを比較する</a>
+        <a class="btn-secondary" href="/articles/diet-bodymake-hikaku">ダイエット・ボディメイク向け比較記事</a>
         <a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>
       </div>
       {affiliate_disclosure_note()}
