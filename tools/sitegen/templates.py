@@ -1713,7 +1713,7 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
       <div class="checks">
         <label><input type="checkbox" id="sort-by-price" onchange="sortRankingByPrice()"> 表示価格が安い順</label>
       </div>
-      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行のラベルでご確認ください）。送料等を含めた正規化はしていません。</p>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行のラベルでご確認ください）。送料等を含めた金額には揃えていません。</p>
     </div>
     {vstatus_legend(link_to_dashboard=True)}
     <div class="ranking-desktop">
@@ -2500,7 +2500,7 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
 
     html += f"""
     <h1>高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮を徹底解説】</h1>
-    <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（data/services.json記載の確認日は社ごとに異なります）</p>
+    <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（確認日は社ごとに異なります。詳細は各サービス詳細ページに記載）</p>
 
     <div class="card panel-accent">
       <h2>結論：高齢者向け宅配食は「やわらか食・塩分配慮の有無」で選ぶ</h2>
@@ -2510,7 +2510,7 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
         <li><strong>塩分・カロリーが配慮されているか</strong>：持病（高血圧・腎臓病等）がある場合に重要</li>
         <li><strong>個食（1食ずつ食べきりサイズ）かどうか</strong>：一人暮らしの高齢者は個食タイプが食べ残しを防ぎやすい</li>
       </ul>
-      <p>当サイトは独自の点数やランキング順位を付けていません。以下は<strong>data/services.jsonに記載の並び順のまま</strong>、公式情報で確認できた内容を並べたものです。</p>
+      <p>当サイトは独自の点数やランキングを付けていません。以下は<strong>確認できた公式情報をそのまま</strong>、掲載順に優劣をつけずに並べたものです。</p>
     </div>
 
     <div class="card">
@@ -2522,7 +2522,7 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
           <tbody>{''.join(rows)}</tbody>
         </table>
       </div>
-      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料込み表記への正規化はしていません。</p>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料を足した金額には揃えていません。</p>
     </div>
 
     <div class="card">
@@ -2759,7 +2759,7 @@ def build_article_demerit_chuiten(services):
           <tbody>{''.join(rows)}</tbody>
         </table>
       </div>
-      <p class="price-meta">「気になる点」は各社最大2件を抜粋表示しています。全件はサービス詳細ページでご確認いただけます。並び順はdata/services.json記載順のままで、順位付けではありません。</p>
+      <p class="price-meta">「気になる点」は各社最大2件を抜粋表示しています。全件はサービス詳細ページでご確認いただけます。掲載順は並び替えておらず、順位付けの意味はありません。</p>
     </div>
 
     <div class="card" id="faq">
@@ -2859,7 +2859,7 @@ def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sour
         <li><strong>カロリー制限・医療的な厳密さを重視</strong>：ウェルネスダイニング</li>
         <li><strong>野菜不足の解消・アラカルトの柔軟性を重視</strong>：GREEN SPOON</li>
       </ul>
-      <p>当サイトは独自の点数やランキング順位を付けていません。以下は<strong>data/services.jsonに記載の並び順のまま</strong>、公式情報で確認できた内容を並べたものです。</p>
+      <p>当サイトは独自の点数やランキングを付けていません。以下は<strong>確認できた公式情報をそのまま</strong>、掲載順に優劣をつけずに並べたものです。</p>
     </div>
 
     <div class="card card-quiet">
@@ -2882,7 +2882,7 @@ def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sour
           <tbody>{''.join(rows)}</tbody>
         </table>
       </div>
-      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料込み表記への正規化はしていません。</p>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料を足した金額には揃えていません。</p>
     </div>
     {''.join(cards)}
 
@@ -2986,7 +2986,7 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
     bridge_by_id = {
         "nosh": "メニューの豊富さは分かったが、大手ならではの安心感を重視するなら次のワタミの宅食ダイレクトが気になるところだ。",
         "watami-takushoku": "栄養バランス重視の次は、味の満足度を重視する人向けの三ツ星ファームを見てみよう。",
-        "mitsuboshi-farm": "続けられるか不安な人がまず気になるのは、少量から試せるかどうかだろう。",
+        "mitsuboshi-farm": "続けられるか不安な人は、まず少量から試せるかを気にするはずだ。",
         "muscle-deli": "単品購入以外に、回数の縛りそのものがないサービスはあるのだろうか。",
         "green-spoon": "最後に、5社の送料・解約条件をまとめて比較しておこう。",
     }
@@ -3020,7 +3020,7 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
 
     <div class="card panel-accent">
       <h2>結論：定番3社と、低コミットで試せる2社がある</h2>
-      <p>一人暮らし向けの宅配食は、<strong>target/tagsに「一人暮らし」と明記された定番3社</strong>（nosh・ワタミの宅食ダイレクト・三ツ星ファーム）と、続けられるか不安な人向けに<strong>単品購入・回数縛りなしで試せる2社</strong>（マッスルデリ・GREEN SPOON）に分けて比較する。当サイトは独自の点数やランキング順位を付けておらず、以下はdata/services.json記載の並び順のまま公式情報をまとめたもの。</p>
+      <p>一人暮らし向けの宅配食は、<strong>公式サイトで「一人暮らし向け」とうたっている定番3社</strong>（nosh・ワタミの宅食ダイレクト・三ツ星ファーム）と、続けられるか不安な人向けに<strong>単品購入・回数縛りなしで試せる2社</strong>（マッスルデリ・GREEN SPOON）に分けて比較する。当サイトは独自の点数やランキングを付けていない。以下は公式情報をそのまま並べたもので、掲載順に優劣の意味はない。</p>
     </div>
 
     <div class="card card-quiet">
@@ -3045,14 +3045,14 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
           <tbody>{''.join(rows)}</tbody>
         </table>
       </div>
-      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料込み表記への正規化はしていません。</p>
+      <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料を足した金額には揃えていません。</p>
     </div>
 
     <div class="card" id="freezer-tips">
       <h2>冷凍庫が心配な人への考え方</h2>
-      <p>nosh・ワタミの宅食ダイレクト・三ツ星ファームは、公式データ上「冷凍庫のスペースが必要」という注意点が明記されている。一人暮らしの小さい冷凍庫だと置き場所に困る可能性がある。</p>
-      <p>冷凍庫が心配な場合は、まず<strong>マッスルデリの単品購入</strong>や<strong>GREEN SPOONの初回のみ購入</strong>のように、届く量を自分で調整できるサービスで試し、置き場所を確認してから定期プランに切り替える方法が考えられる。</p>
-      <p>気になるのは、この2社が具体的にどんなサービスなのかだろう。1社ずつ見ていこう。</p>
+      <p>nosh・ワタミの宅食ダイレクト・三ツ星ファームは、公式サイトでも「冷凍庫のスペースが必要」という点に触れている。一人暮らし用の小さい冷凍庫だと、置き場所に困ることもありそうだ。</p>
+      <p>冷凍庫が心配なら、まず<strong>マッスルデリの単品購入</strong>や<strong>GREEN SPOONの初回のみ購入</strong>のように届く量を自分で調整できるサービスで試し、置き場所を確認してから定期プランに切り替える、という進め方もある。</p>
+      <p>この2社が具体的にどんなサービスなのか、1社ずつ見ていこう。</p>
     </div>
     {''.join(cards)}
 
@@ -3065,14 +3065,14 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
           <tbody>{''.join(ship_rows)}</tbody>
         </table>
       </div>
-      <p>残る疑問は、個別の細かい条件だろう。よくある質問にまとめた。</p>
+      <p>細かい条件は、この下のよくある質問でまとめて確認してほしい。</p>
     </div>
 
     <div class="card" id="faq">
       <h2>よくある質問</h2>
       <details class="faq-item"><summary>三ツ星ファームの送料は無料？</summary><div class="faq-body"><p>全プラン一律無料ではない。14食・21食コースは初回送料無料だが、7食コースは初回から送料（税込990円、北海道・沖縄等は2,500円）が加算される（公式プランページ確認）。</p></div></details>
-      <details class="faq-item"><summary>一人暮らしでも冷凍庫はどのくらい必要？</summary><div class="faq-body"><p>各社とも必要な冷凍庫容量を公式に数値で示していない。まずはマッスルデリの単品購入やGREEN SPOONの初回のみ購入のような少量プランで試し、置き場所を確認してから定期プランに切り替える方法が考えられる。</p></div></details>
-      <details class="faq-item"><summary>定番のnosh・三ツ星ファーム・ワタミをもっと詳しく比較したい</summary><div class="faq-body"><p>2社間の細かい違いをさらに詳しく比較したい場合は、専用の比較ページも用意している。</p></div></details>
+      <details class="faq-item"><summary>一人暮らしでも冷凍庫はどのくらい必要？</summary><div class="faq-body"><p>必要な冷凍庫容量を数値で公式に示している社はない。上の「冷凍庫が心配な人への考え方」で触れた、少量プランからのお試しも参考にしてほしい。</p></div></details>
+      <details class="faq-item"><summary>定番のnosh・三ツ星ファーム・ワタミをもっと詳しく比較したい</summary><div class="faq-body"><p>3社をまとめて比較した専用ページはないが、noshを軸にした2社ずつの比較ページ（nosh×三ツ星ファーム、nosh×ワタミの宅食ダイレクト）を用意している。気になる2社を選んで読み比べてほしい。</p></div></details>
     </div>
 
     <div class="card panel-accent">
