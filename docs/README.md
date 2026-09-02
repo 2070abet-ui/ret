@@ -10,6 +10,7 @@
 | FINAL_PRODUCT_DESIGN.md | 現行（プロダクト設計・非目標） |
 | DEPLOYMENT_GUIDE_2026_08.md | 現行（デプロイ手順） |
 | UI_DESIGN_PRINCIPLES.md | 現行（UI改善時必読） |
+| ARTICLE_WRITING_PRINCIPLES.md | 現行（記事執筆時必読） |
 | DELIVERY_FOOD_AFFILIATE_NEXT_ACTION_2026_08.md | 現行（ロードマップ） |
 
 ## 決定・実装記録（完了）
