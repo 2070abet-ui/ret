@@ -9,6 +9,12 @@ import json
 from sitegen.data import SITE_NAME, SITE_DESC, SITE_URL, GSC_META, OPERATOR, LAST_VERIFIED_DATE, GA4_MEASUREMENT_ID, GTM_CONTAINER_ID
 
 
+# Breadcrumb JSON-LD 用の共通crumb（トップ=ホーム / 比較一覧）。CTR_IMPROVEMENT_PLAN_2026_09_04。
+_HOME_CRUMB = (SITE_NAME, SITE_URL + "/")
+_RANKING_CRUMB = ("比較一覧", SITE_URL + "/ranking")
+
+
+
 def esc(s):
     if s is None:
         return ""
@@ -1189,6 +1195,19 @@ def aff_link(aff_links, service_id, label=None, cls="btn-primary"):
 FAVICON_PATH = "/favicon.png"
 
 
+def breadcrumb_jsonld(crumbs):
+    """検索結果のパンくず表示用 BreadcrumbList JSON-LD を返す。crumbsが空なら空文字（既存ページは無出力のまま）。
+    crumbs: [(表示名, 絶対URL or None), ...]（先頭=最上位）。CTR_IMPROVEMENT_PLAN_2026_09_04。"""
+    if not crumbs:
+        return ""
+    items = [
+        {"@type": "ListItem", "position": i, "name": name, **({"item": url} if url else {})}
+        for i, (name, url) in enumerate(crumbs, start=1)
+    ]
+    obj = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": items}
+    return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False) + "</script>"
+
+
 def _meta_block(title, description, canonical_url):
     """OGP・Twitterカード・基本JSON-LD（WebSite）。既存のtitle/description/canonical値をそのまま利用するのみで、
     本文・見出し・価格表記等のコンテンツは一切変更しない。"""
@@ -1259,7 +1278,7 @@ def _gtm_body_block():
     )
 
 
-def page_header(title, description, canonical_path, main_class="container"):
+def page_header(title, description, canonical_path, main_class="container", crumbs=None):
     """main_class: <main>のクラス。既定は全ページ共通の"container"（1000px）。
     TOPページのみ"container-top"（1200px）を渡す（他ページは呼び出し元を変更しないため無影響）。
     canonical_pathは呼び出し元では従来通り".html"付きファイル名を渡す（呼び出し箇所は変更不要）。
@@ -1271,6 +1290,7 @@ def page_header(title, description, canonical_path, main_class="container"):
     else:
         canonical_url = f"{SITE_URL}/{canonical_path.removesuffix('.html')}"
     meta_block = _meta_block(title, description, canonical_url)
+    breadcrumb_block = breadcrumb_jsonld(crumbs)
     ga4_block = _ga4_block()
     gtm_head = _gtm_head_block()
     gtm_body = _gtm_body_block()
@@ -1285,6 +1305,7 @@ def page_header(title, description, canonical_path, main_class="container"):
 {GSC_META}
 <link rel="canonical" href="{canonical_url}">
 {meta_block}
+{breadcrumb_block}
 {ga4_block}
 <style>
 {_CSS}
@@ -1459,7 +1480,8 @@ def build_service_page(service, aff_links, shipping_by_id=None, related=None, so
     title = f"{s_name}の特徴・料金・初回キャンペーンを解説"
     desc = f"{s_name}の特徴・料金・初回キャンペーン・お試し情報をまとめました。{SITE_NAME}が公式サイトで最終確認した情報（{_lv_label}）に基づく内容です。"
 
-    html = page_header(title, desc, f"services/{s_id}.html")
+    html = page_header(title, desc, f"services/{s_id}.html",
+                        crumbs=[_HOME_CRUMB, _RANKING_CRUMB, (s_name, None)])
     html += f"""
     <div class="page-head">
       <h1>{esc(s_name)}</h1>
@@ -1695,7 +1717,8 @@ def build_ranking_page(services, campaigns, aff_links, comparison_pairs=None,
                        '価格・送料・初回キャンペーンの3項目すべてを公式一次情報で確認済みという事実表示です。'
                        '並び順・おすすめ度とは関係ありません（当サイトは順位付けを行いません）。</p>')
 
-    html = page_header(title, desc, "ranking.html")
+    html = page_header(title, desc, "ranking.html",
+                        crumbs=[_HOME_CRUMB, ("比較一覧", None)])
     html += f"""
     <h1>宅配食 比較一覧{freshness_label}</h1>
     <p>主要宅配食サービスを比較しています。価格・キャンペーン情報は公式サイトで確認できたもののみ掲載し、未確認の項目は「公式確認中」と表示しています（{LAST_VERIFIED_DATE}時点）。当サイトは独自の点数やランキング順位を付けていません。</p>
@@ -1831,7 +1854,8 @@ def build_campaigns_page(campaigns, services, aff_links):
     title = f"宅配食 初回キャンペーン・お試し情報まとめ{_lv_label}"
     desc = "宅配食サービスの最新の初回キャンペーン・お試し価格情報を一覧で紹介。お得に宅配食を始めたい人向け。"
 
-    html = page_header(title, desc, "campaigns.html")
+    html = page_header(title, desc, "campaigns.html",
+                        crumbs=[_HOME_CRUMB, ("初回キャンペーン", None)])
     html += f"""
     <h1>宅配食 初回キャンペーン・お試し情報まとめ</h1>
     <p>各サービスの初回キャンペーン・お試し情報を毎週更新しています。最新の割引条件は必ず公式サイトでご確認ください。</p>
@@ -1917,7 +1941,8 @@ def build_comparison_page(service_a, service_b, aff_links, sources_by_id=None):
     title = f"{a_name}と{b_name}を徹底比較！どっちがおすすめ？【{_lv_year or '2026'}年】"
     desc = f"{a_name}と{b_name}を料金・特徴・初回キャンペーンで比較。一人暮らし・ダイエット・糖質制限など目的別におすすめを解説。"
 
-    html = page_header(title, desc, f"comparisons/{a_id}-vs-{b_id}.html")
+    html = page_header(title, desc, f"comparisons/{a_id}-vs-{b_id}.html",
+                        crumbs=[_HOME_CRUMB, _RANKING_CRUMB, (f"{a_name}と{b_name}の比較", None)])
     html += f"""
     <h1>{esc(a_name)}と{esc(b_name)}を徹底比較</h1>
     <p>どちらにするか迷っている人向けに、料金・特徴・初回キャンペーンを比較します。{as_of_label}</p>
@@ -2001,7 +2026,8 @@ def build_diagnosis_tool(services, aff_links, sources_by_id=None):
     title = "宅配食 診断ツール｜自分に合うサービスを条件で探す"
     desc = "予算・目的・こだわりを選ぶだけで、あなたに合う宅配食サービスがわかる無料の診断ツール。"
 
-    html = page_header(title, desc, "tool/diagnosis.html")
+    html = page_header(title, desc, "tool/diagnosis.html",
+                        crumbs=[_HOME_CRUMB, ("診断ツール", None)])
     html += f"""
     <h1>宅配食 診断ツール</h1>
     <p class="price-meta">目的・保存方法を選ぶだけで、条件に近い上位3社をすぐに表示します。</p>
@@ -2308,16 +2334,18 @@ def affiliate_disclosure_note():
 
 def build_article_chef_muten_kuchikomi(aff_links):
     """シェフの無添つくりおき 商標ロングテール記事（一次情報・公式サイト2026-08-26確認）"""
-    title = "シェフの無添つくりおきの口コミ・評判を徹底検証！料金・送料・メニュー・「まずい？」まで【2026年8月】"
+    title = "シェフの無添つくりおきの口コミ・評判を検証｜料金・送料・まずい？の真相も解説"
     desc = "シェフの無添つくりおきの料金（初回3,799円〜）・送料・メニュー・解約条件を公式情報で検証。「まずい？」の見方、口コミの確認方法、向いている人まで解説します。"
-    html = page_header(title, desc, "articles/chef-muten-tukuritoki-kuchikomi.html")
+    html = page_header(title, desc, "articles/chef-muten-tukuritoki-kuchikomi.html",
+                        crumbs=[_HOME_CRUMB, ("シェフの無添つくりおきの口コミ・評判", None)])
 
     # A8 CTA（aff_link関数が actual_url を使用、rel=nofollow sponsored付き）
     cta = aff_link(aff_links, "chef-muten-tukuritoki", label="シェフの無添つくりおきを公式サイトで見る", cls="btn-primary")
 
     html += f"""
-    <h1>シェフの無添つくりおきの口コミ・評判を徹底検証！料金・送料・メニュー・「まずい？」まで</h1>
+    <h1>シェフの無添つくりおきの口コミ・評判を検証｜料金・送料・まずい？の真相も解説</h1>
     <p class="price-meta">最終確認日：2026年8月26日 ｜ 情報源：公式サイト（store.tavenal.com）・公式FAQ</p>
+    <p>「シェフの無添つくりおき」の<strong>口コミ・評判</strong>でよく聞かれる「<strong>まずい？</strong>」「量が多い」といった声について、公式サイト・公式FAQの一次情報で検証しました。料金・送料・メニューの仕組みも併せて解説します。</p>
 
     <div class="card panel-accent">
       <h2>結論：どんな人に向いている？</h2>
@@ -2473,7 +2501,8 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
 
     title = "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮を徹底解説】"
     desc = "高齢者向けの宅配食・冷凍弁当5社を比較。やわらか食・塩分配慮の有無、1食あたりの価格、個食かどうかを公式情報で整理。自治体配食との違い、離れて暮らす家族が代理で注文する際の確認点も解説します。"
-    html = page_header(title, desc, "articles/koreisha-takushoku-hikaku.html")
+    html = page_header(title, desc, "articles/koreisha-takushoku-hikaku.html",
+                        crumbs=[_HOME_CRUMB, ("高齢者向け宅配食の比較", None)])
 
     cta_wanmairu = aff_link(aff_links, "wanmairu", label="わんまいるを公式サイトで見る", cls="btn-primary")
     cta_syokurakuzen = aff_link(aff_links, "syokurakuzen", label="食楽膳を公式サイトで見る", cls="btn-primary")
@@ -2666,7 +2695,8 @@ def build_article_demerit_chuiten(services):
     desc = (f"宅配食・冷凍弁当のデメリットや注意点を、{num}社の公式情報をもとに正直にまとめました。"
             "冷凍庫のスペース、送料、価格の分かりにくさ、解約条件の違いなど、"
             "後悔しやすいポイントを客観的な事実で整理しています。")
-    html = page_header(title, desc, slug)
+    html = page_header(title, desc, slug,
+                        crumbs=[_HOME_CRUMB, ("宅配食のデメリット・注意点", None)])
 
     rows = []
     for svc in services:
@@ -2803,7 +2833,8 @@ def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sour
     title = "ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】"
     desc = (f"ダイエット・ボディメイクに向いた宅配食{num}社を比較。低糖質・高タンパク・カロリー制限のうち"
             "何を重視するかで選び方が変わります。料金・保存方法・向いている人を公式情報でまとめました。")
-    html = page_header(title, desc, slug)
+    html = page_header(title, desc, slug,
+                        crumbs=[_HOME_CRUMB, ("ダイエット・ボディメイク向け宅配食の比較", None)])
 
     cta_by_id = {
         svc["id"]: aff_link(aff_links, svc["id"], label=f"{svc['name']}を公式サイトで見る",
@@ -2932,7 +2963,8 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
     title = "一人暮らし向け宅配食比較｜新生活・冷凍庫が心配な人の選び方"
     desc = (f"一人暮らしに向いた宅配食{num}社を比較。冷凍庫のスペースや続けられるか不安な人向けに、"
             "気軽に試せるサービスも含めて料金・送料・解約条件を公式情報でまとめました。")
-    html = page_header(title, desc, slug)
+    html = page_header(title, desc, slug,
+                        crumbs=[_HOME_CRUMB, ("一人暮らし向け宅配食の比較", None)])
 
     primary_ids = {"nosh", "green-spoon"}
     cta_by_id = {
