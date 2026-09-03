@@ -135,3 +135,17 @@ title = "シェフの無添つくりおき 口コミ・評判は？料金・ま�
 - 例（services/nosh）: 宅食図鑑 ＞ 比較一覧 ＞ nosh（ナッシュ）
 
 **変更ファイル**: `tools/sitegen/templates.py`（data/schema・configは変更なし）
+
+---
+
+## 8. デプロイ・検証結果（2026-09-04）
+
+| 手順 | 結果 |
+|---|---|
+| push | ✅ `origin/main` 反映（87e3f5b） |
+| デプロイ | ✅ `npx wrangler deploy`（Version ID: b8239a1d-3729-48cd-b145-4d72818abf45）。本番URLで新title・Breadcrumb JSON-LD・リード文の反映を確認 |
+| **Rich Results Test**（記事URL） | ✅ **Breadcrumbs: 1 valid item detected**（"Valid items are eligible for Google Search's rich results."）。クロール成功（Sep 4, 2026） |
+| **記事URLのRequest indexing** | ✅ `/articles/chef-muten-tukuritoki-kuchikomi` をGSC URL検査→リクエスト（"URL was added to a priority crawl queue"）。1回のみ実施 |
+| 2〜4週間後の再確認 | ⏳ 予定（2026-09-07以降至近）: GSC Performanceでクエリ別CTR・掲載順位・表示回数（9/2以降分）を確認 |
+
+**備考**: 本番デプロイはWindows環境変数`CLOUDFLARE_API_TOKEN`（User）をPowerShellから読み込んで実行した（このセッションのBash環境には未継承のため）。Workers BuildsのGit連携による自動デプロイは未設定の模様（push後も本番が更新されないことを確認）。
