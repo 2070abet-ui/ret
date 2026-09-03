@@ -30,9 +30,10 @@
 | DATA_VERIFICATION_AUDIT_20260827.md | 監査 | 完了（confirmed化反映済み） |
 | DIAGNOSIS_COMPARE_CTA_FUNNEL_AUDIT_2026_08_28.md | 監査 | 完了（P2任意のみ未実施） |
 | FINAL_VISUAL_AUDIT_2026_08_28.md | 監査 | 完了（819181e） |
-| GOOGLE_INDEX_REQUEST_LOG_2026_08_28.md | 記録 | 進行中（残り4件） |
+| GOOGLE_INDEX_REQUEST_LOG_2026_08_28.md | 記録 | 完了（2026-09-04 chef-mutenリクエスト済み・全URL完了） |
 | GSC_POST_DEPLOY_STATUS_2026_08_28.md | 監査 | 完了 |
 | GSC_REDIRECT_ERROR_CAUSE_AUDIT_2026_08_31.md | 監査 | 完了（実装・デプロイ済み） |
+| GSC_STATUS_AND_STRATEGY_2026_09_04.md | 監査 | 完了（表示回数0脱出を確認・施策調査済み） |
 | NEW_SERVICE_FINAL_DECISION_WANIMAI_MEALS_2026_08_28.md | 監査 | 完了（わんまいるGO・Meals見送り） |
 | NEW_SERVICE_PRE_AUDIT_WANIMAI_MEALS_2026_08_28.md | 監査 | 完了 |
 | P1_IMPLEMENTATION_PLAN_2026_08_28.md | 計画 | 完了（819181e） |
