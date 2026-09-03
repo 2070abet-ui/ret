@@ -3004,23 +3004,12 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
           <td>{esc(lockin_by_id.get(svc['id'], ''))}</td>
         </tr>""")
 
-    ship_rows = []
-    for svc in picked:
-        ship_row = (shipping_by_id or {}).get(svc["id"])
-        ship_html = shipping_line(ship_row, sources_by_id)
-        ship_rows.append(f"""
-        <tr>
-          <td><a href="#{svc['id']}"><strong>{esc(svc['name'])}</strong></a></td>
-          <td>{ship_html}</td>
-          <td>{esc(lockin_by_id.get(svc['id'], ''))}</td>
-        </tr>""")
-
     bridge_by_id = {
-        "nosh": "メニューの豊富さは魅力だが、大手ならではの安心感を求める人には、次のワタミの宅食ダイレクトも候補になる。",
-        "watami-takushoku": "栄養バランス重視の次は、味の満足度を重視する人向けの三ツ星ファームを見てみよう。",
-        "mitsuboshi-farm": "続けられるか不安なら、まず少量から試せるかがポイントになる。",
-        "muscle-deli": "単品購入以外に、回数の縛りそのものがないサービスも見てみよう。",
-        "green-spoon": "最後に、5社の送料・解約条件をまとめて比較しておこう。",
+        "nosh": "noshはメニュー数が多く、継続回数の制限や解約金もありません。続いて、複数セットからプランを選べるワタミの宅食ダイレクトです。",
+        "watami-takushoku": "ワタミの宅食ダイレクトは大手グループの運営で、複数セットから選べます。次は、シェフ監修で味の満足度を売りにする三ツ星ファームです。",
+        "mitsuboshi-farm": "三ツ星ファームの初回送料無料は14食・21食コース限定です。少量から始めたい場合は、単品購入できるマッスルデリを次に確認します。",
+        "muscle-deli": "マッスルデリは単品購入ができ、定期では5日前までの連絡が必要です。最後は、回数縛りがないGREEN SPOONです。",
+        "green-spoon": "GREEN SPOONは初回のみの購入で済むため、まず1回試すのに合います。料金や縛りの一覧は、記事冒頭の比較表で見られます。",
     }
     mid_link_id = "mitsuboshi-farm"
 
@@ -3052,7 +3041,8 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
 
     <div class="card panel-accent">
       <h2>結論：定番3社と、気軽に試せる2社がある</h2>
-      <p>一人暮らし向けの宅配食は、<strong>公式サイトで「一人暮らし向け」とうたっている定番3社</strong>（nosh・ワタミの宅食ダイレクト・三ツ星ファーム）と、続けられるか不安な人向けに<strong>単品購入・回数縛りなしで試せる2社</strong>（マッスルデリ・GREEN SPOON）に分けて比較する。当サイトは独自の点数やランキングを付けていない。以下は公式情報をそのまま並べたもので、掲載順に優劣の意味はない。</p>
+      <p>一人暮らし向けの宅配食は、<strong>公式サイトで「一人暮らし向け」と紹介されている定番3社</strong>（nosh・ワタミの宅食ダイレクト・三ツ星ファーム）と、<strong>単品購入・回数縛りなしで試せる2社</strong>（マッスルデリ・GREEN SPOON）を候補に加えた計5社で比較します。</p>
+      <p>2社を加えたのは、一人暮らしの最初の不安が「続けられるか」「冷凍庫を圧迫しないか」にあるためです。当サイトは点数やランキングを付けず、以下は各公式サイトで確認した情報を並べたものです。</p>
     </div>
 
     <div class="card card-quiet">
@@ -3062,7 +3052,6 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
           <li><a href="#comparison-table">{num}社の比較表</a></li>
           <li><a href="#freezer-tips">冷凍庫が心配な人への考え方</a></li>
           {toc_items}
-          <li><a href="#shipping-table">送料・解約のしやすさ早見表</a></li>
           <li><a href="#faq">よくある質問</a></li>
         </ul>
       </nav>
@@ -3082,23 +3071,10 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
 
     <div class="card" id="freezer-tips">
       <h2>冷凍庫が心配な人への考え方</h2>
-      <p>nosh・ワタミの宅食ダイレクト・三ツ星ファームは、公式サイトでも「冷凍庫のスペースが必要」という点に触れている。一人暮らし用の小さい冷凍庫だと、置き場所に困ることもありそうだ。</p>
-      <p>冷凍庫が心配なら、まず<strong>マッスルデリの単品購入</strong>や<strong>GREEN SPOONの初回のみ購入</strong>のように届く量を自分で調整できるサービスで試し、置き場所を確認してから定期プランに切り替える、という進め方もある。</p>
-      <p>この2社が具体的にどんなサービスなのか、1社ずつ見ていこう。</p>
+      <p>まず確認したのは、公式サイトが「冷凍庫のスペースが必要」としている3社（nosh・ワタミの宅食ダイレクト・三ツ星ファーム）。ただし、一人暮らし向けに必要な容量を数値で示している社は、今回の確認では見つかりませんでした。</p>
+      <p>そこで当サイトが提案するのは、届く量を自分で決められるサービスから試す方法です。<strong>マッスルデリは単品購入ができ、GREEN SPOONは初回のみの購入で済む</strong>ため、置き場所を実際に確認してから定期プランへ切り替えるか決められます。</p>
     </div>
     {''.join(cards)}
-
-    <div class="card" id="shipping-table">
-      {mobile_scroll_hint()}
-      <h2>送料・解約のしやすさ早見表</h2>
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>サービス</th><th>送料</th><th>縛り・解約のしやすさ</th></tr></thead>
-          <tbody>{''.join(ship_rows)}</tbody>
-        </table>
-      </div>
-      <p>細かい条件は、この下のよくある質問でまとめて確認してほしい。</p>
-    </div>
 
     <div class="card" id="faq">
       <h2>よくある質問</h2>
@@ -3109,7 +3085,7 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
 
     <div class="card panel-accent">
       <h2>まとめ：不安な点から逆算して選ぶ</h2>
-      <p>一人暮らし向けの宅配食は、メニュー数・信頼性・味のどれを重視するかで定番3社から選ぶか、続けられるか不安なら気軽に試せる2社から始めるかを決めるとよい。上の比較表・各社カードを参考にしてほしい。定番2社をさらに詳しく比較したい場合は、専用の比較ページもあわせてどうぞ。</p>
+      <p>迷う基準は、メニュー数・信頼性・味のどこを重視するか、そしてまず1回試せるか、の2軸で整理すると選びやすくなります。当サイトとしては、比較表で料金と縛りまで見比べたうえで、気になった1社を初回のみ・単品から試すのが確実だと考えています。</p>
       <div style="margin-top:12px;">
         <a class="btn-secondary" href="/comparisons/nosh-vs-mitsuboshi-farm">nosh×三ツ星ファームを比較する</a>
         <a class="btn-secondary" href="/comparisons/nosh-vs-watami-takushoku">nosh×ワタミの宅食ダイレクトを比較する</a>
