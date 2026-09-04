@@ -2554,8 +2554,8 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
       <p class="price-meta">表示価格は初回・お試し・通常価格が混在します（各行の表示ラベルでご確認ください）。送料を足した金額には揃えていません。</p>
     </div>
 
-    <div class="card">
-      <h2>まごころケア食：やわらか食・ムース食に対応</h2>
+    <div class="card" id="magokoro-care">
+      <h2><a href="/services/magokoro-care">まごころケア食</a>：やわらか食・ムース食に対応</h2>
       <ul class="feature-list">
         <li>高齢者向けの専門性が高く、やわらか食・ムース食に対応（公式情報より）</li>
         <li>配達エリアが広い</li>
@@ -2565,8 +2565,8 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
       <div style="margin-top:12px;">{cta_magokoro}</div>
     </div>
 
-    <div class="card">
-      <h2>食楽膳：SOMPOグループ・個食タイプで塩分控えめセットが選べる</h2>
+    <div class="card" id="syokurakuzen">
+      <h2><a href="/services/syokurakuzen">食楽膳</a>：SOMPOグループ・個食タイプで塩分控えめセットが選べる</h2>
       <ul class="feature-list">
         <li>SOMPOグループが運営する冷凍おかず宅配</li>
         <li>個食タイプ（1食ずつ食べきりサイズ）で食べ残しを防ぎやすい</li>
@@ -2577,8 +2577,8 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
       <div style="margin-top:12px;">{cta_syokurakuzen}</div>
     </div>
 
-    <div class="card">
-      <h2>健康直球便：減塩食・やわらか食・消化にやさしい食事に特化</h2>
+    <div class="card" id="kenko-chokkyokubin">
+      <h2><a href="/services/kenko-chokkyokubin">健康直球便</a>：減塩食・やわらか食・消化にやさしい食事に特化</h2>
       <ul class="feature-list">
         <li>減塩食・やわらか食・消化にやさしい食事に特化した冷凍弁当</li>
         <li>カロリー・塩分調整食セット10食5,780円（税込・1食578円）</li>
@@ -2589,8 +2589,8 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
       <div style="margin-top:12px;">{cta_kenko}</div>
     </div>
 
-    <div class="card">
-      <h2>わんまいる：無添加・国産食材で健康志向の高い高齢者向け</h2>
+    <div class="card" id="wanmairu">
+      <h2><a href="/services/wanmairu">わんまいる</a>：無添加・国産食材で健康志向の高い高齢者向け</h2>
       <ul class="feature-list">
         <li>国産食材100%使用、合成保存料・合成着色料不使用（無添加）</li>
         <li>主菜1品+副菜2品の3品構成で、単品弁当より食卓の品数を確保できる</li>
@@ -2601,8 +2601,8 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
       <div style="margin-top:12px;">{cta_wanmairu}</div>
     </div>
 
-    <div class="card card-quiet">
-      <h2>食宅便：日清医療食品運営・価格帯は比較的手頃</h2>
+    <div class="card card-quiet" id="shokutakubin">
+      <h2><a href="/services/shokutakubin">食宅便</a>：日清医療食品運営・価格帯は比較的手頃</h2>
       <p>日清医療食品が運営する宅配食で、病院給食のノウハウを活かしたメニューが特徴です。週間人気商品「おまかせコース7食セット」は4,830円（税込・1食690円）ですが、これは公式サイトの人気商品ページ内での最安値であり、全プラン中の最安であることまでは確認できていません（{esc(LAST_VERIFIED_DATE)}時点）。</p>
       <div style="margin-top:12px;">{cta_shokutakubin}</div>
     </div>
@@ -2885,10 +2885,10 @@ def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sour
       <h2>結論：重視する軸で選ぶサービスが変わる</h2>
       <p>ダイエット・ボディメイク向けの宅配食は、どの軸を重視するかによって向くサービスが変わります。</p>
       <ul class="feature-list">
-        <li><strong>低糖質を重視</strong>：nosh・三ツ星ファーム</li>
-        <li><strong>高タンパク・ボディメイクを重視</strong>：マッスルデリ・FIT FOOD HOME</li>
-        <li><strong>カロリー制限・医療的な厳密さを重視</strong>：ウェルネスダイニング</li>
-        <li><strong>野菜不足の解消・アラカルトの柔軟性を重視</strong>：GREEN SPOON</li>
+        <li><strong>低糖質を重視</strong>：<a href="#nosh">nosh</a>・<a href="#mitsuboshi-farm">三ツ星ファーム</a></li>
+        <li><strong>高タンパク・ボディメイクを重視</strong>：<a href="#muscle-deli">マッスルデリ</a>・<a href="#fit-food-home">FIT FOOD HOME</a></li>
+        <li><strong>カロリー制限・医療的な厳密さを重視</strong>：<a href="#wellness-dining">ウェルネスダイニング</a></li>
+        <li><strong>野菜不足の解消・アラカルトの柔軟性を重視</strong>：<a href="#green-spoon">GREEN SPOON</a></li>
       </ul>
       <p>当サイトは独自の点数やランキングを付けていません。以下は<strong>確認できた公式情報をそのまま</strong>、掲載順に優劣をつけずに並べたものです。</p>
     </div>
@@ -3041,7 +3041,7 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
 
     <div class="card panel-accent">
       <h2>結論：定番3社と、気軽に試せる2社がある</h2>
-      <p>一人暮らし向けの宅配食は、<strong>公式サイトで「一人暮らし向け」と紹介されている定番3社</strong>（nosh・ワタミの宅食ダイレクト・三ツ星ファーム）と、<strong>単品購入・回数縛りなしで試せる2社</strong>（マッスルデリ・GREEN SPOON）を候補に加えた計5社で比較します。</p>
+      <p>一人暮らし向けの宅配食は、<strong>公式サイトで「一人暮らし向け」と紹介されている定番3社</strong>（<a href="#nosh">nosh</a>・<a href="#watami-takushoku">ワタミの宅食ダイレクト</a>・<a href="#mitsuboshi-farm">三ツ星ファーム</a>）と、<strong>単品購入・回数縛りなしで試せる2社</strong>（<a href="#muscle-deli">マッスルデリ</a>・<a href="#green-spoon">GREEN SPOON</a>）を候補に加えた計5社で比較します。</p>
       <p>2社を加えたのは、一人暮らしの最初の不安が「続けられるか」「冷凍庫を圧迫しないか」にあるためです。当サイトは点数やランキングを付けず、以下は各公式サイトで確認した情報を並べたものです。</p>
     </div>
 
