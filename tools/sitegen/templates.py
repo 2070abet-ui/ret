@@ -1579,9 +1579,9 @@ def comparison_pairs_block(comparison_pairs):
 ARTICLES_INDEX = [
     ("/articles/chef-muten-tukuritoki-kuchikomi", "シェフの無添つくりおきの口コミ・評判・料金を徹底検証"),
     ("/articles/koreisha-takushoku-hikaku", "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮】"),
-    ("/articles/takushoku-demerit-chuiten", "宅配食のデメリット・注意点｜後悔しないために知っておきたいこと"),
-    ("/articles/diet-bodymake-hikaku", "ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】"),
-    ("/articles/hitorigurashi-takushoku-hikaku", "一人暮らし向け宅配食比較｜新生活・冷凍庫が心配な人の選び方"),
+    ("/articles/takushoku-demerit-chuiten", "宅配食のデメリット・注意点｜送料・解約・冷凍庫、後悔しないための5点を16社の公式情報で整理"),
+    ("/articles/diet-bodymake-hikaku", "ダイエット向け宅配食は「低糖質」か「高タンパク」かで選ぶ｜6社を公式情報で比較"),
+    ("/articles/hitorigurashi-takushoku-hikaku", "一人暮らしの宅配食は「まず定期ではなく単品・初回」から試す｜5社を比較"),
 ]
 
 
@@ -2334,8 +2334,8 @@ def affiliate_disclosure_note():
 
 def build_article_chef_muten_kuchikomi(aff_links):
     """シェフの無添つくりおき 商標ロングテール記事（一次情報・公式サイト2026-08-26確認）"""
-    title = "シェフの無添つくりおきの口コミ・評判を検証｜料金・送料・まずい？の真相も解説"
-    desc = "シェフの無添つくりおきの料金（初回3,799円〜）・送料・メニュー・解約条件を公式情報で検証。「まずい？」の見方、口コミの確認方法、向いている人まで解説します。"
+    title = "シェフの無添つくりおき「まずい？」の声を検証｜口コミ・評判の見方を公式情報で整理"
+    desc = "シェフの無添つくりおき「まずい？」の声は本当か。口コミ・評判の見極め方を公式情報で整理。料金（初回3,799円〜）・送料・解約条件・向いている人も解説します。"
     html = page_header(title, desc, "articles/chef-muten-tukuritoki-kuchikomi.html",
                         crumbs=[_HOME_CRUMB, ("シェフの無添つくりおきの口コミ・評判", None)])
 
@@ -2343,7 +2343,7 @@ def build_article_chef_muten_kuchikomi(aff_links):
     cta = aff_link(aff_links, "chef-muten-tukuritoki", label="シェフの無添つくりおきを公式サイトで見る", cls="btn-primary")
 
     html += f"""
-    <h1>シェフの無添つくりおきの口コミ・評判を検証｜料金・送料・まずい？の真相も解説</h1>
+    <h1>シェフの無添つくりおき「まずい？」の声を検証｜口コミ・評判の見方を公式情報で整理</h1>
     <p class="price-meta">最終確認日：2026年8月26日 ｜ 情報源：公式サイト（store.tavenal.com）・公式FAQ</p>
     <p>「シェフの無添つくりおき」の<strong>口コミ・評判</strong>でよく聞かれる「<strong>まずい？</strong>」「量が多い」といった声について、公式サイト・公式FAQの一次情報で検証しました。料金・送料・メニューの仕組みも併せて解説します。</p>
 
@@ -2499,7 +2499,7 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
     ids = ["magokoro-care", "syokurakuzen", "kenko-chokkyokubin", "wanmairu", "shokutakubin"]
     picked = [svc_by_id[i] for i in ids if i in svc_by_id]
 
-    title = "高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮を徹底解説】"
+    title = "高齢者向け宅配食・冷凍弁当の選び方｜やわらか食・塩分・個食の3軸で5社を比較"
     desc = "高齢者向けの宅配食・冷凍弁当5社を比較。やわらか食・塩分配慮の有無、1食あたりの価格、個食かどうかを公式情報で整理。自治体配食との違い、離れて暮らす家族が代理で注文する際の確認点も解説します。"
     html = page_header(title, desc, "articles/koreisha-takushoku-hikaku.html",
                         crumbs=[_HOME_CRUMB, ("高齢者向け宅配食の比較", None)])
@@ -2528,7 +2528,7 @@ def build_article_koreisha_takushoku(services, aff_links, sources_by_id=None):
         </tr>""")
 
     html += f"""
-    <h1>高齢者向け宅配食・冷凍弁当おすすめ比較【やわらか食・塩分配慮を徹底解説】</h1>
+    <h1>高齢者向け宅配食・冷凍弁当の選び方｜やわらか食・塩分・個食の3軸で5社を比較</h1>
     <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（確認日は社ごとに異なります。詳細は各サービス詳細ページに記載）</p>
 
     <div class="card panel-accent">
@@ -2691,7 +2691,7 @@ def build_article_demerit_chuiten(services):
     （meal_form_categories付与済み）を渡す想定。"""
     slug = "articles/takushoku-demerit-chuiten.html"
     num = len(services)
-    title = "宅配食のデメリット・注意点｜後悔しないために知っておきたいこと"
+    title = "宅配食のデメリット・注意点｜送料・解約・冷凍庫、後悔しないための5点を16社の公式情報で整理"
     desc = (f"宅配食・冷凍弁当のデメリットや注意点を、{num}社の公式情報をもとに正直にまとめました。"
             "冷凍庫のスペース、送料、価格の分かりにくさ、解約条件の違いなど、"
             "後悔しやすいポイントを客観的な事実で整理しています。")
@@ -2716,7 +2716,7 @@ def build_article_demerit_chuiten(services):
     cta_ranking = '<a class="btn-secondary" href="/ranking">宅配食の比較一覧を見る</a>'
 
     html += f"""
-    <h1>宅配食のデメリット・注意点｜後悔しないために知っておきたいこと</h1>
+    <h1>宅配食のデメリット・注意点｜送料・解約・冷凍庫、後悔しないための5点を16社の公式情報で整理</h1>
     <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（掲載{num}社。個別の確認日は各サービス詳細ページに記載）</p>
 
     <div class="card panel-accent">
@@ -2830,7 +2830,7 @@ def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sour
     num = len(picked)
 
     slug = "articles/diet-bodymake-hikaku.html"
-    title = "ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】"
+    title = "ダイエット向け宅配食は「低糖質」か「高タンパク」かで選ぶ｜6社を公式情報で比較"
     desc = (f"ダイエット・ボディメイクに向いた宅配食{num}社を比較。低糖質・高タンパク・カロリー制限のうち"
             "何を重視するかで選び方が変わります。料金・保存方法・向いている人を公式情報でまとめました。")
     html = page_header(title, desc, slug,
@@ -2878,7 +2878,7 @@ def build_article_diet_bodymake_hikaku(services, shipping_by_id, aff_links, sour
     </div>""")
 
     html += f"""
-    <h1>ダイエット・ボディメイク向け宅配食比較【低糖質・高タンパクで選ぶポイント】</h1>
+    <h1>ダイエット向け宅配食は「低糖質」か「高タンパク」かで選ぶ｜6社を公式情報で比較</h1>
     <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（掲載{num}社。個別の確認日は各サービス詳細ページに記載）</p>
 
     <div class="card panel-accent">
@@ -2960,7 +2960,7 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
     num = len(picked)
 
     slug = "articles/hitorigurashi-takushoku-hikaku.html"
-    title = "一人暮らし向け宅配食比較｜新生活・冷凍庫が心配な人の選び方"
+    title = "一人暮らしの宅配食は「まず定期ではなく単品・初回」から試す｜5社を比較"
     desc = (f"一人暮らしに向いた宅配食{num}社を比較。冷凍庫のスペースや続けられるか不安な人向けに、"
             "気軽に試せるサービスも含めて料金・送料・解約条件を公式情報でまとめました。")
     html = page_header(title, desc, slug,
@@ -3036,7 +3036,7 @@ def build_article_hitorigurashi_takushoku(services, shipping_by_id, aff_links, s
     </div>""")
 
     html += f"""
-    <h1>一人暮らし向け宅配食比較｜新生活・冷凍庫が心配な人の選び方</h1>
+    <h1>一人暮らしの宅配食は「まず定期ではなく単品・初回」から試す｜5社を比較</h1>
     <p class="price-meta">最終確認日：{esc(LAST_VERIFIED_DATE)} ｜ 情報源：各社公式サイト（掲載{num}社。個別の確認日は各サービス詳細ページに記載）</p>
 
     <div class="card panel-accent">

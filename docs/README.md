@@ -27,8 +27,8 @@
 | AFFILIATE_LINK_UPDATE_QA_2026_08_28.md | QA | 完了（2ea8ed2） |
 | APPETITE_APPEAL_UI_AUDIT_2026_08_27.md | 監査 | 完了（実装済み） |
 | ARTICLE_CTA_PATH_DETAILED_AUDIT_2026_09_04.md | 監査 | 完了（判定どおり実装・検証済み。commit未） |
-| ARTICLE_TITLE_CANDIDATES_SERP_AUDIT_2026_09_04.md | 監査 | 完了（SERP調査・候補改訂まで。実装は承認待ち） |
-| ARTICLE_TITLE_RESEARCH_AND_CANDIDATES_2026_09_04.md | 監査 | 完了（調査・候補出しまで。実装は承認待ち） |
+| ARTICLE_TITLE_CANDIDATES_SERP_AUDIT_2026_09_04.md | 監査 | 完了（SERP調査・候補改訂・既存記事タイトル実装・検証済み。chef=案A確定） |
+| ARTICLE_TITLE_RESEARCH_AND_CANDIDATES_2026_09_04.md | 監査 | 完了（調査・候補出し。実装はSERP監査docで実施済み） |
 | COMPETITOR_UX_FUNNEL_AUDIT_2026_08_28.md | 監査 | 完了（d3e7a58） |
 | DATA_VERIFICATION_AUDIT_20260827.md | 監査 | 完了（confirmed化反映済み） |
 | DIAGNOSIS_COMPARE_CTA_FUNNEL_AUDIT_2026_08_28.md | 監査 | 完了（P2任意のみ未実施） |
